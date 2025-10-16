@@ -1,7 +1,8 @@
 {
   inputs,
   pkgs,
-  ...
+  config,
+  ... 
 }: {
   homebrew = {
     enable = true;
@@ -13,7 +14,7 @@
     masApps = {
       "Xcode" = 497799835;
     };
-    # taps = [ "homebrew/bundle" ] ++ builtins.attrNames config.nix-homebrew.taps;
+    taps = builtins.attrNames config.nix-homebrew.taps;
   };
 
   # System-level packages

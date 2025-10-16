@@ -59,6 +59,11 @@
 
       # Misc Code Point Fixes
       symbol_map U+21B5,U+25B8,U+2605,U+2630,U+2632,U+2714,U+E0A3,U+E615,U+E62B Symbols Nerd Font
+
+      map cmd+h hide_macos_app
+      map cmd+m minimize_macos_window
+      map cmd+q quit
+      map kitty_mod+p>y kitten hints --type hyperlink
     '';
   };
 }
