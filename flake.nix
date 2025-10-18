@@ -78,10 +78,9 @@
     mkMerge [
       (
         mkDarwin "Avys-Mac" inputs.nixpkgs
-        [
-        ]
         []
-        mkHome "nest" "/home/avycado13" inputs.nixpkgs []
+        []
       )
+        (mkHome "nest" "avycado13" "/home/avycado13" inputs.nixpkgs [])
     ];
 }

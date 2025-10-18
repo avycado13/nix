@@ -124,20 +124,24 @@ in {
     a: b: inputs.nixpkgs.lib.attrsets.recursiveUpdate a b
   ) {};
 
-  mkHome = username: homePath: nixpkgsVersion: extraHmModules: {
+  mkHome = hostname: username: homePath: nixpkgsVersion: extraHmModules: {
     homeConfigurations.${username} = inputs.home-manager.lib.homeManagerConfiguration {
       pkgs = import nixpkgsVersion {system = builtins.currentSystem or "x86_64-linux";};
       modules =
         [
           inputs.agenix.homeManagerModules.default
           ./users/avy/dots.nix
+          {
+            home = {
+              username = username;
+              homeDirectory = homePath;
+              stateVersion = "25.05";
+            };
+          }
         ]
         ++ extraHmModules;
       extraSpecialArgs = {inherit inputs;};
-      configuration = {
-        home.username = username;
-        home.homeDirectory = homePath;
-      };
+      
     };
   };
   mkDebian = machineHostname: nixpkgsVersion: extraHmModules: extraModules: {
