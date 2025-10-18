@@ -44,6 +44,22 @@
         "type": "github"
       }
     },
+    "brew-aerospace": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1756592205,
+        "narHash": "sha256-AB7c96r/7JgkBubPrlEFz9yaIPdsD7S8JkLVnGtlhAw=",
+        "owner": "nikitabobko",
+        "repo": "homebrew-tap",
+        "rev": "2eff00794112cf73fdefeec27cd9b30abe644408",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nikitabobko",
+        "repo": "homebrew-tap",
+        "type": "github"
+      }
+    },
     "brew-src": {
       "flake": false,
       "locked": {
@@ -1064,6 +1080,7 @@
       "inputs": {
         "agenix": "agenix",
         "alejandra": "alejandra",
+        "brew-aerospace": "brew-aerospace",
         "darwin": "darwin_2",
         "deploy-rs": "deploy-rs",
         "gitignore": "gitignore",

@@ -4,5 +4,8 @@
   lib,
   ...
 }: {
-  age.identityPaths = ["/Users/avy/.ssh/avy"];
+  age = {
+    identityPaths = ["/Users/avy/.ssh/avy"];
+
+    };
 }

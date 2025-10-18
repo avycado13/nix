@@ -65,6 +65,10 @@
     };
     nix-topology.url = "github:oddlama/nix-topology";
     nix-search-tv.url = "github:3timeslazy/nix-search-tv";
+    brew-aerospace = {
+      url = "github:nikitabobko/homebrew-tap";
+      flake = false;
+    };
   };
 
   outputs = {...} @ inputs: let
@@ -77,7 +81,7 @@
         [
         ]
         []
-        # mkHome "piserver" "/Users/avy" inputs.nixpkgs []
+        mkHome "nest" "/home/avycado13" inputs.nixpkgs []
       )
     ];
 }

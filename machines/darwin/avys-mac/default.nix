@@ -2,7 +2,7 @@
   inputs,
   pkgs,
   config,
-  ... 
+  ...
 }: {
   homebrew = {
     enable = true;
@@ -10,7 +10,7 @@
       autoUpdate = true;
     };
     brews = ["openssl" "wget" "git-crypt" "docker" "docker-compose"];
-    casks = ["arc" "visual-studio-code" "foks" "kicad" "android-studio" "tailscale-app"];
+    casks = ["arc" "visual-studio-code" "foks" "android-studio" "tailscale-app" "aerospace"];
     masApps = {
       "Xcode" = 497799835;
     };

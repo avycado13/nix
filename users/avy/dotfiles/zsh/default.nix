@@ -61,7 +61,7 @@
           "git"
           "aliases"
           "alias-finder"
-          "git-extra-commands"
+          # "git-extra-commands"
           "pj"
           "asdf"
           "python"
@@ -79,6 +79,7 @@
         yh = "yt-dlp --continue --no-check-certificate --format=bestvideo+bestaudio --exec='ffmpeg -i {} -c:a copy -c:v copy {}.mkv && rm {}'";
         yd = "yt-dlp --continue --no-check-certificate --format=bestvideo+bestaudio --exec='ffmpeg -i {} -c:v prores_ks -profile:v 1 -vf fps=25/1 -pix_fmt yuv422p -c:a pcm_s16le {}.mov && rm {}'";
         ya = "yt-dlp --continue --no-check-certificate --format=bestaudio -x --audio-format wav";
+        ols = "ls -la --color=never | awk '{k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/)*2^(8-i));if(k)printf(\" %0o \",k);print}'";
         fzkill = "kill -9 $(ps aux | fzf | awk '{print $2}')";
         aspm = "sudo lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM )'";
         mkdir = "mkdir -p";
@@ -89,6 +90,11 @@
       initContent = ''
         export PATH="$HOME/finance/bin:$PATH"
         export LEDGER_FILE=~/finance/main.journal
+
+        mkdir -p "$HOME/Library/pnpm"
+        export PNPM_HOME="$HOME/Library/pnpm"
+        export PATH="$PNPM_HOME:$PATH"
+        export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"
 
         # Cycle back in the suggestions menu using Shift+Tab
         bindkey '^[[Z' reverse-menu-complete

@@ -9,6 +9,7 @@
         showhidden = true;
         mineffect = "genie";
         mru-spaces = false;
+        expose-group-apps = true;
       };
 
       # Finder settings

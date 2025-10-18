@@ -54,12 +54,15 @@ in {
             taps = {
               "homebrew/homebrew-core" = inputs.homebrew-core;
               "homebrew/homebrew-cask" = inputs.homebrew-cask;
+              "nikitabobko/tap" = inputs.brew-aerospace;
             };
 
             # Optional: Enable fully-declarative tap management
             #
             # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
             mutableTaps = true;
+
+            autoMigrate = true;
           };
         }
       ];
@@ -127,7 +130,7 @@ in {
       modules =
         [
           inputs.agenix.homeManagerModules.default
-          ./users/${username}/dots.nix
+          ./users/avy/dots.nix
         ]
         ++ extraHmModules;
       extraSpecialArgs = {inherit inputs;};
