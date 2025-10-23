@@ -55,6 +55,7 @@ in {
               "homebrew/homebrew-core" = inputs.homebrew-core;
               "homebrew/homebrew-cask" = inputs.homebrew-cask;
               "nikitabobko/tap" = inputs.brew-aerospace;
+              "TheBoredTeam/boring-notch" = inputs.brew-boring-notch;
             };
 
             # Optional: Enable fully-declarative tap management

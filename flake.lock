@@ -60,6 +60,22 @@
         "type": "github"
       }
     },
+    "brew-boring-notch": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1756136626,
+        "narHash": "sha256-mZq4ac4QPDtViFl6phWUkq43eGt+Bnc3R7KxFWrMHXY=",
+        "owner": "TheBoredTeam",
+        "repo": "homebrew-boring-notch",
+        "rev": "b1ed930be79af418a059a1b45217f81ca1e70199",
+        "type": "github"
+      },
+      "original": {
+        "owner": "TheBoredTeam",
+        "repo": "homebrew-boring-notch",
+        "type": "github"
+      }
+    },
     "brew-src": {
       "flake": false,
       "locked": {
@@ -1081,6 +1097,7 @@
         "agenix": "agenix",
         "alejandra": "alejandra",
         "brew-aerospace": "brew-aerospace",
+        "brew-boring-notch": "brew-boring-notch",
         "darwin": "darwin_2",
         "deploy-rs": "deploy-rs",
         "gitignore": "gitignore",

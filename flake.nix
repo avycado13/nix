@@ -69,6 +69,10 @@
       url = "github:nikitabobko/homebrew-tap";
       flake = false;
     };
+    brew-boring-notch = {
+      url = "github:TheBoredTeam/homebrew-boring-notch";
+      flake = false;
+    };
   };
 
   outputs = {...} @ inputs: let

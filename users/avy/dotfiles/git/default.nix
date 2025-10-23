@@ -30,6 +30,12 @@
         rebase = false;
       };
       url."git@github.com:".insteadOf = "https://github.com/";
+      diff = {
+        "sqlite3" = {
+          binary = true;
+          textconv = "echo .dump | sqlite3";
+        };
+      };
     };
   };
 }

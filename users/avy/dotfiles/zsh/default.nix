@@ -1,7 +1,4 @@
-{
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   home.packages = with pkgs; [grc];
 
   programs = {
@@ -50,7 +47,7 @@
           {name = "unixorn/warhol.plugin.zsh";}
           {name = "davidosomething/git-my";}
           {name = "MichaelAquilina/zsh-you-should-use";}
-          { name = "zsh-users/zsh-syntax-highlighting"; }
+          {name = "zsh-users/zsh-syntax-highlighting";}
         ];
       };
       oh-my-zsh = {
@@ -85,6 +82,12 @@
         mkdir = "mkdir -p";
         # Only do `nix flake update` if flake.lock hasn't been updated within an hour
         deploy-nix = "f() { if [[ $(find . -mmin -60 -type f -name flake.lock | wc -c) -eq 0 ]]; then nix flake update; fi && deploy .#$1 --remote-build -s --auto-rollback false && rsync -ax --delete ./ $1:/etc/nixos/ };f";
+        rm = "rm -iv";
+        cp = "cp -iv";
+        mv = "mv -iv";
+        cfip = ''dig @1.1.1.1 ch txt whoami.cloudflare +short | tr -d '"' '';
+        # pathlines = ''echo -e ${PATH//:/\\n}'';
+        
       };
 
       initContent = ''
@@ -95,6 +98,7 @@
         export PNPM_HOME="$HOME/Library/pnpm"
         export PATH="$PNPM_HOME:$PATH"
         export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"
+        source $HOME/.local/bin/env
 
         # Cycle back in the suggestions menu using Shift+Tab
         bindkey '^[[Z' reverse-menu-complete
@@ -110,8 +114,8 @@
           if [ $(uname) = "Darwin" ]; then
             path=("$HOME/.nix-profile/bin" "/run/wrappers/bin" "/etc/profiles/per-user/$USER/bin" "/nix/var/nix/profiles/default/bin" "/run/current-system/sw/bin" "/opt/homebrew/bin" $path)
             export DOCKER_HOST="unix://$HOME/.colima/default/docker.sock"
+            alias flush-dns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
           fi
-
           export EDITOR=nvim
           export LANG=en_US.UTF-8
           export LC_CTYPE=en_US.UTF-8
