@@ -30,6 +30,7 @@
     direnv = {
       enable = true;
       enableZshIntegration = true;
+      nix-direnv.enable = true;
     };
     ripgrep = {
       enable = true;
@@ -87,7 +88,6 @@
         mv = "mv -iv";
         cfip = ''dig @1.1.1.1 ch txt whoami.cloudflare +short | tr -d '"' '';
         # pathlines = ''echo -e ${PATH//:/\\n}'';
-        
       };
 
       initContent = ''
@@ -97,7 +97,9 @@
         mkdir -p "$HOME/Library/pnpm"
         export PNPM_HOME="$HOME/Library/pnpm"
         export PATH="$PNPM_HOME:$PATH"
-        export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools"
+        export ANDROID_HOME="$HOME/Library/Android/sdk"
+        export ANDROID_SDK_ROOT="$ANDROID_HOME"
+        export PATH="$PATH:$ANDROID_HOME/platform-tools"
         source $HOME/.local/bin/env
 
         # Cycle back in the suggestions menu using Shift+Tab
@@ -115,17 +117,14 @@
             path=("$HOME/.nix-profile/bin" "/run/wrappers/bin" "/etc/profiles/per-user/$USER/bin" "/nix/var/nix/profiles/default/bin" "/run/current-system/sw/bin" "/opt/homebrew/bin" $path)
             export DOCKER_HOST="unix://$HOME/.colima/default/docker.sock"
             alias flush-dns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
+            alias lsblk="diskutil list"
+            ulimit -n 2048
           fi
           export EDITOR=nvim
           export LANG=en_US.UTF-8
           export LC_CTYPE=en_US.UTF-8
           export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
-
-          if [ $(uname) = "Darwin" ]; then
-            alias lsblk="diskutil list"
-            ulimit -n 2048
-          fi
 
           bindkey '^[[A' history-substring-search-up
           bindkey '^[[B' history-substring-search-down

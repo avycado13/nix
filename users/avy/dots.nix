@@ -27,7 +27,6 @@ in {
     ./packages.nix
     ./dotfiles/git/default.nix
     ./dotfiles/kitty/default.nix
-
   ];
 
   programs.home-manager.enable = true;

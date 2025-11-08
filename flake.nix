@@ -73,11 +73,18 @@
       url = "github:TheBoredTeam/homebrew-boring-notch";
       flake = false;
     };
+    stylix = {
+      url = "github:nix-community/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {...} @ inputs: let
     helpers = import ./flakeHelpers.nix inputs;
-    inherit (helpers) mkMerge mkNixos mkDarwin mkHome;
+    inherit (helpers) mkMerge mkNixos mkDarwin;
   in
     mkMerge [
       (
@@ -85,6 +92,7 @@
         []
         []
       )
-        (mkHome "nest" "avycado13" "/home/avycado13" inputs.nixpkgs [])
+      # (mkHome "nest" "avycado13" "/home/avycado13" inputs.nixpkgs [])
+      # (mkNixos "pi1" inputs.nixpkgs "aarch64-linux" [])
     ];
 }

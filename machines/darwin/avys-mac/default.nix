@@ -147,6 +147,10 @@
           "if" = {app-id = "com.tinyspeck.slackmacgap";};
           run = "move-node-to-workspace M";
         }
+        {
+          "if" = {app-id = "com.apple.MobileSMS";};
+          run = "move-node-to-workspace M";
+        }
       ];
     };
   };
@@ -176,6 +180,7 @@
     pkgs.zstd
     pkgs.gnupg
     pkgs.duf
+    pkgs.ffmpeg
   ];
 
   # Security settings
@@ -190,6 +195,14 @@
     computerName = "Avyays MacBook Air";
     hostName = "Avys-Mac";
     localHostName = "Avys-Mac";
+    dns = ["1.1.1.1" "1.0.0.1" "2606:4700:4700::1111" "2606:4700:4700::1001"];
+    knownNetworkServices = [
+      "Raspberry Pi Compute Module 4 Rev 1.1"
+      "USB 10/100/1000 LAN"
+      "Thunderbolt Ethernet"
+      "Thunderbolt Bridge"
+      "Wi-Fi"
+    ];
   };
 
   # Nix Darwin version

@@ -1,5 +1,7 @@
-{...}: {
+{inputs, ...}: {
   nixpkgs = {
+    overlays = [inputs.nix-topology.overlays.default];
+
     config = {
       allowUnfree = true;
       allowUnfreePredicate = _: true;

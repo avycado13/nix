@@ -1,6 +1,4 @@
-{
-  ...
-}: {
+{...}: {
   programs = {
     ssh = {
       enable = true;
@@ -29,13 +27,16 @@
           user = "avycado";
           identityFile = "/Users/avy/.ssh/avy";
         };
-
+        "eu.nixbuild.net" = {
+          hostname = "eu.nixbuild.net";
+          user = "avy";
+          identityFile = "/Users/avy/.ssh/avy";
+        };
         # gh = lib.mkBefore {
         #   hostname = "github.com";
         #   identityFile = "/Users/avy/.ssh/avy";
         # };
       };
     };
-    
   };
 }

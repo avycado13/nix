@@ -9,6 +9,7 @@ inputs: let
         inputs.agenix.homeManagerModules.default
         inputs.mac-app-util.homeManagerModules.default
         inputs.nix-index-database.homeModules.nix-index
+        # inputs.stylix.homeModules.stylix
         ./users/avy/dots.nix
         ./users/avy/age.nix
       ]
@@ -38,6 +39,7 @@ in {
         }
         (inputs.nixpkgs.lib.attrsets.recursiveUpdate (homeManagerCfg true extraHmModules) {
           })
+        inputs.stylix.darwinModules.stylix
         inputs.nix-homebrew.darwinModules.nix-homebrew
         {
           nix-homebrew = {
@@ -69,30 +71,22 @@ in {
       ];
     };
   };
-  mkNixos = machineHostname: nixpkgsVersion: hardware: extraModules: rec {
-    deploy.nodes.${machineHostname} = {
-      hostname = machineHostname;
-      profiles.system = {
-        user = "root";
-        sshUser = "avy";
-        path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos nixosConfigurations.${machineHostname};
-      };
-    };
+  mkNixos = machineHostname: nixpkgsVersion: hardware: extraModules: {
     # apps = inputs.nixinate.nixinate.x86_64-linux self;
     nixosConfigurations.${machineHostname} = nixpkgsVersion.lib.nixosSystem {
-      system = "x86_64-linux";
+      system = hardware;
       specialArgs = {
         inherit inputs;
-        vars = import ./machines/nixos/vars.nix;
+        # vars = import ./machines/nixos/vars.nix;
       };
       modules =
         [
           ./homelab
           # ./machines/nixos/_common
-          # ./machines/nixos/${machineHostname}
+          ./machines/nixos/${machineHostname}
           ./modules/email
-          "${inputs.secrets}/default.nix"
-          "${inputs.nix-mineral}/nix-mineral.nix"
+          # "${inputs.secrets}/default.nix"
+          # inputs.nix-mineral
           # inputs.nixos-conf-editor.packages.${system}.nixos-conf-editor
           inputs.microvm.nixosModules.microvm
           inputs.agenix.nixosModules.default
@@ -101,14 +95,17 @@ in {
           inputs.nix-index-database.nixosModules.nix-index
           {programs.nix-index-database.comma.enable = true;}
           inputs.nixos-shell.nixosModules.nixos-shell
-          inputs.extra-container.nixosModules.default
+          # inputs.extra-container.nixosModules.default
           inputs.nix-search-tv.packages.x86_64-linux.default
-          inputs.nix-minecraft.nixosModules.minecraft-servers
-          {
-            nixpkgs.overlays = [inputs.nix-minecraft.overlay];
-          }
+          # inputs.nix-minecraft.nixosModules.minecraft-servers
+          # {
+          #   nixpkgs.overlays = [inputs.nix-minecraft.overlay];
+          # }
           ./users/avy
           (homeManagerCfg false [])
+          # inputs.nixos-facter-modules.nixosModules.facter
+          # {config.facter.reportPath = ./machines/nixos/${machineHostname}/facter.json;}
+          inputs.disko.nixosModules.disko
         ]
         ++ extraModules;
     };
@@ -142,7 +139,6 @@ in {
         ]
         ++ extraHmModules;
       extraSpecialArgs = {inherit inputs;};
-      
     };
   };
   mkDebian = machineHostname: nixpkgsVersion: extraHmModules: extraModules: {
@@ -151,6 +147,7 @@ in {
         [
           ./modules/email
           ./users/avy
+
           (homeManagerCfg false [])
         ]
         ++ extraModules;
