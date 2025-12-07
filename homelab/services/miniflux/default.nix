@@ -46,7 +46,6 @@ in
         repository = "miniflux/miniflux";
         tag = "latest";
       };
-      ports = [ { hostPort = 8080; containerPort = 8080; } ];
       environment = lib.mkMerge [
         {
           inherit (cfg) listenAddr;

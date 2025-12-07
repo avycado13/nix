@@ -95,16 +95,16 @@ in {
           inputs.nix-index-database.nixosModules.nix-index
           {programs.nix-index-database.comma.enable = true;}
           inputs.nixos-shell.nixosModules.nixos-shell
-          # inputs.extra-container.nixosModules.default
+          inputs.extra-container.nixosModules.default
           inputs.nix-search-tv.packages.x86_64-linux.default
-          # inputs.nix-minecraft.nixosModules.minecraft-servers
-          # {
-          #   nixpkgs.overlays = [inputs.nix-minecraft.overlay];
-          # }
+          inputs.nix-minecraft.nixosModules.minecraft-servers
+          {
+            nixpkgs.overlays = [inputs.nix-minecraft.overlay];
+          }
           ./users/avy
           (homeManagerCfg false [])
-          # inputs.nixos-facter-modules.nixosModules.facter
-          # {config.facter.reportPath = ./machines/nixos/${machineHostname}/facter.json;}
+          inputs.nixos-facter-modules.nixosModules.facter
+          {config.facter.reportPath = ./machines/nixos/${machineHostname}/facter.json;}
           inputs.disko.nixosModules.disko
         ]
         ++ extraModules;

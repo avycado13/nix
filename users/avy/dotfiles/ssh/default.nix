@@ -32,6 +32,9 @@
           user = "avy";
           identityFile = "/Users/avy/.ssh/avy";
         };
+        "*" = {
+          identityFile = "/Users/avy/.ssh/avy";
+        };
         # gh = lib.mkBefore {
         #   hostname = "github.com";
         #   identityFile = "/Users/avy/.ssh/avy";
