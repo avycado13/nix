@@ -1,10 +1,10 @@
 { config, pkgs, lib, ... }:
 
 let
-  cfg = config.homelab.services.stirlingpdf;
+  cfg = config.homelab.services.bentopdf;
 in
 {
-  options.homelab.services.stirlingpdf = {
+  options.homelab.services.bentopdf = {
     enable = lib.mkEnableOption "Stirling PDF Service";
 
     # Optional configuration options
@@ -52,7 +52,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    virtualisation.oci-containers.containers.stirlingpdf = {
+    virtualisation.oci-containers.containers.bentopdf = {
       enable = true;
 
       image = {
@@ -60,6 +60,11 @@ in
         tag = "latest";
       };
 
+      labels = [
+        "traefik.enable=true"
+        "traefik.http.routers.bentopdf.rule=Host(`bentopdf.docker.localhost`)"
+        "traefik.http.routers.bentopdf.entrypoints=web"
+      ];
 
       volumes = lib.mkForce [
         "${cfg.trainingDataPath}:/usr/share/tessdata"
