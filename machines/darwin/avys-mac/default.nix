@@ -1,5 +1,4 @@
 {
-  inputs,
   pkgs,
   config,
   ...
@@ -165,6 +164,7 @@
     pkgs.wget
     pkgs.comma
     pkgs.colima
+    pkgs.lazygit
 
     # System utilities
     pkgs.coreutils

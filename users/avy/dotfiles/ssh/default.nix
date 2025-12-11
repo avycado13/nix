@@ -1,8 +1,20 @@
-{...}: {
+{lib, ...}: {
   programs = {
     ssh = {
       enable = true;
       matchBlocks = {
+        "*" = {
+          forwardAgent = lib.mkDefault false;
+          addKeysToAgent = lib.mkDefault "no";
+          compression = lib.mkDefault false;
+          serverAliveInterval = lib.mkDefault 0;
+          serverAliveCountMax = lib.mkDefault 3;
+          hashKnownHosts = lib.mkDefault false;
+          userKnownHostsFile = lib.mkDefault "~/.ssh/known_hosts";
+          controlMaster = lib.mkDefault "no";
+          controlPath = lib.mkDefault "~/.ssh/master-%r@%n:%p";
+          controlPersist = lib.mkDefault "no";
+        };
         "github.com" = {
           hostname = "github.com";
           user = "git";

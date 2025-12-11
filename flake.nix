@@ -90,6 +90,7 @@
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
     robotnix.url = "github:nix-community/robotnix";
+    lazygit.url = "github:jesseduffield/lazygit";
   };
 
   outputs = {...} @ inputs: let

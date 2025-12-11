@@ -20,7 +20,7 @@ inputs: let
 in {
   mkDarwin = machineHostname: nixpkgsVersion: extraHmModules: extraModules: {
     darwinConfigurations.${machineHostname} = inputs.darwin.lib.darwinSystem {
-      system = builtins.currentSystem or "aarch64-darwin"; # Default to ARM but can be overridden
+      stdenv.hostPlatform.system = builtins.currentSystem or "aarch64-darwin"; # Default to ARM but can be overridden
       specialArgs = {
         inherit inputs;
       };
@@ -74,7 +74,7 @@ in {
   mkNixos = machineHostname: nixpkgsVersion: hardware: extraModules: {
     # apps = inputs.nixinate.nixinate.x86_64-linux self;
     nixosConfigurations.${machineHostname} = nixpkgsVersion.lib.nixosSystem {
-      system = hardware;
+      stdenv.hostPlatform.system = hardware;
       specialArgs = {
         inherit inputs;
         # vars = import ./machines/nixos/vars.nix;
@@ -99,7 +99,7 @@ in {
           inputs.nix-search-tv.packages.x86_64-linux.default
           inputs.nix-minecraft.nixosModules.minecraft-servers
           {
-            nixpkgs.overlays = [inputs.nix-minecraft.overlay];
+            nixpkgs.overlays = [inputs.nix-minecraft.overlay inputs.lazygit.overlay];
           }
           ./users/avy
           (homeManagerCfg false [])

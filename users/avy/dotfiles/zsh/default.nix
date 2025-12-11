@@ -154,5 +154,8 @@
         # marker = "#EBCB8B";
       };
     };
+    lazydocker = {
+      enable = true;
+    };
   };
 }
