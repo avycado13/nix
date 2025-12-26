@@ -88,5 +88,5 @@ in {
     };
   };
 
-  meta.maintainers = with lib.maintainers; [avycado13];
+  # meta.maintainers = with lib.maintainers; [avycado13];
 }

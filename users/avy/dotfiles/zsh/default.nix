@@ -1,7 +1,11 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  config,
+  ...
+}: {
   home.packages = with pkgs; [grc];
-
   programs = {
+    nix-index-database.comma.enable = true;
     starship = {
       enable = true;
       settings = {
@@ -156,6 +160,17 @@
     };
     lazydocker = {
       enable = true;
+    };
+    atuin = {
+      enable = false;
+      settings = {
+        auto_sync = true;
+        sync_frequency = "5m";
+        sync_address = "https://api.atuin.sh";
+        search_mode = "fuzzy";
+        session_path = config.age.secrets."atuin-session".path;
+        key_path = config.age.secrets."atuin-key".path;
+      };
     };
   };
 }

@@ -1,3 +1,4 @@
 .DS_Store
 machines/.DS_Store
 modules/.DS_Store
+.direnv

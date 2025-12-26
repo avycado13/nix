@@ -19,62 +19,57 @@ inputs: let
   };
 in {
   mkDarwin = machineHostname: nixpkgsVersion: extraHmModules: extraModules: {
-    darwinConfigurations.${machineHostname} = inputs.darwin.lib.darwinSystem {
-      stdenv.hostPlatform.system = builtins.currentSystem or "aarch64-darwin"; # Default to ARM but can be overridden
-      specialArgs = {
-        inherit inputs;
-      };
-      modules = [
-        # "${inputs.secrets}/default.nix"
-        inputs.agenix.darwinModules.default
-        ./machines/darwin
-        ./machines/darwin/${machineHostname}
-        inputs.mac-app-util.darwinModules.default
-        inputs.home-manager.darwinModules.home-manager
-        # inputs.nix-search-tv.darwinModules.default
-        inputs.nix-index-database.darwinModules.nix-index
-        {programs.nix-index-database.comma.enable = true;}
-        {
-          home-manager.users.avy.home.homeDirectory = inputs.nixpkgs.lib.mkForce "/Users/avy";
-        }
-        (inputs.nixpkgs.lib.attrsets.recursiveUpdate (homeManagerCfg true extraHmModules) {
-          })
-        inputs.stylix.darwinModules.stylix
-        inputs.nix-homebrew.darwinModules.nix-homebrew
-        {
-          nix-homebrew = {
-            # Install Homebrew under the default prefix
-            enable = true;
+    darwinConfigurations.${machineHostname} = inputs.darwin.lib.darwinSystem rec {
+      # It is better to define 'system' here so it can be referenced via 'rec'
+      system = "aarch64-darwin";
 
-            # Apple Silicon Only: Also install Homebrew under the default Intel prefix for Rosetta 2
-            enableRosetta = false;
+      specialArgs = {inherit inputs;};
 
-            # User owning the Homebrew prefix
-            user = "avy";
+      modules =
+        [
+          inputs.agenix.darwinModules.default
+          ./machines/darwin
+          ./machines/darwin/${machineHostname}
+          inputs.mac-app-util.darwinModules.default
+          inputs.home-manager.darwinModules.home-manager
+          inputs.nix-index-database.darwinModules.nix-index
+          inputs.stylix.darwinModules.stylix
+          inputs.nix-homebrew.darwinModules.nix-homebrew
 
-            # Optional: Declarative tap management
-            taps = {
-              "homebrew/homebrew-core" = inputs.homebrew-core;
-              "homebrew/homebrew-cask" = inputs.homebrew-cask;
-              "nikitabobko/tap" = inputs.brew-aerospace;
-              "TheBoredTeam/boring-notch" = inputs.brew-boring-notch;
+          # Inline module to handle packages and home-manager settings
+          {
+            environment.systemPackages = [
+              # Referencing system from the rec block above
+              inputs.nix-auth.packages.${system}.default
+            ];
+
+            home-manager.users.avy.home.homeDirectory = inputs.nixpkgs.lib.mkForce "/Users/avy";
+
+            nix-homebrew = {
+              enable = true;
+              enableRosetta = false;
+              user = "avy";
+              taps = {
+                "homebrew/homebrew-core" = inputs.homebrew-core;
+                "homebrew/homebrew-cask" = inputs.homebrew-cask;
+                "nikitabobko/tap" = inputs.brew-aerospace;
+                "TheBoredTeam/boring-notch" = inputs.brew-boring-notch;
+              };
+              mutableTaps = true;
+              autoMigrate = true;
             };
+          }
 
-            # Optional: Enable fully-declarative tap management
-            #
-            # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
-            mutableTaps = true;
-
-            autoMigrate = true;
-          };
-        }
-      ];
+          # Merge your extra Home Manager config
+          (homeManagerCfg true extraHmModules)
+        ]
+        ++ extraModules; # Ensure extraModules are actually appended
     };
   };
   mkNixos = machineHostname: nixpkgsVersion: hardware: extraModules: {
     # apps = inputs.nixinate.nixinate.x86_64-linux self;
     nixosConfigurations.${machineHostname} = nixpkgsVersion.lib.nixosSystem {
-      stdenv.hostPlatform.system = hardware;
+      system = hardware;
       specialArgs = {
         inherit inputs;
         # vars = import ./machines/nixos/vars.nix;
@@ -99,8 +94,9 @@ in {
           inputs.nix-search-tv.packages.x86_64-linux.default
           inputs.nix-minecraft.nixosModules.minecraft-servers
           {
-            nixpkgs.overlays = [inputs.nix-minecraft.overlay inputs.lazygit.overlay];
+            nixpkgs.overlays = [inputs.nix-minecraft.overlay inputs.lazygit.overlays.default];
           }
+
           ./users/avy
           (homeManagerCfg false [])
           inputs.nixos-facter-modules.nixosModules.facter
@@ -128,6 +124,7 @@ in {
       modules =
         [
           inputs.agenix.homeManagerModules.default
+          # inputs.nix-index-database.homeModules.default
           ./users/avy/dots.nix
           {
             home = {

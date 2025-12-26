@@ -1,7 +1,5 @@
 {
   inputs,
-  pkgs,
-  lib,
   ...
 }: let
   home = {
@@ -27,6 +25,7 @@ in {
     ./packages.nix
     ./dotfiles/git/default.nix
     ./dotfiles/kitty/default.nix
+    ./dotfiles/gpg/default.nix
   ];
 
   programs.home-manager.enable = true;

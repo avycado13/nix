@@ -57,7 +57,6 @@
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     mac-app-util.url = "github:hraban/mac-app-util";
-    musnix = {url = "github:musnix/musnix";};
     system-manager = {
       url = "github:numtide/system-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -74,10 +73,6 @@
     };
     nix-topology.url = "github:oddlama/nix-topology";
     nix-search-tv.url = "github:3timeslazy/nix-search-tv";
-    brew-aerospace = {
-      url = "github:nikitabobko/homebrew-tap";
-      flake = false;
-    };
     brew-boring-notch = {
       url = "github:TheBoredTeam/homebrew-boring-notch";
       flake = false;
@@ -91,11 +86,14 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
     robotnix.url = "github:nix-community/robotnix";
     lazygit.url = "github:jesseduffield/lazygit";
+    flake-utils.url = "github:numtide/flake-utils";
+    llm-agents.url = "github:numtide/llm-agents.nix";
+    nix-auth.url = "github:numtide/nix-auth";
   };
 
   outputs = {...} @ inputs: let
     helpers = import ./flakeHelpers.nix inputs;
-    inherit (helpers) mkMerge mkNixos mkDarwin;
+    inherit (helpers) mkMerge mkNixos mkDarwin mkHome;
   in
     mkMerge [
       (
@@ -104,7 +102,34 @@
         []
       )
 
-      # (mkHome "nest" "avycado13" "/home/avycado13" inputs.nixpkgs [])
-      (mkNixos "pi1" inputs.nixpkgs "aarch64-linux" [])
+      (mkNixos "pi1" inputs.nixpkgs "aarch64-linux" [inputs.nixos-hardware.nixosModules.raspberry-pi-3])
+      (inputs.flake-utils.lib.eachDefaultSystem (
+        system: let
+          pkgs = import inputs.nixpkgs {inherit system;};
+        in {
+          formatter = pkgs.nixfmt-rfc-style;
+
+          devShells.default = pkgs.mkShell {
+            packages = [
+              pkgs.just
+              pkgs.nh
+              pkgs.nixos-rebuild-ng
+            ];
+          };
+
+          treefmt = {
+            projectRootFile = "flake.nix";
+            settings.global.excludes = [
+              "*.lock"
+              ".gitignore"
+              "secrets/*"
+            ];
+            programs.nixfmt.enable = true;
+            programs.nixfmt.package = pkgs.nixfmt-rfc-style;
+            programs.deadnix.enable = true;
+            programs.shellcheck.enable = true;
+          };
+        }
+      ))
     ];
 }
