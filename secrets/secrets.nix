@@ -7,6 +7,7 @@ let
 
   keys = users ++ machines;
 in {
-  "guest_accounts.json.age".publicKeys = keys;
   "miniflux_admin_password.age".publicKeys = keys;
+  "atuin-session.age".publicKeys = keys;
+  "atuin-key.age".publicKeys = keys;
 }

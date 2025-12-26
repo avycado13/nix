@@ -29,4 +29,28 @@
       };
     };
   };
+  programs.gh = {
+    enable = true;
+    package = pkgs.gh;
+    settings = {
+      git_protocol = "ssh";
+
+      prompt = "enabled";
+      editor = "nvim";
+
+      aliases = {
+        co = "pr checkout";
+        pv = "pr view";
+      };
+    };
+  };
+  programs.lazygit = {
+    enable = true;
+    package = pkgs.lazygit;
+    enableZshIntegration = true;
+  };
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+  };
 }

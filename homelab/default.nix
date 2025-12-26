@@ -63,8 +63,21 @@
         Base domain name to be used to access the homelab services via Traefik reverse proxy
       '';
     };
+    cloudflare.dnsCredentialsFile = lib.mkOption {
+      type = lib.types.path;
+      example = ''
+        CF_DNS_API_TOKEN=verybigsecret
+        CF_API_EMAIL=foo@bar.com
+      '';
+    };
+    email = lib.mkOption {
+      type = lib.types.str;
+      description = "Email address used for ACME certificate registration and other notifications";
+    };
   };
   imports = [
     ./services
+    ./fail2ban-cloudflare
+    ./motd
   ];
 }

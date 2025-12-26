@@ -1,13 +1,11 @@
-{ config,
+{
+  config,
   pkgs,
   lib,
   ...
-}:
-
-let
+}: let
   cfg = config.homelab.services.upsnap;
-in
-{
+in {
   options.homelab.services.upsnap = {
     enable = lib.mkEnableOption "UPSnap Device Monitoring Service";
 
@@ -15,12 +13,6 @@ in
       type = lib.types.str;
       default = "";
       description = "Path to UPSnap data directory on the host.";
-    };
-
-    tz = lib.mkOption {
-      type = lib.types.str;
-      default = "";
-      description = "Timezone for the container (e.g., Europe/Berlin).";
     };
 
     interval = lib.mkOption {
@@ -47,12 +39,6 @@ in
       description = "Whether to run ping as privileged (true/false).";
     };
 
-    websiteTitle = lib.mkOption {
-      type = lib.types.str;
-      default = "";
-      description = "Custom website title.";
-    };
-
     listenAddr = lib.mkOption {
       type = lib.types.str;
       default = "0.0.0.0:5000";
@@ -76,17 +62,16 @@ in
       # Environment variables
       environment = lib.mkMerge [
         {
-          TZ = cfg.tz;
+          TZ = config.homelab.timeZone;
           UPSNAP_INTERVAL = cfg.interval;
           UPSNAP_SCAN_RANGE = cfg.scanRange;
           UPSNAP_SCAN_TIMEOUT = cfg.scanTimeout;
           UPSNAP_PING_PRIVILEGED = lib.toString cfg.pingPrivileged;
-          UPSNAP_WEBSITE_TITLE = cfg.websiteTitle;
         }
       ];
 
       # Optional entrypoint override to specify listen address
-      entrypoint = [ "/bin/sh" "-c" ''./upsnap serve --http ${cfg.listenAddr}'' ];
+      entrypoint = ["/bin/sh" "-c" ''./upsnap serve --http ${cfg.listenAddr}''];
     };
   };
 }

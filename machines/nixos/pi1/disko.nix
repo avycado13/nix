@@ -3,7 +3,6 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/mmcblk0"; # or /dev/disk9 if that's your actual target
         content = {
           type = "gpt";
           partitions = {

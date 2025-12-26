@@ -3,24 +3,6 @@
 
   # NixOS wants to enable GRUB by default
 
-  boot = {
-    loader = {
-      raspberryPi = {
-        enable = true;
-        version = 3;
-        uboot.enable = true;
-        firmwareConfig = ''
-          gpu_mem=256
-        '';
-      };
-      generic-extlinux-compatible.enable = true;
-      grub.enable = false;
-    };
-    kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = ["cma=256M"];
-
-    binfmt.emulatedSystems = ["aarch64-linux"];
-  };
 
   environment.systemPackages = with pkgs; [
     raspberrypi-tools
