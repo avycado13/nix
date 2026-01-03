@@ -41,7 +41,7 @@
         };
         "eu.nixbuild.net" = {
           hostname = "eu.nixbuild.net";
-          user = "avy";
+          user = "avycado13";
           identityFile = "/Users/avy/.ssh/avy";
         };
         "*" = {
@@ -52,6 +52,12 @@
         #   identityFile = "/Users/avy/.ssh/avy";
         # };
       };
+      extraConfig = ''
+        Host eu.nixbuild.net
+        PubkeyAcceptedKeyTypes ssh-ed25519
+        ServerAliveInterval 60
+        IPQoS throughput
+      '';
     };
   };
 }

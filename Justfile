@@ -19,4 +19,4 @@ copy $host:
   rsync -ax --delete --rsync-path="sudo rsync" ./ {{host}}:/etc/nixos/
 
 darwin-deploy:
-  darwin-rebuild switch --flake . --use-remote-sudo
+  sudo darwin-rebuild switch --flake .

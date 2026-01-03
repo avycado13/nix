@@ -11,7 +11,8 @@
     settings = {
       user = {
         name = "avycado13";
-        email = "108358183+avycado13@users.noreply.github.com.";
+        email = "108358183+avycado13@users.noreply.github.com";
+        signingkey = "680098B290681E1D28F555A90F7A57CF72410272";
       };
 
       alias = {
@@ -27,6 +28,8 @@
         binary = true;
         textconv = "echo .dump | sqlite3";
       };
+      commit.gpgsign = true;
+      tag.gpgsign = true;
     };
   };
   programs.gh = {

@@ -63,6 +63,5 @@
 
   imports = [
     ./miniflux
-    ./traefik
   ];
 }

@@ -17,16 +17,21 @@
         "avy"
         "@admin"
       ];
-      extra-substituters = ["https://cache.numtide.com" "ssh://eu.nixbuild.net"];
+      extra-substituters = [
+        "https://cache.numtide.com"
+        # "ssh://eu.nixbuild.net"
+        "https://colmena.cachix.org"
+      ];
       extra-trusted-public-keys = [
         "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
         "nixbuild.net/OFT2JX-1:c0PQH1gJLM8bMKX5O1giRWxDUgpCpcpMrkYw6HCmprQ="
+        "colmena.cachix.org-1:7BzpDnjjH8ki2CT3f6GdOk7QAzPOl+1t3LvTLXqYcSg="
       ];
     };
     optimise = {
       automatic = true;
     };
-    distributedBuilds = true;
+    distributedBuilds = false;
     buildMachines = [
       {
         hostName = "eu.nixbuild.net";

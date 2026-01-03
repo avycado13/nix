@@ -16,7 +16,7 @@ in
 
     langs = lib.mkOption {
       type = lib.types.str;
-      default = "en_GB";
+      default = "en_US";
       description = "OCR languages to use";
     };
 
@@ -59,12 +59,6 @@ in
         repository = "ghcr.io/alam00000/bentopdf";
         tag = "latest";
       };
-
-      labels = [
-        "traefik.enable=true"
-        "traefik.http.routers.bentopdf.rule=Host(`bentopdf.docker.localhost`)"
-        "traefik.http.routers.bentopdf.entrypoints=web"
-      ];
 
       volumes = lib.mkForce [
         "${cfg.trainingDataPath}:/usr/share/tessdata"

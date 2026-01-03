@@ -10,4 +10,5 @@ in {
   "miniflux_admin_password.age".publicKeys = keys;
   "atuin-session.age".publicKeys = keys;
   "atuin-key.age".publicKeys = keys;
+  "slack_user_id.age".publicKeys = keys;
 }

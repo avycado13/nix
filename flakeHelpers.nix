@@ -52,7 +52,6 @@ in {
               taps = {
                 "homebrew/homebrew-core" = inputs.homebrew-core;
                 "homebrew/homebrew-cask" = inputs.homebrew-cask;
-                "nikitabobko/tap" = inputs.brew-aerospace;
                 "TheBoredTeam/boring-notch" = inputs.brew-boring-notch;
               };
               mutableTaps = true;
@@ -148,6 +147,21 @@ in {
           (homeManagerCfg false [])
         ]
         ++ extraModules;
+    };
+
+    mkColemna = system: extraModules: {
+      colmenaHive = inputs.colmena.lib.makeHive {
+        meta = {
+          nixpkgs = import inputs.nixpkgs {
+            system = "aarch64-darwin";
+            overlays = [];
+            config = {
+              allowUnfree = true;
+              allowUnfreePredicate = _: true;
+            };
+          };
+        };
+      };
     };
   };
 }

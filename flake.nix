@@ -89,11 +89,19 @@
     flake-utils.url = "github:numtide/flake-utils";
     llm-agents.url = "github:numtide/llm-agents.nix";
     nix-auth.url = "github:numtide/nix-auth";
+    terminal-wakatime = {
+      url = "github:hackclub/terminal-wakatime";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    colmena.url = "github:zhaofengli/colmena";
+    ghostty = {
+      url = "github:ghostty-org/ghostty";
+    };
   };
 
   outputs = {...} @ inputs: let
     helpers = import ./flakeHelpers.nix inputs;
-    inherit (helpers) mkMerge mkNixos mkDarwin mkHome;
+    inherit (helpers) mkMerge mkNixos mkDarwin;
   in
     mkMerge [
       (
@@ -105,7 +113,9 @@
       (mkNixos "pi1" inputs.nixpkgs "aarch64-linux" [inputs.nixos-hardware.nixosModules.raspberry-pi-3])
       (inputs.flake-utils.lib.eachDefaultSystem (
         system: let
-          pkgs = import inputs.nixpkgs {inherit system;};
+          pkgs = import inputs.nixpkgs {inherit system;
+          overlays = [ inputs.agenix-rekey.overlays.default ];
+          };
         in {
           formatter = pkgs.nixfmt-rfc-style;
 
@@ -114,6 +124,7 @@
               pkgs.just
               pkgs.nh
               pkgs.nixos-rebuild-ng
+              pkgs.agenix-rekey
             ];
           };
 

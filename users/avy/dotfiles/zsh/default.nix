@@ -64,16 +64,15 @@
           "aliases"
           "alias-finder"
           # "git-extra-commands"
-          "pj"
-          "asdf"
           "python"
-          "brew"
+          "sudo"
+          "colored-man-pages"
           "uv"
         ];
       };
       shellAliases = {
         manix-fzf = "'manix' | rg '^# ' | sed 's/^# \\(.*\\) (.*/\\1/;s/ (.*//;s/^# //' | fzf --preview=\"manix '{}'\" | xargs manix";
-        la = "ls --color -lha";
+        ls = "eza";
         zshconfig = "$EDITOR ~/.zshrc && source ~/.zshrc";
         df = "df -h";
         du = "du -ch";
@@ -85,17 +84,16 @@
         fzkill = "kill -9 $(ps aux | fzf | awk '{print $2}')";
         aspm = "sudo lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM )'";
         mkdir = "mkdir -p";
-        # Only do `nix flake update` if flake.lock hasn't been updated within an hour
-        deploy-nix = "f() { if [[ $(find . -mmin -60 -type f -name flake.lock | wc -c) -eq 0 ]]; then nix flake update; fi && deploy .#$1 --remote-build -s --auto-rollback false && rsync -ax --delete ./ $1:/etc/nixos/ };f";
         rm = "rm -iv";
         cp = "cp -iv";
         mv = "mv -iv";
         cfip = ''dig @1.1.1.1 ch txt whoami.cloudflare +short | tr -d '"' '';
-        # pathlines = ''echo -e ${PATH//:/\\n}'';
+        rr = "rm -Rf";
+        ghrpc = "gh repo create -c";
+        goops = "git commit --amend --no-edit && git push --force-with-lease";
       };
 
       initContent = ''
-        export PATH="$HOME/finance/bin:$PATH"
         export LEDGER_FILE=~/finance/main.journal
 
         mkdir -p "$HOME/Library/pnpm"
@@ -104,7 +102,6 @@
         export ANDROID_HOME="$HOME/Library/Android/sdk"
         export ANDROID_SDK_ROOT="$ANDROID_HOME"
         export PATH="$PATH:$ANDROID_HOME/platform-tools"
-        source $HOME/.local/bin/env
 
         # Cycle back in the suggestions menu using Shift+Tab
         bindkey '^[[Z' reverse-menu-complete
@@ -138,7 +135,16 @@
             motd
           fi
           bindkey -e
+          eval "$(terminal-wakatime init)"
+
       '';
+    };
+    eza = {
+      enable = true;
+      enableZshIntegration = true;
+      git = true;
+      colors = "auto";
+      icons = "auto";
     };
     fzf = {
       enable = true;
@@ -161,6 +167,10 @@
     lazydocker = {
       enable = true;
     };
+    yazi = {
+      enable = true;
+      enableZshIntegration = true;
+    };
     atuin = {
       enable = false;
       settings = {
@@ -172,5 +182,10 @@
         key_path = config.age.secrets."atuin-key".path;
       };
     };
+    
   };
+  home.sessionPath = [
+    "$HOME/finance/bin"
+    "$HOME/.local/bin"
+  ];
 }

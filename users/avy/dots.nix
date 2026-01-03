@@ -9,7 +9,7 @@
   };
 in {
   nixpkgs = {
-    overlays = [inputs.nix-topology.overlays.default];
+    overlays = [inputs.nix-topology.overlays.default inputs.lazygit.overlays.default];
     config = {
       allowUnfree = true;
       allowUnfreePredicate = _: true;
@@ -24,7 +24,7 @@ in {
     ./dotfiles/ssh/default.nix
     ./packages.nix
     ./dotfiles/git/default.nix
-    ./dotfiles/kitty/default.nix
+    ./dotfiles/terminal/default.nix
     ./dotfiles/gpg/default.nix
   ];
 
