@@ -97,6 +97,10 @@
     ghostty = {
       url = "github:ghostty-org/ghostty";
     };
+    nixvim = {
+      url = "github:nix-community/nixvim";
+      # If using a stable channel you can use `url = "github:nix-community/nixvim/nixos-<version>"`
+    };
   };
 
   outputs = {...} @ inputs: let
@@ -113,8 +117,9 @@
       (mkNixos "pi1" inputs.nixpkgs "aarch64-linux" [inputs.nixos-hardware.nixosModules.raspberry-pi-3])
       (inputs.flake-utils.lib.eachDefaultSystem (
         system: let
-          pkgs = import inputs.nixpkgs {inherit system;
-          overlays = [ inputs.agenix-rekey.overlays.default ];
+          pkgs = import inputs.nixpkgs {
+            inherit system;
+            overlays = [inputs.agenix-rekey.overlays.default];
           };
         in {
           formatter = pkgs.nixfmt-rfc-style;

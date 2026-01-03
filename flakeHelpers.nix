@@ -9,6 +9,7 @@ inputs: let
         inputs.agenix.homeManagerModules.default
         inputs.mac-app-util.homeManagerModules.default
         inputs.nix-index-database.homeModules.nix-index
+        inputs.nixvim.homeModules.nixvim
         # inputs.stylix.homeModules.stylix
         ./users/avy/dots.nix
         ./users/avy/age.nix
@@ -35,6 +36,7 @@ in {
           inputs.nix-index-database.darwinModules.nix-index
           inputs.stylix.darwinModules.stylix
           inputs.nix-homebrew.darwinModules.nix-homebrew
+          inputs.nixvim.nixDarwinModules.nixvim
 
           # Inline module to handle packages and home-manager settings
           {
@@ -95,6 +97,7 @@ in {
           {
             nixpkgs.overlays = [inputs.nix-minecraft.overlay inputs.lazygit.overlays.default];
           }
+          inputs.nixvim.nixosModules.nixvim
 
           ./users/avy
           (homeManagerCfg false [])

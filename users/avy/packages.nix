@@ -6,14 +6,19 @@
   gdk = pkgs.google-cloud-sdk.withExtraComponents (with pkgs.google-cloud-sdk.components; [
     gke-gcloud-auth-plugin
   ]);
+  zmx = import ../../packages/zmx.nix {
+    inherit pkgs;
+    inherit (pkgs) lib stdenv fetchurl autoPatchelfHook;
+  };
 in {
   home.packages = with inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
+    zmx
     # pkgs.hello
     # ai tools
     # opencode
-    gemini-cli
+    # gemini-cli
     qwen-code
     amp
     copilot-cli
@@ -112,7 +117,7 @@ in {
     (pkgs.writeShellScriptBin "hackatime-summary" ''
       # shamelessly stolen from dunkirk.sh
       # Hackatime summary
-      user_id=""
+      user_id=
       use_waka=false
 
       # Parse arguments

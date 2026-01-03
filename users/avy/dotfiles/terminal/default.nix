@@ -77,5 +77,17 @@
     #   enableFishIntegration = true;
     #   enableBashIntegration = true;
     # };
+    ghostty = {
+      enable = true;
+      package = pkgs.ghostty-bin;
+      settings = {
+        theme = "nord";
+        font-size = 16;
+        font-family = "Comic Code Ligatures";
+        adjust-cell-height = "50%";
+        font-thicken = true;
+        font-thicken-strength = 120;
+      };
+    };
   };
 }
