@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation rec {
   pname = "zmx";
-  version = "0.1.0";
+  version = "0.2.0";
 
   src = fetchurl {
     url = if stdenv.isLinux then
@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
     else if stdenv.isLinux then
       "sha256-Zmqs/Y3be2z9KMuSwyTLZWKbIInzHgoC9Bm0S2jv3XI="
     else if stdenv.isDarwin && stdenv.isAarch64 then
-      "sha256-34k5Q1cIr3+foubtMJVoHVHZtCLoSjwJK00e1p0JdLg="
+      "sha256-nGjCLm4hZ3p4a/4LJJuyTc11uqXWgXBQqM+/4HxAh7Q="
     else
       "sha256-0epjoQhUSBYlE0L7Ubwn/sJF61+4BbxeaRx6EY/SklE=";
   };

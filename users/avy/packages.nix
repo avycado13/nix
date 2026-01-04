@@ -45,6 +45,8 @@ in {
     pkgs.coreutils
     pkgs.wakatime-cli
     inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default
+
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
     # # parentheses. Maybe you want to install Nerd Fonts with a limited number of

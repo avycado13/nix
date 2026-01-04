@@ -136,6 +136,7 @@
           fi
           bindkey -e
           eval "$(terminal-wakatime init)"
+          
 
       '';
     };
