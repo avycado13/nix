@@ -4,5 +4,5 @@ let
 
   # Parse the TOML string into a Nix attribute set
   config = builtins.fromTOML tomlString;
-in 
-config
+in
+  config

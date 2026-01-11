@@ -181,7 +181,6 @@
     pkgs.zstd
     pkgs.duf
     pkgs.ffmpeg
-    
   ];
 
   security.pam.services.sudo_local.touchIdAuth = true;
@@ -206,8 +205,6 @@
       "Wi-Fi"
     ];
   };
-
-
 
   system = {
     stateVersion = 5;

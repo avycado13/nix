@@ -42,7 +42,7 @@ in {
 
   assertions = [
     {
-      assertion = cfg.enable -> ((cfg.pubKeyFiles != [] || cfg.pubKeys != []));
+      assertion = cfg.enable -> (cfg.pubKeyFiles != [] || cfg.pubKeys != []);
       message = "remoteBuild: At least one of pubKeyFiles or pubKeys must be non-empty when remoteBuild.enable is true.";
     }
   ];

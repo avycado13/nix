@@ -3,7 +3,6 @@
 
   # NixOS wants to enable GRUB by default
 
-
   environment.systemPackages = with pkgs; [
     raspberrypi-tools
   ];

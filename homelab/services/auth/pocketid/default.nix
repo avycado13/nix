@@ -211,8 +211,6 @@ in {
         description = "SMTP password.";
       };
 
-      
-
       tls = lib.mkOption {
         type = lib.types.enum ["none" "starttls" "tls"];
         default = "none";
@@ -278,8 +276,6 @@ in {
         default = "";
         description = "LDAP bind password.";
       };
-
-      
 
       base = lib.mkOption {
         type = lib.types.str;

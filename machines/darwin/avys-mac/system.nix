@@ -1,7 +1,6 @@
 {
   # System-wide defaults
   system = {
-    
     defaults = {
       # Dock settings
       dock = {

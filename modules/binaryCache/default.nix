@@ -5,7 +5,6 @@
 }: let
   cfg = config.binaryCache;
 in {
-
   options.binaryCache = {
     enable = lib.mkEnableOption "Nix binary cache and nix-serve setup";
     secretKeyFile = lib.mkOption {

@@ -71,6 +71,7 @@
         ];
       };
       shellAliases = {
+        cat = "bat";
         manix-fzf = "'manix' | rg '^# ' | sed 's/^# \\(.*\\) (.*/\\1/;s/ (.*//;s/^# //' | fzf --preview=\"manix '{}'\" | xargs manix";
         ls = "eza";
         zshconfig = "$EDITOR ~/.zshrc && source ~/.zshrc";
@@ -136,7 +137,7 @@
           fi
           bindkey -e
           eval "$(terminal-wakatime init)"
-          
+
 
       '';
     };
@@ -183,7 +184,6 @@
         key_path = config.age.secrets."atuin-key".path;
       };
     };
-    
   };
   home.sessionPath = [
     "$HOME/finance/bin"

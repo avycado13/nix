@@ -1,7 +1,4 @@
-{
-  inputs,
-  ...
-}: let
+{inputs, pkgs, ...}: let
   home = {
     username = "avy";
     homeDirectory = "/home/avy";
@@ -18,14 +15,17 @@ in {
 
   home = home;
 
+
+
   imports = [
     ./dotfiles/zsh/default.nix
-    # ../../dots/nvim/default.nix
+    ../../dots/editor/default.nix
     ./dotfiles/ssh/default.nix
     ./packages.nix
     ./dotfiles/git/default.nix
     ./dotfiles/terminal/default.nix
     ./dotfiles/gpg/default.nix
+    ./dotfiles/devenv/default.nix
   ];
 
   programs.home-manager.enable = true;

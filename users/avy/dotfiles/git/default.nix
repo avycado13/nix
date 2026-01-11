@@ -17,6 +17,42 @@
 
       alias = {
         st = "status";
+        amend = "commit -a --amend";
+        bmerged = "!f() { DEFAULT=$(git default); git branch --merged \${1-DEFAULT} | grep -v \"\${1-DEFAULT}$\" | xargs -r git branch -d; }; f";
+        brebased = "!f() { DEFAULT=$(git default); for b in $(git branch --format=\"%(refname:short)\" | grep -vE \"(\${1-DEFAULT}|$DEFAULT)\"); do if [ -z \"$(git cherry \${1-\$DEFAULT} $b | grep \"^+\")\" ]; then git branch -D $b; fi; done; }; f";
+        bdone = "!f() { DEFAULT=$(git default); git switch \${1-$DEFAULT} && git up && git brebased \${1-$DEFAULT}; }; f";
+        co = "checkout";
+        clog = "log --pretty=%C(yellow)%s%n%Creset%n%b%n---";
+        ddfind = "log --decorate --stat --date=iso --format=fuller --patch --grep";
+        ddlog = "log --decorate --stat --date=iso --format=fuller -p";
+        default = " !git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'";
+        dfind = "log --decorate --stat --date=iso --format=fuller --name-status --grep";
+        files = "diff --name-only";
+        di = "diff --color-words";
+        dic = "diff --color-words=.";
+        dlog = "log --decorate --stat --date=iso --format=fuller";
+        ec = " config --global -e";
+        find = "log --pretty=\"format:%Cgreen%H %Cblue%s\" --name-status --grep";
+        flog = "log --pretty=fixes";
+        format-patch-repo = "!git format-patch --subject-prefix=\'PATCH $(basename $(git rev-parse --show-toplevel))\'";
+        glog = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%aN>%Creset'";
+        hist = "log --follow -p";
+        pf = "push --force-with-lease";
+        plog = "log -1 --pretty=%B";
+        rba = "!f() { DEFAULT=$(git default); git rebase -i --autosquash \${1-\$DEFAULT}; }; f";
+        save = "!git add -A && git commit -m 'SAVEPOINT'";
+        sba = "!f() { git subtree add --prefix $1 $2 master --squash; }; f";
+        sbp = "!f() { git subtree push --prefix $1 $2 $3; }; f";
+        sbu = "!f() { git subtree pull --prefix $1 $2 master --squash; }; f";
+        sc = "switch -c";
+        send-email-repo = "!git send-email --subject-prefix=\'PATCH $(basename $(git rev-parse --show-toplevel))\'";
+        slog = "shortlog -e --no-merges";
+        tlog = "tag --sort=-v:refname -l --format='%(color:red)%(refname:strip=2)%(color:reset) - %(color:yellow)%(contents:subject)%(color:reset) by %(taggername) on %(taggerdate:human)\n\n%(contents:body)'";
+        undo = "reset HEAD~1 --mixed";
+        up = "!f() { git pull --rebase --prune $@ && git submodule update --init --recursive; }; f";
+        wip = "!git add -u && git commit -m 'WIP'";
+        wipe = " !git add -A && git commit -qm 'WIPE SAVEPOINT' && git reset HEAD~1 --hard";
+        wt = "worktree";
       };
 
       color.ui = "auto";

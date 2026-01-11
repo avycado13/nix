@@ -9,7 +9,6 @@ inputs: let
         inputs.agenix.homeManagerModules.default
         inputs.mac-app-util.homeManagerModules.default
         inputs.nix-index-database.homeModules.nix-index
-        inputs.nixvim.homeModules.nixvim
         # inputs.stylix.homeModules.stylix
         ./users/avy/dots.nix
         ./users/avy/age.nix
@@ -36,7 +35,6 @@ in {
           inputs.nix-index-database.darwinModules.nix-index
           inputs.stylix.darwinModules.stylix
           inputs.nix-homebrew.darwinModules.nix-homebrew
-          inputs.nixvim.nixDarwinModules.nixvim
 
           # Inline module to handle packages and home-manager settings
           {
@@ -67,7 +65,7 @@ in {
         ++ extraModules; # Ensure extraModules are actually appended
     };
   };
-  mkNixos = machineHostname: nixpkgsVersion: hardware: extraModules: {
+  mkNixos = machineHostname: nixpkgsVersion: hardware: extraHmModules: extraModules: {
     # apps = inputs.nixinate.nixinate.x86_64-linux self;
     nixosConfigurations.${machineHostname} = nixpkgsVersion.lib.nixosSystem {
       system = hardware;
@@ -97,10 +95,8 @@ in {
           {
             nixpkgs.overlays = [inputs.nix-minecraft.overlay inputs.lazygit.overlays.default];
           }
-          inputs.nixvim.nixosModules.nixvim
-
           ./users/avy
-          (homeManagerCfg false [])
+          (homeManagerCfg true extraHmModules)
           inputs.nixos-facter-modules.nixosModules.facter
           {config.facter.reportPath = ./machines/nixos/${machineHostname}/facter.json;}
           inputs.disko.nixosModules.disko
