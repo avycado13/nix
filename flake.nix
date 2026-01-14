@@ -77,10 +77,7 @@
       url = "github:TheBoredTeam/homebrew-boring-notch";
       flake = false;
     };
-    stylix = {
-      url = "github:nix-community/stylix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    catppuccin.url = "github:catppuccin/nix";
     nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
@@ -97,6 +94,7 @@
     ghostty = {
       url = "github:ghostty-org/ghostty";
     };
+    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
   };
 
   outputs = {...} @ inputs: let
@@ -126,6 +124,7 @@
               pkgs.nh
               pkgs.nixos-rebuild-ng
               pkgs.agenix-rekey
+              pkgs.treefmt
             ];
           };
 

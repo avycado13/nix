@@ -1,4 +1,8 @@
-{inputs, pkgs, ...}: let
+{
+  inputs,
+  pkgs,
+  ...
+}: let
   home = {
     username = "avy";
     homeDirectory = "/home/avy";
@@ -6,7 +10,12 @@
   };
 in {
   nixpkgs = {
-    overlays = [inputs.nix-topology.overlays.default inputs.lazygit.overlays.default];
+    overlays = [
+      inputs.nix-topology.overlays.default
+      inputs.lazygit.overlays.default
+      inputs.nix-vscode-extensions.overlays.default
+      inputs.nur.overlays.default
+    ];
     config = {
       allowUnfree = true;
       allowUnfreePredicate = _: true;
@@ -15,11 +24,9 @@ in {
 
   home = home;
 
-
-
   imports = [
     ./dotfiles/zsh/default.nix
-    ../../dots/editor/default.nix
+    ./dotfiles/editor/default.nix
     ./dotfiles/ssh/default.nix
     ./packages.nix
     ./dotfiles/git/default.nix

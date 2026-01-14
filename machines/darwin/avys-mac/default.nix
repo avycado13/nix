@@ -1,9 +1,10 @@
 {
   pkgs,
   config,
+  inputs,
   ...
 }: {
-  homebrew = {
+  homebrew = {  
     enable = true;
     onActivation.autoUpdate = true;
 
@@ -16,8 +17,6 @@
     ];
 
     casks = [
-      "arc"
-      "visual-studio-code"
       "foks"
       "android-studio"
       "tailscale-app"
@@ -181,6 +180,9 @@
     pkgs.zstd
     pkgs.duf
     pkgs.ffmpeg
+pkgs.nur.repos.forkprince.helium-nightly
+              inputs.nix-auth.packages.aarch64-darwin.default
+
   ];
 
   security.pam.services.sudo_local.touchIdAuth = true;
@@ -215,11 +217,5 @@
     name = "avy";
     home = "/Users/avy";
     shell = pkgs.zsh;
-  };
-
-  stylix = {
-    enable = true;
-    autoEnable = true;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
   };
 }

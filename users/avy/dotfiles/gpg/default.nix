@@ -3,4 +3,9 @@
     enable = true;
     mutableKeys = true;
   };
+  services.gpg-agent = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+  home.packages = [pkgs.gpgme];
 }

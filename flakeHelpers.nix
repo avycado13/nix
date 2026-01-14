@@ -9,7 +9,7 @@ inputs: let
         inputs.agenix.homeManagerModules.default
         inputs.mac-app-util.homeManagerModules.default
         inputs.nix-index-database.homeModules.nix-index
-        # inputs.stylix.homeModules.stylix
+        inputs.catppuccin.homeModules.catppuccin
         ./users/avy/dots.nix
         ./users/avy/age.nix
       ]
@@ -33,15 +33,11 @@ in {
           inputs.mac-app-util.darwinModules.default
           inputs.home-manager.darwinModules.home-manager
           inputs.nix-index-database.darwinModules.nix-index
-          inputs.stylix.darwinModules.stylix
+          # inputs.catppuccin.darwinModules.catppuccin
           inputs.nix-homebrew.darwinModules.nix-homebrew
 
           # Inline module to handle packages and home-manager settings
           {
-            environment.systemPackages = [
-              # Referencing system from the rec block above
-              inputs.nix-auth.packages.${system}.default
-            ];
 
             home-manager.users.avy.home.homeDirectory = inputs.nixpkgs.lib.mkForce "/Users/avy";
 
