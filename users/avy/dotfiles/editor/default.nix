@@ -86,8 +86,7 @@
           "[javascript]" = {"editor.defaultFormatter" = "biomejs.biome";};
           "[html]" = {"editor.defaultFormatter" = "biomejs.biome";};
           "[svelte]" = {"editor.defaultFormatter" = "svelte.svelte-vscode";};
-            "workbench.colorTheme" = "Catppuccin Mocha";
-
+          "workbench.colorTheme" = "Catppuccin Mocha";
         };
       };
     };

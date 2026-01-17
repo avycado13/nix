@@ -64,9 +64,14 @@
         binary = true;
         textconv = "echo .dump | sqlite3";
       };
+      transfer.fsckobjects = true;
+      fetch.fsckobjects = true;
+      receive.fsckObjects = true;
       commit.gpgsign = true;
       tag.gpgsign = true;
     };
+    signing.format = "openpgp";
+
   };
   programs.gh = {
     enable = true;

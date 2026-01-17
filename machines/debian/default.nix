@@ -21,6 +21,7 @@
       # System utilities
       pkgs.coreutils
       pkgs.htop
+      pkgs.btop
       pkgs.tree
       # misc stuff that everyone needs!
       pkgs.cowsay

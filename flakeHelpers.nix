@@ -38,7 +38,6 @@ in {
 
           # Inline module to handle packages and home-manager settings
           {
-
             home-manager.users.avy.home.homeDirectory = inputs.nixpkgs.lib.mkForce "/Users/avy";
 
             nix-homebrew = {

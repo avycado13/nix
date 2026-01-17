@@ -22,7 +22,10 @@
     bat = {
       enable = true;
     };
-
+    nix-index = {
+      enable = true;
+      enableZshIntegration = true;
+    };
     zoxide = {
       enable = true;
       enableZshIntegration = true;

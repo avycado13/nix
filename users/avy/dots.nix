@@ -33,9 +33,24 @@ in {
     ./dotfiles/terminal/default.nix
     ./dotfiles/gpg/default.nix
     ./dotfiles/devenv/default.nix
+    ./dotfiles/theme/default.nix
   ];
 
   programs.home-manager.enable = true;
+  services.home-manager = {
+    autoExpire = {
+      enable = true;
+      store = {
+        cleanup = true;
+        options = "--delete-older-than 14d";
+      };
+    };
+    autoUpgrade = {
+      enable = false;
+      flakeDir = "~/nix";
+      useFlake = true;
+    };
+  };
 
   systemd.user.startServices = "sd-switch";
 }

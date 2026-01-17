@@ -1,4 +1,4 @@
-{...}: {
+{pkgs,...}: {
   catppuccin = {
     enable = true;
     flavor = "mocha";
@@ -16,4 +16,8 @@
       };
     };
   };
+  fonts.fontconfig.enable = true;
+  home.packages = [
+   pkgs.nerd-fonts.open-dyslexic
+  ];
 }

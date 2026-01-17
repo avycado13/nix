@@ -4,7 +4,7 @@
   inputs,
   ...
 }: {
-  homebrew = {  
+  homebrew = {
     enable = true;
     onActivation.autoUpdate = true;
 
@@ -180,9 +180,8 @@
     pkgs.zstd
     pkgs.duf
     pkgs.ffmpeg
-pkgs.nur.repos.forkprince.helium-nightly
-              inputs.nix-auth.packages.aarch64-darwin.default
-
+    pkgs.nur.repos.forkprince.helium-nightly
+    inputs.nix-auth.packages.aarch64-darwin.default
   ];
 
   security.pam.services.sudo_local.touchIdAuth = true;

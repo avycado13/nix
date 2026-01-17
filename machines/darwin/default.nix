@@ -1,7 +1,10 @@
 {inputs, ...}: {
   nixpkgs = {
-    overlays = [inputs.nix-topology.overlays.default inputs.lazygit.overlays.default       inputs.nur.overlays.default
-];
+    overlays = [
+      inputs.nix-topology.overlays.default
+      inputs.lazygit.overlays.default
+      inputs.nur.overlays.default
+    ];
 
     config = {
       allowUnfree = true;

@@ -95,6 +95,10 @@
       url = "github:ghostty-org/ghostty";
     };
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
+    weechat-scripts = {
+      url = "github:weechat/scripts";
+      flake = false;
+    };
   };
 
   outputs = {...} @ inputs: let
@@ -109,25 +113,28 @@
       )
 
       (mkNixos "pi1" inputs.nixpkgs "aarch64-linux" [] [inputs.nixos-hardware.nixosModules.raspberry-pi-3])
-      (inputs.flake-utils.lib.eachDefaultSystem (
+(inputs.flake-utils.lib.eachDefaultSystem (
         system: let
           pkgs = import inputs.nixpkgs {
             inherit system;
-            overlays = [inputs.agenix-rekey.overlays.default];
+            overlays = [ inputs.agenix-rekey.overlays.default ];
           };
         in {
           formatter = pkgs.nixfmt-rfc-style;
-
-          devShells.default = pkgs.mkShell {
-            packages = [
-              pkgs.just
-              pkgs.nh
-              pkgs.nixos-rebuild-ng
-              pkgs.agenix-rekey
-              pkgs.treefmt
-            ];
+          devShells = {
+            default = pkgs.mkShell {
+              packages = [
+                pkgs.just
+                pkgs.nh
+                pkgs.nixos-rebuild-ng
+                pkgs.agenix-rekey
+                pkgs.treefmt
+                pkgs.nixfmt-rfc-style
+                pkgs.deadnix
+                pkgs.shellcheck
+              ];
+            };
           };
-
           treefmt = {
             projectRootFile = "flake.nix";
             settings.global.excludes = [

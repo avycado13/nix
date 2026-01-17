@@ -1889,6 +1889,7 @@
         "robotnix": "robotnix",
         "system-manager": "system-manager",
         "terminal-wakatime": "terminal-wakatime",
+        "weechat-scripts": "weechat-scripts",
         "xc": "xc"
       }
     },
@@ -2330,6 +2331,22 @@
       "original": {
         "owner": "numtide",
         "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "weechat-scripts": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767512199,
+        "narHash": "sha256-fZYvXyx/FPALURmJov9yOblsJdOJrmTY96QnPyP9s30=",
+        "owner": "weechat",
+        "repo": "scripts",
+        "rev": "d67b7e44eff682284e59ce10bd86f14f032eb7a0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "weechat",
+        "repo": "scripts",
         "type": "github"
       }
     },
