@@ -2,7 +2,12 @@
   inputs,
   pkgs,
   ...
-}: {
+}:
+let
+  helpers = import ../../flakeHelpers.nix inputs;
+in
+{
+  nixpkgs = helpers.nixpkgsCfg;
   virtualisation = {
     podman = {
       enable = true;
@@ -27,4 +32,9 @@
     docker-compose # start group of containers for dev
     #podman-compose # start group of containers for dev
   ];
+
+  nix-mineral = {
+    enable = true;
+    preset = "compatibility";
+  };
 }

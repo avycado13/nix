@@ -12,8 +12,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-    nixos-conf-editor.url = "github:snowfallorg/nixos-conf-editor";
-    kubenix.url = "github:hall/kubenix";
     nixos-shell.url = "github:Mic92/nixos-shell";
     microvm = {
       url = "github:astro/microvm.nix";
@@ -69,7 +67,6 @@
     };
     nix-mineral = {
       url = "github:cynicsketch/nix-mineral"; # Refers to the main branch and is updated to the latest commit when you use "nix flake update"
-      flake = false;
     };
     nix-topology.url = "github:oddlama/nix-topology";
     nix-search-tv.url = "github:3timeslazy/nix-search-tv";
@@ -99,53 +96,49 @@
       url = "github:weechat/scripts";
       flake = false;
     };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = {...} @ inputs: let
-    helpers = import ./flakeHelpers.nix inputs;
-    inherit (helpers) mkMerge mkNixos mkDarwin;
-  in
+  outputs =
+    { ... }@inputs:
+    let
+      helpers = import ./flakeHelpers.nix inputs;
+      inherit (helpers) mkMerge mkDarwin;
+    in
     mkMerge [
-      (
-        mkDarwin "Avys-Mac" inputs.nixpkgs
-        []
-        []
-      )
+      (mkDarwin "Avys-Mac" inputs.nixpkgs [ ] [ ])
 
-      (mkNixos "pi1" inputs.nixpkgs "aarch64-linux" [] [inputs.nixos-hardware.nixosModules.raspberry-pi-3])
-(inputs.flake-utils.lib.eachDefaultSystem (
-        system: let
+      # (mkNixos "pi1" inputs.nixpkgs "aarch64-linux" [] [inputs.nixos-hardware.nixosModules.raspberry-pi-3])
+
+      (inputs.flake-utils.lib.eachDefaultSystem (
+        system:
+        let
           pkgs = import inputs.nixpkgs {
             inherit system;
             overlays = [ inputs.agenix-rekey.overlays.default ];
           };
-        in {
-          formatter = pkgs.nixfmt-rfc-style;
-          devShells = {
-            default = pkgs.mkShell {
-              packages = [
-                pkgs.just
-                pkgs.nh
-                pkgs.nixos-rebuild-ng
-                pkgs.agenix-rekey
-                pkgs.treefmt
-                pkgs.nixfmt-rfc-style
-                pkgs.deadnix
-                pkgs.shellcheck
-              ];
-            };
-          };
-          treefmt = {
+          treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs {
             projectRootFile = "flake.nix";
-            settings.global.excludes = [
-              "*.lock"
-              ".gitignore"
-              "secrets/*"
-            ];
             programs.nixfmt.enable = true;
-            programs.nixfmt.package = pkgs.nixfmt-rfc-style;
             programs.deadnix.enable = true;
             programs.shellcheck.enable = true;
+          };
+        in
+        {
+          formatter = treefmtEval.config.build.wrapper;
+          checks.formatting = treefmtEval.config.build.check inputs.self;
+          devShells.default = pkgs.mkShell {
+            packages = [
+              pkgs.just
+              pkgs.nh
+              pkgs.nixos-rebuild-ng
+              treefmtEval.config.build.wrapper
+              inputs.agenix.packages.${system}.default
+              pkgs.agenix-rekey
+            ];
           };
         }
       ))

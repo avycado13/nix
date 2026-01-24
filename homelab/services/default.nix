@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   options.homelab.services = {
     enable = lib.mkEnableOption "Containerized services for the homelab";
   };
@@ -13,7 +14,7 @@
       enable = true;
       dockerCompat = true;
       autoPrune.enable = true;
-      extraPackages = [pkgs.zfs];
+      extraPackages = [ pkgs.zfs ];
       defaultNetwork.settings = {
         dns_enabled = true;
       };
@@ -22,7 +23,7 @@
       backend = "podman";
     };
 
-    networking.firewall.interfaces.podman0.allowedUDPPorts = [53];
+    networking.firewall.interfaces.podman0.allowedUDPPorts = [ 53 ];
     networking.firewall.allowedTCPPorts = [
       80
       443
@@ -31,9 +32,9 @@
       acceptTerms = true;
       defaults.email = "${config.homelab.email}";
       certs.${config.homelab.baseDomain} = {
-        reloadServices = ["caddy.service"];
+        reloadServices = [ "caddy.service" ];
         domain = "${config.homelab.baseDomain}";
-        extraDomainNames = ["*.${config.homelab.baseDomain}"];
+        extraDomainNames = [ "*.${config.homelab.baseDomain}" ];
         dnsProvider = "cloudflare";
         dnsResolver = "1.1.1.1:53";
         dnsPropagationCheck = true;
@@ -43,6 +44,10 @@
     };
     services.caddy = {
       enable = true;
+      package = pkgs.caddy.withPlugins {
+        plugins = [ "github.com/caddy-dns/powerdns@v1.0.1" ];
+        hash = "sha256-F/jqR4iEsklJFycTjSaW8B/V3iTGqqGOzwYBUXxRKrc=";
+      };
       globalConfig = ''
         auto_https off
       '';

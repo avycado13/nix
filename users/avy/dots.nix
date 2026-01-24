@@ -1,26 +1,17 @@
 {
   inputs,
-  pkgs,
   ...
-}: let
+}:
+let
   home = {
     username = "avy";
     homeDirectory = "/home/avy";
     stateVersion = "25.05";
   };
-in {
-  nixpkgs = {
-    overlays = [
-      inputs.nix-topology.overlays.default
-      inputs.lazygit.overlays.default
-      inputs.nix-vscode-extensions.overlays.default
-      inputs.nur.overlays.default
-    ];
-    config = {
-      allowUnfree = true;
-      allowUnfreePredicate = _: true;
-    };
-  };
+  helpers = import ../../flakeHelpers.nix inputs;
+in
+{
+  nixpkgs = helpers.nixpkgsCfg;
 
   home = home;
 

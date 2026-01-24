@@ -22,7 +22,7 @@ This is a Nix flake-based configuration for managing multiple systems:
 
 - `just deploy <host>`: Deploy configuration to a NixOS host (copies files via rsync, then switches)
 - `just dry-run <host>`: Test deployment without applying changes
-- `darwin-rebuild switch --flake .`: Apply Darwin configuration on macOS
+- `sudo darwin-rebuild switch --flake .`: Apply Darwin configuration on macOS
 - `just darwin-deploy`: Shorthand for Darwin rebuild (from Justfile)
 
 ### Development Shell
@@ -65,7 +65,7 @@ Available tools: just, nh, nixos-rebuild-ng, agenix-rekey
 
 ## Formatting and Linting
 
-- **Formatter**: `nixfmt-rfc-style` (configured in flake.nix)
+- **Formatter**: `nixfmt` (configured in flake.nix)
 - **Linting**: `deadnix` (detects unused code), `shellcheck` (shell scripts)
 - **Auto-format**: Run `treefmt` to format all files
 - Exclusions: `*.lock`, `.gitignore`, `secrets/*`
@@ -90,4 +90,4 @@ Available tools: just, nh, nixos-rebuild-ng, agenix-rekey
 
 - No automated unit tests currently
 - Manual testing via `dry-run` commands
-- `test.sh`: Script for updating Bun package hashes (not related to config testing)</content>
+- `test.sh`: Script for updating Bun package hashes (not related to config testing)

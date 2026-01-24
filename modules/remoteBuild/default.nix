@@ -7,25 +7,27 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.remoteBuild;
-in {
+in
+{
   options.remoteBuild = {
     enable = lib.mkEnableOption "Nix remote build setup";
     pubKeyFiles = lib.mkOption {
       description = "Path to the public key file for the Nix remote build";
       type = lib.types.listOf lib.types.path;
-      default = ["./remotebuild.pub"];
+      default = [ "./remotebuild.pub" ];
     };
     pubKeys = lib.mkOption {
       description = "Inline SSH public keys for the remote build user.";
       type = lib.types.listOf lib.types.str;
-      default = [];
+      default = [ ];
     };
     extraServiceConfig = lib.mkOption {
       description = "Extra systemd serviceConfig options for nix-daemon.";
       type = lib.types.attrsOf lib.types.anything;
-      default = {};
+      default = { };
     };
     # Resource and logging options
     maxMemoryUsage = lib.mkOption {
@@ -35,14 +37,19 @@ in {
     };
     logLevel = lib.mkOption {
       description = "Verbosity of nix-daemon logs.";
-      type = lib.types.enum ["debug" "info" "warn" "error"];
+      type = lib.types.enum [
+        "debug"
+        "info"
+        "warn"
+        "error"
+      ];
       default = "info";
     };
   };
 
   assertions = [
     {
-      assertion = cfg.enable -> (cfg.pubKeyFiles != [] || cfg.pubKeys != []);
+      assertion = cfg.enable -> (cfg.pubKeyFiles != [ ] || cfg.pubKeys != [ ]);
       message = "remoteBuild: At least one of pubKeyFiles or pubKeys must be non-empty when remoteBuild.enable is true.";
     }
   ];
@@ -57,12 +64,12 @@ in {
       openssh.authorizedKeys.keys = lib.mkAfter cfg.pubKeys;
     };
 
-    users.groups.remotebuild = {};
+    users.groups.remotebuild = { };
 
     nix = {
       nrBuildUsers = 64;
       settings = {
-        trusted-users = lib.mkAfter ["remotebuild"];
+        trusted-users = lib.mkAfter [ "remotebuild" ];
         min-free = 10 * 1024 * 1024;
         max-free = 200 * 1024 * 1024;
 

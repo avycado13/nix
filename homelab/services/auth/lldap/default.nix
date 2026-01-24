@@ -1,11 +1,12 @@
 {
   config,
-  pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.homelab.services.auth.lldap;
-in {
+in
+{
   options.homelab.services.auth.lldap = {
     enable = lib.mkEnableOption "LLDAP Authentication Service";
 
@@ -148,20 +149,20 @@ in {
     };
 
     forceLdapUserPassReset = lib.mkOption {
-      type = lib.types.either lib.types.bool (lib.types.enum ["always"]);
+      type = lib.types.either lib.types.bool (lib.types.enum [ "always" ]);
       default = false;
       description = "Force reset of admin password.";
     };
 
     ignoredUserAttributes = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = [];
+      default = [ ];
       description = "LDAP user attributes to ignore.";
     };
 
     ignoredGroupAttributes = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = [];
+      default = [ ];
       description = "LDAP group attributes to ignore.";
     };
 
@@ -173,7 +174,11 @@ in {
       };
 
       encryption = lib.mkOption {
-        type = lib.types.enum ["NONE" "TLS" "STARTTLS"];
+        type = lib.types.enum [
+          "NONE"
+          "TLS"
+          "STARTTLS"
+        ];
         default = "TLS";
         description = "SMTP encryption type.";
       };

@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.ddns.cloudflare;
   cloudflare = pkgs.writeShellScriptBin "cloudflare-ddns" ''
     # Use Cloudflare API to update DNS records
@@ -43,7 +44,8 @@
       echo "Failed to update DNS record. Response: $RESPONSE"
     fi
   '';
-in {
+in
+{
   config = lib.mkIf cfg.enable {
     assertions = [
       {
@@ -60,12 +62,12 @@ in {
       }
     ];
 
-    environment.systemPackages = [cloudflare];
+    environment.systemPackages = [ cloudflare ];
 
     systemd.services.cloudflare-ddns = {
       description = "Cloudflare Dynamic DNS Client";
-      after = ["network.target"];
-      wantedBy = ["multi-user.target"];
+      after = [ "network.target" ];
+      wantedBy = [ "multi-user.target" ];
       startAt = "*:0/5";
       path = [
         pkgs.curl

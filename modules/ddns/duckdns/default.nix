@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.ddns.duckdns;
   duckdns = pkgs.writeShellScriptBin "duckdns" ''
     # Use DuckDns to autodetect IPv4
@@ -28,7 +29,8 @@
         echo -e "Something went wrong, please check your settings\nThe response returned was:\n$DRESPONSE\n"
     fi
   '';
-in {
+in
+{
   config = lib.mkIf cfg.enable {
     assertions = [
       {
@@ -45,12 +47,12 @@ in {
       }
     ];
 
-    environment.systemPackages = [duckdns];
+    environment.systemPackages = [ duckdns ];
 
     systemd.services.duckdns = {
       description = "DuckDNS Dynamic DNS Client";
-      after = ["network.target"];
-      wantedBy = ["multi-user.target"];
+      after = [ "network.target" ];
+      wantedBy = [ "multi-user.target" ];
       startAt = "*:0/5";
       path = [
         pkgs.gnused
@@ -61,11 +63,10 @@ in {
       ];
       serviceConfig = {
         Type = "simple";
-        LoadCredential =
-          [
-            "DUCKDNS_TOKEN_FILE:${cfg.tokenFile}"
-          ]
-          ++ lib.optionals (cfg.domainsFile != null) ["DUCKDNS_DOMAINS_FILE:${cfg.domainsFile}"];
+        LoadCredential = [
+          "DUCKDNS_TOKEN_FILE:${cfg.tokenFile}"
+        ]
+        ++ lib.optionals (cfg.domainsFile != null) [ "DUCKDNS_DOMAINS_FILE:${cfg.domainsFile}" ];
         DynamicUser = true;
       };
       script = ''
@@ -81,5 +82,5 @@ in {
     };
   };
 
-  meta.maintainers = with lib.maintainers; [avycado13];
+  # meta.maintainers = with lib.maintainers; [avycado13];
 }

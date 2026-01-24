@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   programs = {
     neovim = {
       enable = true;
@@ -18,13 +19,13 @@
         {
           name = "nix";
           auto-format = true;
-          formatter.command = "${pkgs.nixfmt-rfc-style}/bin/nixfmt";
+          formatter.command = "${pkgs.nixfmt}/bin/nixfmt";
         }
       ];
       themes = {
         autumn_night_transparent = {
           "inherits" = "autumn_night";
-          "ui.background" = {};
+          "ui.background" = { };
         };
       };
     };
@@ -43,6 +44,7 @@
           wakatime.vscode-wakatime
           svelte.svelte-vscode
           ms-vscode-remote.vscode-remote-extensionpack
+          sourcegraph.amp
         ];
 
         userSettings = {
@@ -58,7 +60,9 @@
           "git.autofetch" = true;
           "makefile.configureOnOpen" = true;
           "redhat.telemetry.enabled" = true;
-          "[typescript]" = {"editor.defaultFormatter" = "esbenp.prettier-vscode";};
+          "[typescript]" = {
+            "editor.defaultFormatter" = "esbenp.prettier-vscode";
+          };
           "explorer.fileNesting.patterns" = {
             "*.ts" = "\${capture}.js";
             "*.js" = "\${capture}.js.map ; \${capture}.min.js ; \${capture}.d.ts";
@@ -82,11 +86,23 @@
             };
             "editor.defaultFormatter" = "charliermarsh.ruff";
           };
-          "[jsonc]" = {"editor.defaultFormatter" = "esbenp.prettier-vscode";};
-          "[javascript]" = {"editor.defaultFormatter" = "biomejs.biome";};
-          "[html]" = {"editor.defaultFormatter" = "biomejs.biome";};
-          "[svelte]" = {"editor.defaultFormatter" = "svelte.svelte-vscode";};
+          "[jsonc]" = {
+            "editor.defaultFormatter" = "esbenp.prettier-vscode";
+          };
+          "[javascript]" = {
+            "editor.defaultFormatter" = "biomejs.biome";
+          };
+          "[html]" = {
+            "editor.defaultFormatter" = "biomejs.biome";
+          };
+          "[svelte]" = {
+            "editor.defaultFormatter" = "svelte.svelte-vscode";
+          };
           "workbench.colorTheme" = "Catppuccin Mocha";
+          "amp.experimental.modes" = [
+            "deep"
+            "large"
+          ];
         };
       };
     };

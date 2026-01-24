@@ -1,10 +1,9 @@
 {
-  config,
-  inputs,
   pkgs,
   ...
-}: {
-  nix.settings.trusted-users = ["avy"];
+}:
+{
+  nix.settings.trusted-users = [ "avy" ];
 
   # age.secrets.hashedUserPassword = {
   #   file = "${inputs.secrets}/hashedUserPassword.age";

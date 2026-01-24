@@ -1,20 +1,19 @@
-{inputs, ...}: {
-  nixpkgs = {
-    overlays = [
-      inputs.nix-topology.overlays.default
-      inputs.lazygit.overlays.default
-      inputs.nur.overlays.default
-    ];
-
-    config = {
-      allowUnfree = true;
-      allowUnfreePredicate = _: true;
-    };
-  };
+{
+  inputs,
+  ...
+}:
+let
+  helpers = import ../../flakeHelpers.nix inputs;
+in
+{
+  nixpkgs = helpers.nixpkgsCfg;
 
   nix = {
     settings = {
-      experimental-features = ["nix-command" "flakes"];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       max-jobs = "auto";
       trusted-users = [
         "root"
@@ -37,31 +36,46 @@
     optimise = {
       automatic = true;
     };
-    distributedBuilds = false;
+    gc = {
+      automatic = true;
+    };
+    distributedBuilds = true;
     buildMachines = [
       {
         hostName = "eu.nixbuild.net";
         system = "x86_64-linux";
         maxJobs = 100;
-        supportedFeatures = ["benchmark" "big-parallel"];
+        supportedFeatures = [
+          "benchmark"
+          "big-parallel"
+        ];
       }
       {
         hostName = "eu.nixbuild.net";
         system = "aarch64-linux";
         maxJobs = 100;
-        supportedFeatures = ["benchmark" "big-parallel"];
+        supportedFeatures = [
+          "benchmark"
+          "big-parallel"
+        ];
       }
       {
         hostName = "eu.nixbuild.net";
         system = "armv7l-linux";
         maxJobs = 100;
-        supportedFeatures = ["benchmark" "big-parallel"];
+        supportedFeatures = [
+          "benchmark"
+          "big-parallel"
+        ];
       }
       {
         hostName = "eu.nixbuild.net";
         system = "i686-linux";
         maxJobs = 100;
-        supportedFeatures = ["benchmark" "big-parallel"];
+        supportedFeatures = [
+          "benchmark"
+          "big-parallel"
+        ];
       }
     ];
   };

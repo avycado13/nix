@@ -1,11 +1,12 @@
 {
   config,
-  pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.homelab.services.bentopdf;
-in {
+in
+{
   options.homelab.services.bentopdf = {
     enable = lib.mkEnableOption "Stirling PDF Service";
 
@@ -71,10 +72,7 @@ in {
       ];
 
       environment = {
-        DISABLE_ADDITIONAL_FEATURES =
-          if cfg.disableAdditionalFeatures
-          then "true"
-          else "false";
+        DISABLE_ADDITIONAL_FEATURES = if cfg.disableAdditionalFeatures then "true" else "false";
         LANGS = cfg.langs;
       };
     };

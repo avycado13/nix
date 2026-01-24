@@ -1,11 +1,12 @@
 {
   config,
-  pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.homelab.services.auth.indiko;
-in {
+in
+{
   options.homelab.services.auth.indiko = {
     enable = lib.mkEnableOption "indiko OAuth/IndieAuth server";
 

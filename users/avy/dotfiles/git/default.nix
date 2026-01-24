@@ -1,10 +1,8 @@
 {
-  inputs,
-  lib,
-  config,
   pkgs,
   ...
-}: {
+}:
+{
   programs.git = {
     enable = true;
     package = pkgs.gitFull;
@@ -71,7 +69,6 @@
       tag.gpgsign = true;
     };
     signing.format = "openpgp";
-
   };
   programs.gh = {
     enable = true;

@@ -1,8 +1,8 @@
 {
-  config,
   pkgs,
   ...
-}: {
+}:
+{
   environment = {
     etc = {
       "foo.conf".text = ''

@@ -2,8 +2,9 @@
   pkgs,
   config,
   ...
-}: {
-  home.packages = with pkgs; [grc];
+}:
+{
+  home.packages = with pkgs; [ grc ];
   programs = {
     nix-index-database.comma.enable = true;
     starship = {
@@ -11,7 +12,7 @@
       settings = {
         add_newline = false;
         gcloud = {
-          detect_env_vars = ["GOOGLE_CLOUD"];
+          detect_env_vars = [ "GOOGLE_CLOUD" ];
         };
         aws = {
           disabled = true;
@@ -29,7 +30,7 @@
     zoxide = {
       enable = true;
       enableZshIntegration = true;
-      options = ["--cmd cd"];
+      options = [ "--cmd cd" ];
     };
     yt-dlp = {
       enable = true;
@@ -48,14 +49,14 @@
       zplug = {
         enable = true;
         plugins = [
-          {name = "zsh-users/zsh-autosuggestions";}
-          {name = "zsh-users/zsh-syntax-highlighting";}
-          {name = "zsh-users/zsh-completions";}
-          {name = "zsh-users/zsh-history-substring-search";}
-          {name = "unixorn/warhol.plugin.zsh";}
-          {name = "davidosomething/git-my";}
-          {name = "MichaelAquilina/zsh-you-should-use";}
-          {name = "zsh-users/zsh-syntax-highlighting";}
+          { name = "zsh-users/zsh-autosuggestions"; }
+          { name = "zsh-users/zsh-syntax-highlighting"; }
+          { name = "zsh-users/zsh-completions"; }
+          { name = "zsh-users/zsh-history-substring-search"; }
+          { name = "unixorn/warhol.plugin.zsh"; }
+          { name = "davidosomething/git-my"; }
+          { name = "MichaelAquilina/zsh-you-should-use"; }
+          { name = "zsh-users/zsh-syntax-highlighting"; }
         ];
       };
       oh-my-zsh = {
@@ -74,10 +75,9 @@
         ];
       };
       shellAliases = {
-        cat = "bat";
         manix-fzf = "'manix' | rg '^# ' | sed 's/^# \\(.*\\) (.*/\\1/;s/ (.*//;s/^# //' | fzf --preview=\"manix '{}'\" | xargs manix";
+        cat = "bat";
         ls = "eza";
-        zshconfig = "$EDITOR ~/.zshrc && source ~/.zshrc";
         df = "df -h";
         du = "du -ch";
         ipp = "curl ipinfo.io/ip";

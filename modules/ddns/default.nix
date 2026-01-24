@@ -3,9 +3,8 @@
   lib,
   ...
 }:
-with lib; let
-  cfg = config.ddns;
-in {
+with lib;
+{
   options.ddns = {
     duckdns = {
       enable = mkEnableOption "DuckDNS Dynamic DNS Client";
@@ -21,7 +20,7 @@ in {
       domains = mkOption {
         default = null;
         type = types.nullOr (types.listOf types.str);
-        example = ["examplehost"];
+        example = [ "examplehost" ];
         description = ''
           The domain(s) to update in DuckDNS
           (without the .duckdns.org suffix)
@@ -75,5 +74,5 @@ in {
       };
     };
   };
-  meta.maintainers = with lib.maintainers; [avycado13];
+  meta.maintainers = with lib.maintainers; [ avycado13 ];
 }

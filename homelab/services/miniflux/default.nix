@@ -1,11 +1,12 @@
 {
   config,
-  pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.homelab.services.miniflux;
-in {
+in
+{
   options.homelab.services.miniflux = {
     enable = lib.mkEnableOption "Miniflux RSS Feed Reader Service";
 
@@ -65,7 +66,8 @@ in {
             ADMIN_USERNAME_FILE = cfg.adminUsernameFile;
             DATABASE_URL = cfg.databaseUrl;
           }
-          (lib.filterAttrs (name: _:
+          (lib.filterAttrs (
+            name: _:
             !(builtins.elem name [
               "enable"
               "adminUsername"
@@ -73,8 +75,8 @@ in {
               "adminUsernameFile"
               "listenAddr"
               "databaseUrl"
-            ]))
-          cfg)
+            ])
+          ) cfg)
         ];
       };
     };

@@ -1,5 +1,6 @@
-{pkgs, ...}: {
-  imports = [./disko.nix];
+{ pkgs, ... }:
+{
+  imports = [ ./disko.nix ];
 
   # NixOS wants to enable GRUB by default
 
@@ -30,7 +31,7 @@
     wireless = {
       enable = true;
       networks."samosa".psk = "maplec29";
-      interfaces = ["wlan0"];
+      interfaces = [ "wlan0" ];
     };
   };
 
@@ -39,7 +40,7 @@
     users."pi" = {
       isNormalUser = true;
       password = "password";
-      extraGroups = ["wheel"];
+      extraGroups = [ "wheel" ];
     };
     users.root = {
       password = "root";

@@ -3,7 +3,8 @@
   config,
   inputs,
   ...
-}: {
+}:
+{
   homebrew = {
     enable = true;
     onActivation.autoUpdate = true;
@@ -36,7 +37,7 @@
     enable = true;
     settings = {
       accordion-padding = 30;
-      after-startup-command = [];
+      after-startup-command = [ ];
       automatically-unhide-macos-hidden-apps = false;
       default-root-container-layout = "tiles";
       default-root-container-orientation = "auto";
@@ -141,21 +142,48 @@
         };
 
         service.binding = {
-          alt-shift-h = ["join-with left" "mode main"];
-          alt-shift-j = ["join-with down" "mode main"];
-          alt-shift-k = ["join-with up" "mode main"];
-          alt-shift-l = ["join-with right" "mode main"];
-          backspace = ["close-all-windows-but-current" "mode main"];
+          alt-shift-h = [
+            "join-with left"
+            "mode main"
+          ];
+          alt-shift-j = [
+            "join-with down"
+            "mode main"
+          ];
+          alt-shift-k = [
+            "join-with up"
+            "mode main"
+          ];
+          alt-shift-l = [
+            "join-with right"
+            "mode main"
+          ];
+          backspace = [
+            "close-all-windows-but-current"
+            "mode main"
+          ];
           down = "volume down";
-          esc = ["reload-config" "mode main"];
-          f = ["layout floating tiling" "mode main"];
-          r = ["flatten-workspace-tree" "mode main"];
-          shift-down = ["volume set 0" "mode main"];
+          esc = [
+            "reload-config"
+            "mode main"
+          ];
+          f = [
+            "layout floating tiling"
+            "mode main"
+          ];
+          r = [
+            "flatten-workspace-tree"
+            "mode main"
+          ];
+          shift-down = [
+            "volume set 0"
+            "mode main"
+          ];
           up = "volume up";
         };
       };
 
-      on-focused-monitor-changed = ["move-mouse monitor-lazy-center"];
+      on-focused-monitor-changed = [ "move-mouse monitor-lazy-center" ];
 
       on-window-detected = [
         {

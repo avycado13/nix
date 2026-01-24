@@ -3,20 +3,22 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.homelab.services.postgres;
-in {
+in
+{
   options.homelab.services.postgres = {
     enable = lib.mkEnableOption "PostgreSQL database service";
 
     databases = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = ["mydatabase"];
+      default = [ "mydatabase" ];
       description = "List of databases to ensure are created.";
     };
     otherUsers = lib.mkOption {
       type = lib.types.listOf (lib.types.either lib.types.str lib.types.attrs);
-      default = [];
+      default = [ ];
       description = "List of additional database users to create.";
     };
   };
@@ -48,23 +50,22 @@ in {
 
       '';
 
-      ensureUsers =
-        [
+      ensureUsers = [
+        {
+          name = "avy";
+          ensureDBOwnership = true;
+        }
+      ]
+      + map (
+        u:
+        if builtins.isString u then
           {
-            name = "avy";
+            name = u;
             ensureDBOwnership = true;
           }
-        ]
-        + map (
-          u:
-            if builtins.isString u
-            then {
-              name = u;
-              ensureDBOwnership = true;
-            }
-            else u
-        )
-        cfg.otherUsers;
+        else
+          u
+      ) cfg.otherUsers;
     };
   };
 }

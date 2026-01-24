@@ -1,7 +1,9 @@
-{lib, ...}: {
+{ lib, ... }:
+{
   programs = {
     ssh = {
       enable = true;
+      enableDefaultConfig = true;
       matchBlocks = {
         "*" = {
           forwardAgent = lib.mkDefault false;

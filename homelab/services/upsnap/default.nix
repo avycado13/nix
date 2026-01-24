@@ -1,11 +1,12 @@
 {
   config,
-  pkgs,
   lib,
   ...
-}: let
+}:
+let
   cfg = config.homelab.services.upsnap;
-in {
+in
+{
   options.homelab.services.upsnap = {
     enable = lib.mkEnableOption "UPSnap Device Monitoring Service";
 
@@ -71,7 +72,11 @@ in {
       ];
 
       # Optional entrypoint override to specify listen address
-      entrypoint = ["/bin/sh" "-c" ''./upsnap serve --http ${cfg.listenAddr}''];
+      entrypoint = [
+        "/bin/sh"
+        "-c"
+        "./upsnap serve --http ${cfg.listenAddr}"
+      ];
     };
   };
 }

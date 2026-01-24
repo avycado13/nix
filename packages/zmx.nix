@@ -1,9 +1,9 @@
 {
-  pkgs,
   lib,
   stdenv,
   fetchurl,
   autoPatchelfHook,
+  ...
 }:
 stdenv.mkDerivation rec {
   pname = "zmx";
@@ -11,33 +11,35 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url =
-      if stdenv.isLinux
-      then
+      if stdenv.isLinux then
         (
-          if stdenv.isAarch64
-          then "https://zmx.sh/a/zmx-${version}-linux-aarch64.tar.gz"
-          else "https://zmx.sh/a/zmx-${version}-linux-x86_64.tar.gz"
+          if stdenv.isAarch64 then
+            "https://zmx.sh/a/zmx-${version}-linux-aarch64.tar.gz"
+          else
+            "https://zmx.sh/a/zmx-${version}-linux-x86_64.tar.gz"
         )
-      else if stdenv.isDarwin
-      then
+      else if stdenv.isDarwin then
         (
-          if stdenv.isAarch64
-          then "https://zmx.sh/a/zmx-${version}-macos-aarch64.tar.gz"
-          else "https://zmx.sh/a/zmx-${version}-macos-x86_64.tar.gz"
+          if stdenv.isAarch64 then
+            "https://zmx.sh/a/zmx-${version}-macos-aarch64.tar.gz"
+          else
+            "https://zmx.sh/a/zmx-${version}-macos-x86_64.tar.gz"
         )
-      else throw "Unsupported platform";
+      else
+        throw "Unsupported platform";
 
     hash =
-      if stdenv.isLinux && stdenv.isAarch64
-      then "sha256-cMGo+Af0VRY3c2EoNzVZFU53Kz5wKL8zsSSXIOtZVU8="
-      else if stdenv.isLinux
-      then "sha256-Zmqs/Y3be2z9KMuSwyTLZWKbIInzHgoC9Bm0S2jv3XI="
-      else if stdenv.isDarwin && stdenv.isAarch64
-      then "sha256-nGjCLm4hZ3p4a/4LJJuyTc11uqXWgXBQqM+/4HxAh7Q="
-      else "sha256-0epjoQhUSBYlE0L7Ubwn/sJF61+4BbxeaRx6EY/SklE=";
+      if stdenv.isLinux && stdenv.isAarch64 then
+        "sha256-cMGo+Af0VRY3c2EoNzVZFU53Kz5wKL8zsSSXIOtZVU8="
+      else if stdenv.isLinux then
+        "sha256-Zmqs/Y3be2z9KMuSwyTLZWKbIInzHgoC9Bm0S2jv3XI="
+      else if stdenv.isDarwin && stdenv.isAarch64 then
+        "sha256-nGjCLm4hZ3p4a/4LJJuyTc11uqXWgXBQqM+/4HxAh7Q="
+      else
+        "sha256-0epjoQhUSBYlE0L7Ubwn/sJF61+4BbxeaRx6EY/SklE=";
   };
 
-  nativeBuildInputs = lib.optionals stdenv.isLinux [autoPatchelfHook];
+  nativeBuildInputs = lib.optionals stdenv.isLinux [ autoPatchelfHook ];
 
   sourceRoot = ".";
 

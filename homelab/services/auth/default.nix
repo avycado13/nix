@@ -1,11 +1,9 @@
 {
   config,
-  pkgs,
   lib,
   ...
-}: let
-  cfg = config.homelab.services.auth;
-in {
+}:
+{
   options.homelab.services.auth = {
     enable = lib.mkEnableOption "Auth Services";
   };
