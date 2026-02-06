@@ -25,5 +25,7 @@
   home.packages = [
     pkgs.biome
     pkgs.nodejs
+    pkgs.nil
+        pkgs.surge-cli
   ];
 }

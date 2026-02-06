@@ -138,6 +138,7 @@
               treefmtEval.config.build.wrapper
               inputs.agenix.packages.${system}.default
               pkgs.agenix-rekey
+              pkgs.nil
             ];
           };
         }

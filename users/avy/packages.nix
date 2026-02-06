@@ -88,6 +88,11 @@ in
     pkgs.tree
     pkgs.cowsay
     pkgs.file
+    pkgs.angrr
+    pkgs.jnv
+    pkgs.clipboard-jh
+    pkgs.serie
+    pkgs.nurl
     pkgs.which
     pkgs.gnused
     pkgs.gnutar
@@ -97,6 +102,8 @@ in
     pkgs.cmus
     pkgs.gum
     pkgs.jq
+    pkgs.duf
+    pkgs.wireguard-tools
 
     inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default

@@ -59,9 +59,8 @@
           "security.promptForLocalFileProtocolHandling" = false;
           "git.autofetch" = true;
           "makefile.configureOnOpen" = true;
-          "redhat.telemetry.enabled" = true;
           "[typescript]" = {
-            "editor.defaultFormatter" = "esbenp.prettier-vscode";
+            "editor.defaultFormatter" = "biomejs.biome";
           };
           "explorer.fileNesting.patterns" = {
             "*.ts" = "\${capture}.js";

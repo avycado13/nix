@@ -4,7 +4,17 @@
   ...
 }:
 {
-  home.packages = with pkgs; [ grc ];
+  home.sessionPath = [
+    "$HOME/finance/bin"
+    "$HOME/.local/bin"
+  ];
+  home.packages = with pkgs; [
+    grc
+    serpl
+    dua
+    procs
+    scc
+  ];
   programs = {
     nix-index-database.comma.enable = true;
     starship = {
@@ -49,6 +59,17 @@
       zplug = {
         enable = true;
         plugins = [
+          { name = "getantidote/use-omz"; }
+          { name = "ohmyzsh/ohmyzsh path:lib"; }
+          { name = "ohmyzsh/ohmyzsh path:plugins/direnv"; }
+          { name = "ohmyzsh/ohmyzsh path:plugins/kitty"; }
+          { name = "ohmyzsh/ohmyzsh path:plugins/git"; }
+          { name = "ohmyzsh/ohmyzsh path:plugins/aliases"; }
+          { name = "ohmyzsh/ohmyzsh path:plugins/alias-finder"; }
+          { name = "ohmyzsh/ohmyzsh path:plugins/python"; }
+          { name = "ohmyzsh/ohmyzsh path:plugins/sudo"; }
+          { name = "ohmyzsh/ohmyzsh path:plugins/colored-man-pages"; }
+          { name = "ohmyzsh/ohmyzsh path:plugins/uv"; }
           { name = "zsh-users/zsh-autosuggestions"; }
           { name = "zsh-users/zsh-syntax-highlighting"; }
           { name = "zsh-users/zsh-completions"; }
@@ -56,22 +77,7 @@
           { name = "unixorn/warhol.plugin.zsh"; }
           { name = "davidosomething/git-my"; }
           { name = "MichaelAquilina/zsh-you-should-use"; }
-          { name = "zsh-users/zsh-syntax-highlighting"; }
-        ];
-      };
-      oh-my-zsh = {
-        enable = true;
-        plugins = [
-          "direnv"
-          "kitty"
-          "git"
-          "aliases"
-          "alias-finder"
-          # "git-extra-commands"
-          "python"
-          "sudo"
-          "colored-man-pages"
-          "uv"
+          { name = "Aloxaf/fzf-tab"; }
         ];
       };
       shellAliases = {
@@ -188,8 +194,5 @@
       };
     };
   };
-  home.sessionPath = [
-    "$HOME/finance/bin"
-    "$HOME/.local/bin"
-  ];
+
 }
