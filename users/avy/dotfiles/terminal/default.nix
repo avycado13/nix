@@ -30,15 +30,15 @@
     #   enable = true;
     #   # package = inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default;
     #   package = pkgs.ghostty-bin;
-    #   installVimSyntax = true;
-    #   installBatSyntax = true;
-    #   enableZshIntegration = true;
-    #   enableFishIntegration = true;
-    #   enableBashIntegration = true;
+      # installVimSyntax = true;
+      # installBatSyntax = true;
+      # enableZshIntegration = true;
+      # enableFishIntegration = true;
+      # enableBashIntegration = true;
     # };
     ghostty = {
-      enable = true;
-      package = pkgs.ghostty-bin;
+      enable = false;
+      package = null; # brew
       settings = {
         theme = "nord";
         font-size = 16;
@@ -47,6 +47,11 @@
         font-thicken = true;
         font-thicken-strength = 120;
       };
+         installVimSyntax = true;
+      installBatSyntax = true;
+      enableZshIntegration = true;
+      enableFishIntegration = true;
+      enableBashIntegration = true;
     };
   };
 }

@@ -10,7 +10,7 @@
   ];
   home.packages = with pkgs; [
     grc
-    serpl
+    scooter
     dua
     procs
     scc
@@ -19,8 +19,19 @@
     nix-index-database.comma.enable = true;
     starship = {
       enable = true;
+
+
+
       settings = {
         add_newline = false;
+      #   format = "$env_var.zmx$all";
+
+      # env_var = {
+      #   zmx = {
+      #     variable = "ZMX_SESSION";
+      #     format = "[$env_value] ";
+      #   };
+      # };
         gcloud = {
           detect_env_vars = [ "GOOGLE_CLOUD" ];
         };
@@ -29,7 +40,18 @@
         };
       };
     };
-
+    navi = {
+      enable = true;
+      enableZshIntegration = true;
+      settings = {
+  cheats = {
+    paths = [
+      "~/cheats/"
+    ];
+  };
+};
+    };
+    
     bat = {
       enable = true;
     };
@@ -56,29 +78,30 @@
     zsh = {
       enable = true;
       enableCompletion = false;
-      zplug = {
+      antidote = {
         enable = true;
         plugins = [
-          { name = "getantidote/use-omz"; }
-          { name = "ohmyzsh/ohmyzsh path:lib"; }
-          { name = "ohmyzsh/ohmyzsh path:plugins/direnv"; }
-          { name = "ohmyzsh/ohmyzsh path:plugins/kitty"; }
-          { name = "ohmyzsh/ohmyzsh path:plugins/git"; }
-          { name = "ohmyzsh/ohmyzsh path:plugins/aliases"; }
-          { name = "ohmyzsh/ohmyzsh path:plugins/alias-finder"; }
-          { name = "ohmyzsh/ohmyzsh path:plugins/python"; }
-          { name = "ohmyzsh/ohmyzsh path:plugins/sudo"; }
-          { name = "ohmyzsh/ohmyzsh path:plugins/colored-man-pages"; }
-          { name = "ohmyzsh/ohmyzsh path:plugins/uv"; }
-          { name = "zsh-users/zsh-autosuggestions"; }
-          { name = "zsh-users/zsh-syntax-highlighting"; }
-          { name = "zsh-users/zsh-completions"; }
-          { name = "zsh-users/zsh-history-substring-search"; }
-          { name = "unixorn/warhol.plugin.zsh"; }
-          { name = "davidosomething/git-my"; }
-          { name = "MichaelAquilina/zsh-you-should-use"; }
-          { name = "Aloxaf/fzf-tab"; }
+          "ohmyzsh/ohmyzsh path:lib"
+          "getantidote/use-omz"
+          "ohmyzsh/ohmyzsh path:plugins/direnv"
+          "ohmyzsh/ohmyzsh path:plugins/kitty"
+          "ohmyzsh/ohmyzsh path:plugins/git"
+          "ohmyzsh/ohmyzsh path:plugins/aliases"
+          "ohmyzsh/ohmyzsh path:plugins/alias-finder"
+          "ohmyzsh/ohmyzsh path:plugins/python"
+          "ohmyzsh/ohmyzsh path:plugins/sudo"
+          "ohmyzsh/ohmyzsh path:plugins/colored-man-pages"
+          "ohmyzsh/ohmyzsh path:plugins/uv"
+          "zsh-users/zsh-autosuggestions"
+          "zsh-users/zsh-syntax-highlighting"
+          "zsh-users/zsh-completions"
+          "zsh-users/zsh-history-substring-search"
+          "unixorn/warhol.plugin.zsh"
+          "MichaelAquilina/zsh-you-should-use"
+          "Aloxaf/fzf-tab"
+          "unixorn/git-extra-commands@main"
         ];
+        useFriendlyNames = true;
       };
       shellAliases = {
         manix-fzf = "'manix' | rg '^# ' | sed 's/^# \\(.*\\) (.*/\\1/;s/ (.*//;s/^# //' | fzf --preview=\"manix '{}'\" | xargs manix";
@@ -91,7 +114,11 @@
         yd = "yt-dlp --continue --no-check-certificate --format=bestvideo+bestaudio --exec='ffmpeg -i {} -c:v prores_ks -profile:v 1 -vf fps=25/1 -pix_fmt yuv422p -c:a pcm_s16le {}.mov && rm {}'";
         ya = "yt-dlp --continue --no-check-certificate --format=bestaudio -x --audio-format wav";
         ols = "ls -la --color=never | awk '{k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/)*2^(8-i));if(k)printf(\" %0o \",k);print}'";
-        fzkill = "kill -9 $(ps aux | fzf | awk '{print $2}')";
+        fzkill = "(date; ps -ef) |
+  fzf --bind='ctrl-r:reload(date; ps -ef)' \
+      --header=$'Press CTRL-R to reload\n\n' --header-lines=2 \
+      --preview='echo {}' --preview-window=down,3,wrap \
+      --layout=reverse --height=80% | awk '{print $2}' | xargs kill -9";
         aspm = "sudo lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM )'";
         mkdir = "mkdir -p";
         rm = "rm -iv";
@@ -131,7 +158,6 @@
             alias lsblk="diskutil list"
             ulimit -n 2048
           fi
-          export EDITOR=nvim
           export LANG=en_US.UTF-8
           export LC_CTYPE=en_US.UTF-8
           export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
@@ -183,14 +209,14 @@
       enableZshIntegration = true;
     };
     atuin = {
-      enable = false;
+      enable = true;
       settings = {
         auto_sync = true;
         sync_frequency = "5m";
         sync_address = "https://api.atuin.sh";
         search_mode = "fuzzy";
-        session_path = config.age.secrets."atuin-session".path;
-        key_path = config.age.secrets."atuin-key".path;
+        session_path = config.age.secrets.atuin-session.path;
+        key_path = config.age.secrets.atuin-key.path;
       };
     };
   };

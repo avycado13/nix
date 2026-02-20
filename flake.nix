@@ -31,10 +31,7 @@
       url = "github:kamadorueda/alejandra/3.1.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    xc = {
-      url = "github:joerdav/xc";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+
     gitignore = {
       url = "github:hercules-ci/gitignore.nix";
       # Use the same nixpkgs
@@ -78,7 +75,6 @@
     nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
-    robotnix.url = "github:nix-community/robotnix";
     lazygit.url = "github:jesseduffield/lazygit";
     flake-utils.url = "github:numtide/flake-utils";
     llm-agents.url = "github:numtide/llm-agents.nix";
@@ -100,6 +96,8 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    wakatime-ls.url = "github:mrnossiom/wakatime-ls";
+    wakatime-ls.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =

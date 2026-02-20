@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 {
   programs = {
     bun = {
@@ -21,11 +21,57 @@
     ty = {
       enable = true;
     };
+    mcp = {
+      enable = true;
+      servers = {
+        context7 = {
+          url = "https://mcp.context7.com/mcp";
+          headers = {
+            CONTEXT7_API_KEY = "{env:CONTEXT7_API_KEY}";
+          };
+        };
+
+        github = {
+          type = "http";
+          url = "https://api.githubcopilot.com/mcp/";
+          headers = {
+            Authorization = "Bearer {env:GH_MCP_TOKEN}";
+          };
+        };
+        sequentialthinking = {
+          command = "${pkgs.bun}/bin/bunx";
+          args = [
+            "-y"
+            "@modelcontextprotocol/server-sequential-thinking"
+          ];
+        };
+        chrome-devtools = {
+          command = "${pkgs.bun}/bin/bunx";
+          args = [
+            "-y"
+            "chrome-devtools-mcp@latest"
+          ];
+        };
+         package-search = {
+    url = "https://mcp.trychroma.com/package-search/v1";
+    headers = {
+      x-chroma-token = "{env:CHROMA_MCP_TOKEN}";
+    };
+    type = "http";
+  };
+
+      };
+    };
   };
   home.packages = [
     pkgs.biome
     pkgs.nodejs
     pkgs.nil
-        pkgs.surge-cli
+    pkgs.surge-cli
   ];
+  programs.zsh.initExtra = ''
+    export CONTEXT7_API_KEY="$(cat ${config.age.secrets.context7_api_key.path})"
+    export GH_MCP_TOKEN="$(cat ${config.age.secrets.gh_mcp_token.path})"
+    export CHROMA_MCP_TOKEN="$(cat ${config.age.secrets.chroma_mcp_token.path})"
+  '';
 }

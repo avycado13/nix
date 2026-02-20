@@ -36,7 +36,7 @@ in
 {
   inherit nixpkgsCfg;
   mkDarwin = machineHostname: _nixpkgsVersion: extraHmModules: extraModules: {
-    darwinConfigurations.${machineHostname} = inputs.darwin.lib.darwinSystem rec {
+    darwinConfigurations.${machineHostname} = inputs.darwin.lib.darwinSystem {
       # It is better to define 'system' here so it can be referenced via 'rec'
       system = "aarch64-darwin";
 

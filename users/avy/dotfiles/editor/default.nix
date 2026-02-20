@@ -3,31 +3,255 @@
   programs = {
     neovim = {
       enable = true;
-      defaultEditor = true;
+      defaultEditor = false;
     };
 
     helix = {
       enable = true;
+      defaultEditor = true;
       settings = {
-        editor.cursor-shape = {
-          normal = "block";
-          insert = "bar";
-          select = "underline";
+        editor = {
+          mouse = true;
+          auto-format = true;
+          cursor-shape = {
+            normal = "block";
+            insert = "bar";
+            select = "underline";
+          };
+
         };
+        keys = {
+          normal = {
+            C-g = [
+              ":write-all"
+              ":insert-output lazygit >/dev/tty"
+              ":redraw"
+              ":reload-all"
+              ":set mouse false"
+              ":set mouse true"
+            ];
+            C-r = [
+              ":write-all"
+              ":insert-output scooter --no-stdin >/dev/tty"
+              ":redraw"
+              ":reload-all"
+              ":set mouse false"
+              ":set mouse true"
+            ];
+            "C-f" = [
+  ":write-all"
+  ":insert-output rg --column --line-number --no-heading --color=always \"%{selection}\" | less -R"
+  ":redraw"
+];
+"C-p" = [
+  ":write"
+  ":insert-output glow -p %{buffer_name} >/dev/tty"
+  ":redraw"
+];
+            space = {
+              e = [
+                ":sh rm -f /tmp/unique-file-h21a434"
+                ":insert-output yazi \"%{buffer_name}\" --chooser-file=/tmp/unique-file-h21a434"
+                ":sh printf \"\\x1b[?1049h\\x1b[?2004h\" > /dev/tty"
+                ":open %sh{cat /tmp/unique-file-h21a434}"
+                ":redraw"
+                ":set mouse false"
+                ":set mouse true"
+              ];
+              m = [
+  ":write-all"
+  ":insert-output glow >/dev/tty"
+  ":redraw"
+];
+            };
+            g = {
+              a = "code_action";
+            }; # Maps `ga` to show possible code actions
+
+          };
+        };
+
       };
       languages.language = [
         {
-          name = "nix";
           auto-format = true;
-          formatter.command = "${pkgs.nixfmt}/bin/nixfmt";
+          formatter = {
+            args = [
+              "--file=/dev/stdin"
+              "--pretty-print=/dev/stdout"
+            ];
+            command = "${pkgs.gawk}/bin/awk";
+            timeout = 5;
+          };
+          name = "awk";
+          scope = "source.awk";
+        }
+        {
+          auto-format = true;
+          formatter = {
+            args = [
+              "format"
+              "--stdin-file-path buffer.graphql"
+            ];
+            command = "${pkgs.biome}/bin/biome";
+          };
+          name = "graphql";
+          scope = "source.graphql";
+        }
+        {
+          auto-format = true;
+          formatter = {
+            args = [
+              "format"
+              "--stdin-file-path"
+              "buffer.css"
+            ];
+            command = "${pkgs.biome}/bin/biome";
+          };
+          name = "css";
+          language-servers = [ "wakatime" ];
+          scope = "source.css";
+        }
+        {
+          auto-format = true;
+          formatter = {
+            args = [
+              "format"
+              "--stdin-file-path"
+              "buffer.js"
+            ];
+            command = "${pkgs.biome}/bin/biome";
+          };
+          name = "javascript";
+          language-servers = [ "wakatime" ];
+          scope = "source.js";
+        }
+        {
+          auto-format = true;
+          formatter = {
+            args = [
+              "format"
+              "--stdin-file-path"
+              "buffer.ts"
+            ];
+            command = "${pkgs.biome}/bin/biome";
+          };
+          name = "typescript";
+          language-servers = [
+            "typescript-language-server"
+            "wakatime"
+          ];
+          scope = "source.ts";
+        }
+        {
+          auto-format = true;
+          formatter = {
+            args = [
+              "format"
+              "--stdin-file-path"
+              "buffer.jsx"
+            ];
+            command = "${pkgs.biome}/bin/biome";
+          };
+          name = "jsx";
+          language-servers = [
+            "typescript-language-server"
+            "wakatime"
+          ];
+          scope = "source.jsx";
+        }
+        {
+          auto-format = true;
+          formatter = {
+            args = [
+              "format"
+              "--stdin-file-path"
+              "buffer.tsx"
+            ];
+            command = "${pkgs.biome}/bin/biome";
+          };
+          name = "tsx";
+          language-servers = [
+            "typescript-language-server"
+            "wakatime"
+          ];
+          scope = "source.tsx";
+        }
+        {
+          auto-format = true;
+          formatter = {
+            args = [
+              "format"
+              "--stdin-file-path"
+              "buffer.json"
+            ];
+            command = "${pkgs.biome}/bin/biome";
+          };
+          name = "json";
+          language-servers = [ "wakatime" ];
+          scope = "source.json";
+        }
+        {
+          auto-format = true;
+          formatter = {
+            args = [
+              "format"
+              "--stdin-file-path"
+              "buffer.jsonc"
+            ];
+            command = "${pkgs.biome}/bin/biome";
+          };
+          name = "jsonc";
+          language-servers = [ "wakatime" ];
+          scope = "source.json";
+        }
+        {
+          auto-format = true;
+          formatter = {
+            args = [
+              "--justfile"
+              "/dev/stdin"
+              "--dump"
+            ];
+            command = "${pkgs.just}/bin/just";
+          };
+          name = "just";
+          language-servers = [ "wakatime" ];
+          scope = "source.just";
+        }
+        {
+          auto-format = true;
+          formatter = {
+            command = "${pkgs.nixfmt}/bin/nixfmt";
+          };
+          name = "nix";
+          language-servers = [
+            "nil"
+            "wakatime"
+          ];
+          scope = "source.nix";
+        }
+        {
+          auto-format = true;
+          formatter = {
+            args = [
+              "format"
+              "--line-length"
+              "88"
+              "-"
+            ];
+            command = "${pkgs.ruff}/bin/ruff";
+          };
+          name = "python";
+          language-servers = [
+            "pylsp"
+            "ruff"
+            "wakatime"
+          ];
+          scope = "source.python";
         }
       ];
-      themes = {
-        autumn_night_transparent = {
-          "inherits" = "autumn_night";
-          "ui.background" = { };
-        };
-      };
+
     };
 
     vscode = {
@@ -103,6 +327,7 @@
             "large"
           ];
         };
+        enableMcpIntegration = true;
       };
     };
   };

@@ -24,6 +24,8 @@
       "boring-notch"
       "obsidian"
       "keybase"
+      "cloudflare-warp"
+      "ghostty"
     ];
 
     masApps = {

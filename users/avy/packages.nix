@@ -71,12 +71,14 @@ in
   home.packages = ai ++ [
     irc-pkg
     zmx
+    inputs.wakatime-ls.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # Basic Utilities
     pkgs.onefetch
     pkgs.fastfetch
     pkgs.git-extras
     pkgs.devenv
+    pkgs.caligula
     pkgs.manix
     pkgs.pnpm
     pkgs.magic-wormhole
@@ -104,6 +106,9 @@ in
     pkgs.jq
     pkgs.duf
     pkgs.wireguard-tools
+    pkgs.hledger
+    pkgs.glow
+    pkgs.just
 
     inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default

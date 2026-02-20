@@ -12,4 +12,7 @@ in
   "atuin-session.age".publicKeys = keys;
   "atuin-key.age".publicKeys = keys;
   "slack_user_id.age".publicKeys = keys;
+  "context7_api_key.age".publicKeys = keys;
+  "gh_mcp_token.age".publicKeys = keys;
+  "chroma_mcp_token.age".publicKeys = keys;
 }

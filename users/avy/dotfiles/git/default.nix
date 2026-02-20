@@ -62,9 +62,14 @@
         binary = true;
         textconv = "echo .dump | sqlite3";
       };
-      transfer.fsckobjects = true;
-      fetch.fsckobjects = true;
-      receive.fsckObjects = true;
+      transfer.fsckobjects = false;
+      fetch.fsckobjects = false;
+      receive.fsckObjects = false;
+
+      fsck.zeroPaddedFilemode = "ignore";
+      fetch.fsck.zeroPaddedFilemode = "ignore";
+      transfer.fsck.zeroPaddedFilemode = "ignore";
+      receive.fsck.zeroPaddedFilemode = "ignore";
       commit.gpgsign = true;
       tag.gpgsign = true;
     };
@@ -95,4 +100,8 @@
     enable = true;
     enableGitIntegration = true;
   };
+  home.packages = with pkgs; [
+    git-extras
+    mob
+  ];
 }

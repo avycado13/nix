@@ -1,0 +1,85 @@
+[keys.normal]
+C-g = [
+    ":write-all",
+    ":insert-output lazygit >/dev/tty",
+    ":redraw",
+    ":reload-all"
+]
+C-r = [
+    ":write-all",
+    ":insert-output scooter --no-stdin >/dev/tty",
+    ":redraw",
+    ":reload-all"
+]
+
+[keys.normal.space]
+e = [
+  ':sh rm -f /tmp/unique-file-h21a434',
+  ':insert-output yazi "%{buffer_name}" --chooser-file=/tmp/unique-file-h21a434',
+  ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
+  ':open %sh{cat /tmp/unique-file-h21a434}',
+    ':redraw',
+  ':set mouse false',
+  ':set mouse true',
+]
+
+[[language]]
+name = "awk"
+formatter = { command = "awk", timeout = 5, args = [ "--file=/dev/stdin", "--pretty-print=/dev/stdout" ] }
+auto-format = true
+
+[[language]]
+name = "graphql"
+formatter = { command = 'biome', args = ["format", "--stdin-file-path buffer.graphql"] }
+auto-format = true
+
+[[language]]
+name = "css"
+formatter = { command = 'biome', args = ["format", "--stdin-file-path", "buffer.css"] }
+auto-format = true
+
+[[language]]
+name = "javascript"
+formatter = { command = 'biome', args = ["format", "--stdin-file-path", "buffer.js"] }
+auto-format = true
+
+[[language]]
+name = "typescript"
+formatter = { command = 'biome', args = ["format", "--stdin-file-path", "buffer.ts"] }
+auto-format = true
+
+[[language]]
+name = "jsx"
+formatter = { command = 'biome', args = ["format", "--stdin-file-path", "buffer.jsx"] }
+auto-format = true
+
+[[language]]
+name = "tsx"
+formatter = { command = 'biome', args = ["format", "--stdin-file-path", "buffer.tsx"] }
+auto-format = true
+
+[[language]]
+name = "json"
+formatter = { command = 'biome', args = ["format", "--stdin-file-path", "buffer.json"] }
+auto-format = true
+
+[[language]]
+name = "jsonc"
+formatter = { command = 'biome', args = ["format", "--stdin-file-path", "buffer.jsonc"] }
+auto-format = true
+
+
+[[language]]
+name = "just"
+auto-format = true
+formatter = { command = "just", args = ['--justfile', '/dev/stdin', '--dump'] }
+
+[[language]]
+name = "nix"
+formatter = { command = "nixfmt" }
+auto-format = true
+
+[[language]]
+name = "python"
+formatter = { command = "ruff", args = ["format", "--line-length", "88", "-"] }
+auto-format = true
