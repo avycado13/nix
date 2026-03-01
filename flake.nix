@@ -98,18 +98,29 @@
     };
     wakatime-ls.url = "github:mrnossiom/wakatime-ls";
     wakatime-ls.inputs.nixpkgs.follows = "nixpkgs";
+    zmx.url = "github:neurosnap/zmx";
+    virby.url = "github:quinneden/virby-nix-darwin/be170bd7ef21ce9773e7daa646d43f5405a1bdb2";
+    nixos-pi-zero-2 = {
+      url = "github:plmercereau/nixos-pi-zero-2";
+    };
   };
 
   outputs =
     { ... }@inputs:
     let
       helpers = import ./flakeHelpers.nix inputs;
-      inherit (helpers) mkMerge mkDarwin;
+      inherit (helpers) mkMerge mkDarwin mkNixos;
     in
     mkMerge [
       (mkDarwin "Avys-Mac" inputs.nixpkgs [ ] [ ])
 
-      # (mkNixos "pi1" inputs.nixpkgs "aarch64-linux" [] [inputs.nixos-hardware.nixosModules.raspberry-pi-3])
+      (mkNixos "pi0" inputs.nixpkgs "aarch64-linux"
+        [ ]
+        [
+          inputs.nixos-pi-zero-2.nixosModules.sd-image
+          inputs.nixos-pi-zero-2.nixosModules.hardware
+        ]
+      )
 
       (inputs.flake-utils.lib.eachDefaultSystem (
         system:

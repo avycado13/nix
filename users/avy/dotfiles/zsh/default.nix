@@ -20,18 +20,16 @@
     starship = {
       enable = true;
 
-
-
       settings = {
         add_newline = false;
-      #   format = "$env_var.zmx$all";
+        #   format = "$env_var.zmx$all";
 
-      # env_var = {
-      #   zmx = {
-      #     variable = "ZMX_SESSION";
-      #     format = "[$env_value] ";
-      #   };
-      # };
+        # env_var = {
+        #   zmx = {
+        #     variable = "ZMX_SESSION";
+        #     format = "[$env_value] ";
+        #   };
+        # };
         gcloud = {
           detect_env_vars = [ "GOOGLE_CLOUD" ];
         };
@@ -44,14 +42,14 @@
       enable = true;
       enableZshIntegration = true;
       settings = {
-  cheats = {
-    paths = [
-      "~/cheats/"
-    ];
-  };
-};
+        cheats = {
+          paths = [
+            "~/cheats/"
+          ];
+        };
+      };
     };
-    
+
     bat = {
       enable = true;
     };
@@ -140,6 +138,18 @@
         export ANDROID_SDK_ROOT="$ANDROID_HOME"
         export PATH="$PATH:$ANDROID_HOME/platform-tools"
 
+        fancy-ctrl-z() {
+      if [[ -z $BUFFER ]]; then
+        BUFFER="fg"
+        zle accept-line
+      else
+        zle push-input
+        zle clear-screen
+      fi
+    }
+    zle -N fancy-ctrl-z
+    bindkey '^Z' fancy-ctrl-z
+
         # Cycle back in the suggestions menu using Shift+Tab
         bindkey '^[[Z' reverse-menu-complete
 
@@ -207,6 +217,7 @@
     yazi = {
       enable = true;
       enableZshIntegration = true;
+      shellWrapperName = "y";
     };
     atuin = {
       enable = true;

@@ -23,6 +23,7 @@
         keys = {
           normal = {
             C-g = [
+              ":w"
               ":write-all"
               ":insert-output lazygit >/dev/tty"
               ":redraw"
@@ -31,6 +32,7 @@
               ":set mouse true"
             ];
             C-r = [
+              ":w"
               ":write-all"
               ":insert-output scooter --no-stdin >/dev/tty"
               ":redraw"
@@ -39,17 +41,19 @@
               ":set mouse true"
             ];
             "C-f" = [
-  ":write-all"
-  ":insert-output rg --column --line-number --no-heading --color=always \"%{selection}\" | less -R"
-  ":redraw"
-];
-"C-p" = [
-  ":write"
-  ":insert-output glow -p %{buffer_name} >/dev/tty"
-  ":redraw"
-];
+              ":write-all"
+              ":insert-output rg --column --line-number --no-heading --color=always \"%{selection}\" | less -R"
+              ":redraw"
+            ];
+            "C-p" = [
+              ":w"
+              ":write"
+              ":insert-output glow -p %{buffer_name} >/dev/tty"
+              ":redraw"
+            ];
             space = {
               e = [
+                ":w"
                 ":sh rm -f /tmp/unique-file-h21a434"
                 ":insert-output yazi \"%{buffer_name}\" --chooser-file=/tmp/unique-file-h21a434"
                 ":sh printf \"\\x1b[?1049h\\x1b[?2004h\" > /dev/tty"
@@ -58,11 +62,6 @@
                 ":set mouse false"
                 ":set mouse true"
               ];
-              m = [
-  ":write-all"
-  ":insert-output glow >/dev/tty"
-  ":redraw"
-];
             };
             g = {
               a = "code_action";
@@ -96,7 +95,30 @@
             command = "${pkgs.biome}/bin/biome";
           };
           name = "graphql";
+          language-servers = [
+            "graphql-language-server"
+            "wakatime"
+          ];
           scope = "source.graphql";
+        }
+        {
+          auto-format = true;
+          formatter = {
+            args = [
+              "format"
+              "--stdin-file-path"
+              "buffer.html"
+            ];
+            command = "${pkgs.biome}/bin/biome";
+          };
+          name = "html";
+          language-servers = [
+            "superhtml"
+            "vscode-html-language-server"
+            "biome"
+            "wakatime"
+          ];
+          scope = "text.html.basic";
         }
         {
           auto-format = true;
@@ -109,7 +131,11 @@
             command = "${pkgs.biome}/bin/biome";
           };
           name = "css";
-          language-servers = [ "wakatime" ];
+          language-servers = [
+            "vscode-css-language-server"
+            "biome"
+            "wakatime"
+          ];
           scope = "source.css";
         }
         {
@@ -123,7 +149,11 @@
             command = "${pkgs.biome}/bin/biome";
           };
           name = "javascript";
-          language-servers = [ "wakatime" ];
+          language-servers = [
+            "typescript-language-server"
+            "biome"
+            "wakatime"
+          ];
           scope = "source.js";
         }
         {
@@ -139,6 +169,7 @@
           name = "typescript";
           language-servers = [
             "typescript-language-server"
+            "biome"
             "wakatime"
           ];
           scope = "source.ts";
@@ -156,6 +187,7 @@
           name = "jsx";
           language-servers = [
             "typescript-language-server"
+            "biome"
             "wakatime"
           ];
           scope = "source.jsx";
@@ -173,6 +205,7 @@
           name = "tsx";
           language-servers = [
             "typescript-language-server"
+            "biome"
             "wakatime"
           ];
           scope = "source.tsx";
@@ -188,7 +221,11 @@
             command = "${pkgs.biome}/bin/biome";
           };
           name = "json";
-          language-servers = [ "wakatime" ];
+          language-servers = [
+            "vscode-json-language-server"
+            "biome"
+            "wakatime"
+          ];
           scope = "source.json";
         }
         {
@@ -202,7 +239,11 @@
             command = "${pkgs.biome}/bin/biome";
           };
           name = "jsonc";
-          language-servers = [ "wakatime" ];
+          language-servers = [
+            "vscode-json-language-server"
+            "biome"
+            "wakatime"
+          ];
           scope = "source.json";
         }
         {
@@ -216,7 +257,9 @@
             command = "${pkgs.just}/bin/just";
           };
           name = "just";
-          language-servers = [ "wakatime" ];
+          language-servers = [
+            "wakatime"
+          ];
           scope = "source.just";
         }
         {
@@ -227,6 +270,7 @@
           name = "nix";
           language-servers = [
             "nil"
+            "nixd"
             "wakatime"
           ];
           scope = "source.nix";
@@ -244,14 +288,94 @@
           };
           name = "python";
           language-servers = [
-            "pylsp"
+            "ty"
             "ruff"
             "wakatime"
           ];
           scope = "source.python";
         }
+        {
+          auto-format = true;
+          formatter = {
+            command = "${pkgs.shfmt}/bin/shfmt";
+          };
+          name = "bash";
+          language-servers = [
+            "bash-language-server"
+            "wakatime"
+          ];
+          scope = "source.bash";
+        }
+        {
+          auto-format = true;
+          name = "markdown";
+          language-servers = [
+            "marksman"
+            "wakatime"
+          ];
+          scope = "source.md";
+        }
       ];
 
+      languages.language-server = {
+        typescript-language-server = {
+          command = "${pkgs.typescript-language-server}/bin/typescript-language-server";
+          args = [ "--stdio" ];
+        };
+        nil = {
+          command = "${pkgs.nil}/bin/nil";
+        };
+        nixd = {
+          command = "${pkgs.nixd}/bin/nixd";
+        };
+        ty = {
+          command = "${pkgs.ty}/bin/ty";
+          args = [ "server" ];
+        };
+        ruff = {
+          command = "${pkgs.ruff}/bin/ruff";
+          args = [ "server" ];
+        };
+        biome = {
+          command = "${pkgs.biome}/bin/biome";
+          args = [ "lsp-proxy" ];
+        };
+        vscode-html-language-server = {
+          command = "${pkgs.vscode-langservers-extracted}/bin/vscode-html-language-server";
+          args = [ "--stdio" ];
+        };
+        superhtml = {
+          command = "${pkgs.superhtml}/bin/superhtml";
+          args = [ "lsp" ];
+        };
+        vscode-css-language-server = {
+          command = "${pkgs.vscode-langservers-extracted}/bin/vscode-css-language-server";
+          args = [ "--stdio" ];
+        };
+        vscode-json-language-server = {
+          command = "${pkgs.vscode-langservers-extracted}/bin/vscode-json-language-server";
+          args = [ "--stdio" ];
+        };
+        graphql-language-server = {
+          command = "${pkgs.nodePackages.graphql-language-service-cli}/bin/graphql-lsp";
+          args = [
+            "server"
+            "-m"
+            "stream"
+          ];
+        };
+        bash-language-server = {
+          command = "${pkgs.bash-language-server}/bin/bash-language-server";
+          args = [ "start" ];
+        };
+        marksman = {
+          command = "${pkgs.marksman}/bin/marksman";
+          args = [ "server" ];
+        };
+        wakatime = {
+          command = "wakatime-lsp";
+        };
+      };
     };
 
     vscode = {
@@ -259,10 +383,10 @@
       profiles.default = {
         extensions = with pkgs.vscode-extensions; [
           esbenp.prettier-vscode
-          rust-lang.rust-analyzer
           # Note: You referenced these formnatters in settings,
           # you might want to add them here:
           charliermarsh.ruff
+          # astral-sh.ty
           biomejs.biome
           mkhl.direnv
           wakatime.vscode-wakatime
@@ -322,9 +446,13 @@
             "editor.defaultFormatter" = "svelte.svelte-vscode";
           };
           "workbench.colorTheme" = "Catppuccin Mocha";
-          "amp.experimental.modes" = [
-            "deep"
-            "large"
+          "json.schemaDownload.trustedDomains" = [
+            "https://schemastore.azurewebsites.net/"
+            "https://raw.githubusercontent.com/"
+            "https://www.schemastore.org/"
+            "https://json.schemastore.org/"
+            "https://json-schema.org/"
+            "https://biomejs.dev"
           ];
         };
         enableMcpIntegration = true;

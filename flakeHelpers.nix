@@ -49,6 +49,7 @@ in
         inputs.mac-app-util.darwinModules.default
         inputs.home-manager.darwinModules.home-manager
         inputs.nix-index-database.darwinModules.nix-index
+        inputs.virby.darwinModules.default
         # inputs.catppuccin.darwinModules.catppuccin
         inputs.nix-homebrew.darwinModules.nix-homebrew
 

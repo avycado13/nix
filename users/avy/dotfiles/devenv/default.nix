@@ -31,13 +31,6 @@
           };
         };
 
-        github = {
-          type = "http";
-          url = "https://api.githubcopilot.com/mcp/";
-          headers = {
-            Authorization = "Bearer {env:GH_MCP_TOKEN}";
-          };
-        };
         sequentialthinking = {
           command = "${pkgs.bun}/bin/bunx";
           args = [
@@ -52,13 +45,13 @@
             "chrome-devtools-mcp@latest"
           ];
         };
-         package-search = {
-    url = "https://mcp.trychroma.com/package-search/v1";
-    headers = {
-      x-chroma-token = "{env:CHROMA_MCP_TOKEN}";
-    };
-    type = "http";
-  };
+        package-search = {
+          url = "https://mcp.trychroma.com/package-search/v1";
+          headers = {
+            x-chroma-token = "{env:CHROMA_MCP_TOKEN}";
+          };
+          type = "http";
+        };
 
       };
     };
@@ -68,6 +61,8 @@
     pkgs.nodejs
     pkgs.nil
     pkgs.surge-cli
+    pkgs.deno
+    # pkgs.kicad
   ];
   programs.zsh.initExtra = ''
     export CONTEXT7_API_KEY="$(cat ${config.age.secrets.context7_api_key.path})"

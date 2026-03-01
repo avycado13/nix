@@ -637,6 +637,14 @@ in
                 "NODE_ENV=production"
               ]
               ++ lib.optional (cfg.port != null) "PORT=${toString cfg.port}";
+
+              ExecStartPre = [
+                "!${pkgs.writeShellScript "${name}-setup" ''
+                  mkdir -p ${cfg.dataDir}/app ${cfg.dataDir}/data
+                  chown -R ${userName}:${userName} ${cfg.dataDir}
+                  chmod -R u+rwX,g+rX ${cfg.dataDir}
+                ''}"
+              ];
             }
             // lib.optionalAttrs (cfg.secretsFile != null) {
               EnvironmentFile = cfg.secretsFile;
@@ -649,14 +657,6 @@ in
               ++ lib.mapAttrsToList (k: v: "${k}=${v}") cfg.environment;
             }
             // cfg.serviceConfig;
-
-            serviceConfig.ExecStartPre = [
-              "!${pkgs.writeShellScript "${name}-setup" ''
-                mkdir -p ${cfg.dataDir}/app ${cfg.dataDir}/data
-                chown -R ${userName}:${userName} ${cfg.dataDir}
-                chmod -R u+rwX,g+rX ${cfg.dataDir}
-              ''}"
-            ];
           };
 
           # Ensure directories exist

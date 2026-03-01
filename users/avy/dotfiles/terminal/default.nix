@@ -1,5 +1,4 @@
 {
-  pkgs,
   ...
 }:
 {
@@ -30,11 +29,11 @@
     #   enable = true;
     #   # package = inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default;
     #   package = pkgs.ghostty-bin;
-      # installVimSyntax = true;
-      # installBatSyntax = true;
-      # enableZshIntegration = true;
-      # enableFishIntegration = true;
-      # enableBashIntegration = true;
+    # installVimSyntax = true;
+    # installBatSyntax = true;
+    # enableZshIntegration = true;
+    # enableFishIntegration = true;
+    # enableBashIntegration = true;
     # };
     ghostty = {
       enable = false;
@@ -47,7 +46,7 @@
         font-thicken = true;
         font-thicken-strength = 120;
       };
-         installVimSyntax = true;
+      installVimSyntax = true;
       installBatSyntax = true;
       enableZshIntegration = true;
       enableFishIntegration = true;

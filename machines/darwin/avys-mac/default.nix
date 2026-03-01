@@ -4,6 +4,99 @@
   inputs,
   ...
 }:
+let
+  clockScript = pkgs.writeShellScript "clock.sh" ''
+    sketchybar --set "$NAME" label="$(date '+%m/%d  %I:%M %p')"
+  '';
+  wifiScript = pkgs.writeShellScript "wifi.sh" ''
+    SSID=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk -F': ' '/^ *SSID:/{print $2}')
+    RSSI=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk -F': ' '/^ *agrCtlRSSI:/{print $2}')
+    if [ -z "$SSID" ]; then
+      sketchybar --set "$NAME" label="Disconnected" icon="󰤭"
+    elif [[ -n "$RSSI" && "$RSSI" -gt -50 ]]; then
+      sketchybar --set "$NAME" label="$SSID" icon="󰤨"
+    elif [[ -n "$RSSI" && "$RSSI" -gt -70 ]]; then
+      sketchybar --set "$NAME" label="$SSID" icon="󰤥"
+    else
+      sketchybar --set "$NAME" label="$SSID" icon="󰤟"
+    fi
+  '';
+  cpuScript = pkgs.writeShellScript "cpu.sh" ''
+    CPU=$(ps -A -o %cpu | awk '{s+=$1} END {printf "%.0f", s}')
+    sketchybar --set "$NAME" label="''${CPU}%"
+  '';
+  ramScript = pkgs.writeShellScript "ram.sh" ''
+    MEMORY=$(memory_pressure | grep "System-wide memory free percentage:" | awk '{print 100-$5}')
+    sketchybar --set "$NAME" label="''${MEMORY}%"
+  '';
+  aerospaceScript = pkgs.writeShellScript "aerospace.sh" ''
+        if [ "$1" = "$FOCUSED_WORKSPACE" ]; then
+        sketchybar --set $NAME background.drawing=on
+    else
+        sketchybar --set $NAME background.drawing=off
+    fi
+  '';
+  soundScript = pkgs.writeShellScript "sound.sh" ''
+    DEVICE=$(SwitchAudioSource -c 2>/dev/null || system_profiler SPAudioDataType 2>/dev/null | awk '/Default Output Device: Yes/{found=1} found && /Device Name:/{print $NF; exit}')
+    VOLUME=$(osascript -e 'output volume of (get volume settings)')
+    MUTED=$(osascript -e 'output muted of (get volume settings)')
+    if [ "$MUTED" = "true" ]; then
+      ICON="󰖁"
+    elif [ "$VOLUME" -gt 66 ]; then
+      ICON="󰕾"
+    elif [ "$VOLUME" -gt 33 ]; then
+      ICON="󰖀"
+    elif [ "$VOLUME" -gt 0 ]; then
+      ICON="󰕿"
+    else
+      ICON="󰖁"
+    fi
+    sketchybar --set "$NAME" icon="$ICON" label="''${VOLUME}%"
+  '';
+  nowPlayingScript = pkgs.writeShellScript "now_playing.sh" ''
+    PLAYER_STATE=$(osascript -e '
+      set output to ""
+      if application "Spotify" is running then
+        tell application "Spotify"
+          if player state is playing then
+            set output to (artist of current track) & " - " & (name of current track)
+          end if
+        end tell
+      else if application "Music" is running then
+        tell application "Music"
+          if player state is playing then
+            set output to (artist of current track) & " - " & (name of current track)
+          end if
+        end tell
+      end if
+      return output
+    ')
+    if [ -n "$PLAYER_STATE" ]; then
+      if [ ''${#PLAYER_STATE} -gt 40 ]; then
+        PLAYER_STATE="$(echo "$PLAYER_STATE" | cut -c1-40)…"
+      fi
+      sketchybar --set "$NAME" label="$PLAYER_STATE" icon="󰎆" drawing=on
+    else
+      sketchybar --set "$NAME" drawing=off
+    fi
+  '';
+  dndScript = pkgs.writeShellScript "dnd.sh" ''
+    DND=$(defaults read com.apple.controlcenter "NSStatusItem Visible FocusModes" 2>/dev/null)
+    FOCUS=$(plutil -extract data.0.modeIdentifier raw ~/Library/DoNotDisturb/DB/Assertions/v2/storeAssertionRecords 2>/dev/null || echo "")
+    if [ -n "$FOCUS" ]; then
+      sketchybar --set "$NAME" icon="󰍶" icon.color=0xfff38ba8 label="Focus"
+    else
+      sketchybar --set "$NAME" icon="󰍷" icon.color=0xffa6adc8 label="Off"
+    fi
+  '';
+  heliumScript = pkgs.writeShellScript "helium.sh" ''
+    if pgrep -xi "helium" >/dev/null 2>&1 || pgrep -f "Helium.app" >/dev/null 2>&1; then
+      sketchybar --set "$NAME" icon.color=0xff89b4fa label="On" label.drawing=on
+    else
+      sketchybar --set "$NAME" icon.color=0xff6c7086 label="Off" label.drawing=on
+    fi
+  '';
+in
 {
   homebrew = {
     enable = true;
@@ -39,7 +132,12 @@
     enable = true;
     settings = {
       accordion-padding = 30;
-      after-startup-command = [ ];
+      after-startup-command = [ "exec-and-forget sketchybar" ];
+      exec-on-workspace-change = [
+        "${pkgs.bash}/bin/bash"
+        "-c"
+        "sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE"
+      ];
       automatically-unhide-macos-hidden-apps = false;
       default-root-container-layout = "tiles";
       default-root-container-orientation = "auto";
@@ -203,6 +301,110 @@
       ];
     };
   };
+  services.sketchybar = {
+    enable = false;
+    config = ''
+            # This is a demo config to showcase some of the most important commands.
+      # It is meant to be changed and configured, as it is intentionally kept sparse.
+      # For a (much) more advanced configuration example see my dotfiles:
+      # https://github.com/FelixKratz/dotfiles
+
+      PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+      ##### Bar Appearance #####
+      # Configuring the general appearance of the bar.
+      # These are only some of the options available. For all options see:
+      # https://felixkratz.github.io/SketchyBar/config/bar
+      # If you are looking for other colors, see the color picker:
+      # https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
+
+      sketchybar --bar position=top height=40 blur_radius=30 color=0x40000000
+
+      ##### Changing Defaults #####
+      # We now change some default values, which are applied to all further items.
+      # For a full list of all available item properties see:
+      # https://felixkratz.github.io/SketchyBar/config/items
+
+      default=(
+        padding_left=5
+        padding_right=5
+        icon.font="OpenDyslexic Nerd Font:Bold:17.0"
+        label.font="OpenDyslexic Nerd Font:Bold:14.0"
+        icon.color=0xffffffff
+        label.color=0xffffffff
+        icon.padding_left=4
+        icon.padding_right=4
+        label.padding_left=4
+        label.padding_right=4
+      )
+      sketchybar --default "''${default[@]}"
+
+
+
+      ##### Adding Left Items #####
+      # We add some regular items to the left side of the bar, where
+      # only the properties deviating from the current defaults need to be set
+
+      sketchybar --add event aerospace_workspace_change
+
+      for sid in $(aerospace list-workspaces --focused); do
+          sketchybar --add item space.$sid left \
+              --subscribe space.$sid aerospace_workspace_change \
+              --set space.$sid \
+              background.color=0x44ffffff \
+              background.corner_radius=5 \
+              background.height=20 \
+              background.drawing=off \
+              label="$sid" \
+              click_script="aerospace workspace $sid" \
+              script="${aerospaceScript} $sid"
+      done
+
+      sketchybar --add item chevron left \
+                 --set chevron icon= label.drawing=off \
+                 --add item front_app left \
+                 --set front_app icon.drawing=off script="$PLUGIN_DIR/front_app.sh" \
+                 --subscribe front_app front_app_switched \
+                 --add item helium left \
+                 --set helium icon="󰖟" update_freq=10 label.drawing=off script="${heliumScript}" \
+                 --add item now_playing right \
+                 --set now_playing update_freq=5 icon="󰎆" script="${nowPlayingScript}" drawing=off
+
+      ##### Adding Right Items #####
+      # In the same way as the left items we can add items to the right side.
+      # Additional position (e.g. center) are available, see:
+      # https://felixkratz.github.io/SketchyBar/config/items#adding-items-to-sketchybar
+
+      # Some items refresh on a fixed cycle, e.g. the clock runs its script once
+      # every 10s. Other items respond to events they subscribe to, e.g. the
+      # volume.sh script is only executed once an actual change in system audio
+      # volume is registered. More info about the event system can be found here:
+      # https://felixkratz.github.io/SketchyBar/config/events
+
+      sketchybar --add item clock right \
+                 --set clock update_freq=10 icon=  script="${clockScript}" \
+                 --add item volume right \
+                 --set volume script="$PLUGIN_DIR/volume.sh" \
+                 --subscribe volume volume_change \
+                 --add item battery right \
+                 --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
+                 --subscribe battery system_woke power_source_change \
+                 --add item wifi right \
+                 --set wifi update_freq=10 icon="󰤨" script="${wifiScript}" \
+                 --add item sound right \
+                 --set sound update_freq=5 icon="󰕾" script="${soundScript}" \
+                 --subscribe sound volume_change \
+                 --add item dnd right \
+                 --set dnd update_freq=30 icon="󰍷" script="${dndScript}"
+
+      ##### Force all scripts to run the first time (never do this in a script) #####
+      sketchybar --update
+    '';
+    # --add item cpu right \
+    #  --set cpu update_freq=5 icon="󰻠" script="${cpuScript}" \
+    #  --add item ram right \
+    #  --set ram update_freq=10 icon="󰍛" script="${ramScript}" \
+  };
 
   environment.systemPackages = [
     pkgs.colima
@@ -214,6 +416,9 @@
     inputs.nix-auth.packages.aarch64-darwin.default
   ];
 
+  services.virby.enable = false;
+  services.virby.onDemand.enable = true;
+  services.virby.onDemand.ttl = 10;
   security.pam.services.sudo_local.touchIdAuth = true;
 
   networking = {

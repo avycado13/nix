@@ -2,6 +2,7 @@
   pkgs,
   inputs,
   config,
+  lib,
   ...
 }:
 let
@@ -34,7 +35,27 @@ let
     forge
     cursor-agent
     pi
+    opencode
+    gemini-cli
+    nanocoder
+    codex
+    ccusage-amp
   ];
+  aiMap = builtins.listToAttrs (
+    map (
+      pkg:
+      let
+        raw = pkg.pname or pkg.name;
+        display = lib.removeSuffix "-cli" raw;
+      in
+      {
+        name = display;
+        value = {
+          bin = "${pkg}/bin/${raw}";
+        };
+      }
+    ) ai
+  );
 
   irc-pkg = pkgs.weechat.override {
     configure =
@@ -109,17 +130,36 @@ in
     pkgs.hledger
     pkgs.glow
     pkgs.just
+    pkgs.typescript-language-server
+    pkgs.typescript
 
     inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default
 
     # Scripts
+    (pkgs.writeShellScriptBin "aipick" ''
+          set -e
+
+      choice=$(
+        printf "%s\n" ${lib.concatStringsSep " " (builtins.attrNames aiMap)} \
+        | tr ' ' '\n' \
+        | ${pkgs.fzf}/bin/fzf --prompt="AI > "
+      )
+
+      if [ -n "$choice" ]; then
+        case "$choice" in
+          ${lib.concatStringsSep "\n      " (
+            map (name: "${name}) exec ${aiMap.${name}.bin} ;;") (builtins.attrNames aiMap)
+          )}
+        esac
+      fi
+    '')
     (pkgs.writeShellScriptBin "rfv" ''
       RELOAD='reload:rg --column --color=always --smart-case {q} || :'
       OPENER='if [[ $FZF_SELECT_COUNT -eq 0 ]]; then
-                nvim {1} +{2}
+                $EDITOR {1} +{2}
               else
-                nvim +cw -q {+f}
+                $EDITOR +cw -q {+f}
               fi'
       fzf --disabled --ansi --multi \
           --bind "start:$RELOAD" --bind "change:$RELOAD" \
