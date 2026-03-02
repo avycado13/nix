@@ -60,6 +60,11 @@
 let
   cfg = config.homelab.services.${name};
 
+  resolvedExtraOptions =
+    if builtins.isFunction extraOptions
+    then extraOptions { inherit lib config pkgs; }
+    else extraOptions;
+
   # Generate start command based on runtime
   defaultStartCommand =
     {
@@ -511,7 +516,7 @@ in
       description = "Systemd units this service requires";
     };
   }
-  // extraOptions;
+  // resolvedExtraOptions;
 
   config =
     let

@@ -15,19 +15,19 @@ let
   # System must be set separately as it's platform-specific
   # NixOS includes it via lib.nixosSystem(system=...)
   # Darwin/home-manager set it in their respective builders
-  homeManagerCfg = userPackages: extraImports: {
+  homeManagerCfg = { userPackages, isDarwin ? false, extraImports ? [] }: {
     home-manager.useGlobalPkgs = false;
     home-manager.extraSpecialArgs = {
       inherit inputs;
     };
     home-manager.users.avy.imports = [
       inputs.agenix.homeManagerModules.default
-      inputs.mac-app-util.homeManagerModules.default
       inputs.nix-index-database.homeModules.nix-index
       inputs.catppuccin.homeModules.catppuccin
       ./users/avy/dots.nix
       ./users/avy/age.nix
     ]
+    ++ (if isDarwin then [ inputs.mac-app-util.homeManagerModules.default ] else [])
     ++ extraImports;
     home-manager.backupFileExtension = "bak";
     home-manager.useUserPackages = userPackages;
@@ -72,7 +72,7 @@ in
         }
 
         # Merge your extra Home Manager config
-        (homeManagerCfg true extraHmModules)
+        (homeManagerCfg { userPackages = true; isDarwin = true; extraImports = extraHmModules; })
       ]
       ++ extraModules; # Ensure extraModules are actually appended
     };
@@ -100,13 +100,12 @@ in
         inputs.nix-index-database.nixosModules.nix-index
         inputs.nixos-shell.nixosModules.nixos-shell
         inputs.extra-container.nixosModules.default
-        inputs.nix-search-tv.packages.x86_64-linux.default
         inputs.nix-minecraft.nixosModules.minecraft-servers
         {
           programs.nix-index-database.comma.enable = true;
         }
         ./users/avy
-        (homeManagerCfg true extraHmModules)
+        (homeManagerCfg { userPackages = true; extraImports = extraHmModules; })
         # Disabled facter for now - file access issues in pure nix eval
         # inputs.nixos-facter-modules.nixosModules.facter
         # {
@@ -147,7 +146,7 @@ in
         ./modules/email
         ./users/avy
 
-        (homeManagerCfg false [ ])
+        (homeManagerCfg { userPackages = false; })
       ]
       ++ extraModules;
     };

@@ -99,6 +99,7 @@
     wakatime-ls.url = "github:mrnossiom/wakatime-ls";
     wakatime-ls.inputs.nixpkgs.follows = "nixpkgs";
     zmx.url = "github:neurosnap/zmx";
+    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
     virby.url = "github:quinneden/virby-nix-darwin/be170bd7ef21ce9773e7daa646d43f5405a1bdb2";
     nixos-pi-zero-2 = {
       url = "github:plmercereau/nixos-pi-zero-2";

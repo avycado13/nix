@@ -14,7 +14,7 @@
       enable = true;
       dockerCompat = true;
       autoPrune.enable = true;
-      extraPackages = [ pkgs.zfs ];
+      extraPackages = [ ];
       defaultNetwork.settings = {
         dns_enabled = true;
       };
@@ -31,10 +31,10 @@
     security.acme = {
       acceptTerms = true;
       defaults.email = "${config.homelab.email}";
-      certs.${config.homelab.baseDomain} = {
+      certs.${config.homelab.baseDomainName} = {
         reloadServices = [ "caddy.service" ];
-        domain = "${config.homelab.baseDomain}";
-        extraDomainNames = [ "*.${config.homelab.baseDomain}" ];
+        domain = "${config.homelab.baseDomainName}";
+        extraDomainNames = [ "*.${config.homelab.baseDomainName}" ];
         dnsProvider = "cloudflare";
         dnsResolver = "1.1.1.1:53";
         dnsPropagationCheck = true;
@@ -52,12 +52,12 @@
         auto_https off
       '';
       virtualHosts = {
-        "http://${config.homelab.baseDomain}" = {
+        "http://${config.homelab.baseDomainName}" = {
           extraConfig = ''
             redir https://{host}{uri}
           '';
         };
-        "http://*.${config.homelab.baseDomain}" = {
+        "http://*.${config.homelab.baseDomainName}" = {
           extraConfig = ''
             redir https://{host}{uri}
           '';
