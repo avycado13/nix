@@ -118,7 +118,7 @@ in
       "obsidian"
       "keybase"
       "cloudflare-warp"
-      "ghostty"
+      "sikarugir"
     ];
 
     masApps = {

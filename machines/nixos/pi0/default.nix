@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, ... }:
 {
   nix.settings.trusted-users = [ "@wheel" ];
   system.stateVersion = "25.11";
@@ -19,7 +19,7 @@
   services.sshd.enable = true;
 
   # NTP time sync.
-  services.timesyncd.enable = true;
+  services.timesyncd.enable = lib.mkForce true;
   users.users.avy = {
     isNormalUser = true;
     home = "/home/avy";

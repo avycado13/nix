@@ -71,6 +71,10 @@
       url = "github:TheBoredTeam/homebrew-boring-notch";
       flake = false;
     };
+    brew-sikarugir = {
+      url = "github:Sikarugir-App/homebrew-sikarugir";
+      flake = false;
+    };
     catppuccin.url = "github:catppuccin/nix";
     nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
     disko.url = "github:nix-community/disko";
@@ -104,6 +108,8 @@
     nixos-pi-zero-2 = {
       url = "github:plmercereau/nixos-pi-zero-2";
     };
+    srvos.url = "github:nix-community/srvos";
+
   };
 
   outputs =

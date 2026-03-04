@@ -15,23 +15,29 @@ let
   # System must be set separately as it's platform-specific
   # NixOS includes it via lib.nixosSystem(system=...)
   # Darwin/home-manager set it in their respective builders
-  homeManagerCfg = { userPackages, isDarwin ? false, extraImports ? [] }: {
-    home-manager.useGlobalPkgs = false;
-    home-manager.extraSpecialArgs = {
-      inherit inputs;
+  homeManagerCfg =
+    {
+      userPackages,
+      isDarwin ? false,
+      extraImports ? [ ],
+    }:
+    {
+      home-manager.useGlobalPkgs = false;
+      home-manager.extraSpecialArgs = {
+        inherit inputs;
+      };
+      home-manager.users.avy.imports = [
+        inputs.agenix.homeManagerModules.default
+        inputs.nix-index-database.homeModules.nix-index
+        inputs.catppuccin.homeModules.catppuccin
+        ./users/avy/dots.nix
+        ./users/avy/age.nix
+      ]
+      ++ (if isDarwin then [ inputs.mac-app-util.homeManagerModules.default ] else [ ])
+      ++ extraImports;
+      home-manager.backupFileExtension = "bak";
+      home-manager.useUserPackages = userPackages;
     };
-    home-manager.users.avy.imports = [
-      inputs.agenix.homeManagerModules.default
-      inputs.nix-index-database.homeModules.nix-index
-      inputs.catppuccin.homeModules.catppuccin
-      ./users/avy/dots.nix
-      ./users/avy/age.nix
-    ]
-    ++ (if isDarwin then [ inputs.mac-app-util.homeManagerModules.default ] else [])
-    ++ extraImports;
-    home-manager.backupFileExtension = "bak";
-    home-manager.useUserPackages = userPackages;
-  };
 in
 {
   inherit nixpkgsCfg;
@@ -65,6 +71,7 @@ in
               "homebrew/homebrew-core" = inputs.homebrew-core;
               "homebrew/homebrew-cask" = inputs.homebrew-cask;
               "TheBoredTeam/boring-notch" = inputs.brew-boring-notch;
+              "Sikarugir-App/sikarugir" = inputs.brew-sikarugir;
             };
             mutableTaps = true;
             autoMigrate = true;
@@ -72,7 +79,11 @@ in
         }
 
         # Merge your extra Home Manager config
-        (homeManagerCfg { userPackages = true; isDarwin = true; extraImports = extraHmModules; })
+        (homeManagerCfg {
+          userPackages = true;
+          isDarwin = true;
+          extraImports = extraHmModules;
+        })
       ]
       ++ extraModules; # Ensure extraModules are actually appended
     };
@@ -101,11 +112,16 @@ in
         inputs.nixos-shell.nixosModules.nixos-shell
         inputs.extra-container.nixosModules.default
         inputs.nix-minecraft.nixosModules.minecraft-servers
+        inputs.home-manager.nixosModules.home-manager
         {
           programs.nix-index-database.comma.enable = true;
         }
         ./users/avy
-        (homeManagerCfg { userPackages = true; extraImports = extraHmModules; })
+        (homeManagerCfg {
+          userPackages = true;
+          isDarwin = false;
+          extraImports = extraHmModules;
+        })
         # Disabled facter for now - file access issues in pure nix eval
         # inputs.nixos-facter-modules.nixosModules.facter
         # {

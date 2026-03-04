@@ -63,7 +63,7 @@
       options = [ "--cmd cd" ];
     };
     yt-dlp = {
-      enable = true;
+      enable = false;
     };
     direnv = {
       enable = true;
@@ -129,59 +129,59 @@
       };
 
       initContent = ''
-        export LEDGER_FILE=~/finance/main.journal
+            export LEDGER_FILE=~/finance/main.journal
 
-        mkdir -p "$HOME/Library/pnpm"
-        export PNPM_HOME="$HOME/Library/pnpm"
-        export PATH="$PNPM_HOME:$PATH"
-        export ANDROID_HOME="$HOME/Library/Android/sdk"
-        export ANDROID_SDK_ROOT="$ANDROID_HOME"
-        export PATH="$PATH:$ANDROID_HOME/platform-tools"
+            mkdir -p "$HOME/Library/pnpm"
+            export PNPM_HOME="$HOME/Library/pnpm"
+            export PATH="$PNPM_HOME:$PATH"
+            export ANDROID_HOME="$HOME/Library/Android/sdk"
+            export ANDROID_SDK_ROOT="$ANDROID_HOME"
+            export PATH="$PATH:$ANDROID_HOME/platform-tools"
 
-        fancy-ctrl-z() {
-      if [[ -z $BUFFER ]]; then
-        BUFFER="fg"
-        zle accept-line
-      else
-        zle push-input
-        zle clear-screen
-      fi
-    }
-    zle -N fancy-ctrl-z
-    bindkey '^Z' fancy-ctrl-z
-
-        # Cycle back in the suggestions menu using Shift+Tab
-        bindkey '^[[Z' reverse-menu-complete
-
-        bindkey '^B' autosuggest-toggle
-        # Make Ctrl+W remove one path segment instead of the whole path
-        WORDCHARS=''${WORDCHARS/\/}
-
-        # Highlight the selected suggestion
-        zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
-        zstyle ':completion:*' menu yes=long select
-
-          if [ $(uname) = "Darwin" ]; then
-            path=("$HOME/.nix-profile/bin" "/run/wrappers/bin" "/etc/profiles/per-user/$USER/bin" "/nix/var/nix/profiles/default/bin" "/run/current-system/sw/bin" "/opt/homebrew/bin" $path)
-            export DOCKER_HOST="unix://$HOME/.colima/default/docker.sock"
-            alias flush-dns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
-            alias lsblk="diskutil list"
-            ulimit -n 2048
+            fancy-ctrl-z() {
+          if [[ -z $BUFFER ]]; then
+            BUFFER="fg"
+            zle accept-line
+          else
+            zle push-input
+            zle clear-screen
           fi
-          export LANG=en_US.UTF-8
-          export LC_CTYPE=en_US.UTF-8
-          export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+        }
+        zle -N fancy-ctrl-z
+        bindkey '^Z' fancy-ctrl-z
+
+            # Cycle back in the suggestions menu using Shift+Tab
+            bindkey '^[[Z' reverse-menu-complete
+
+            bindkey '^B' autosuggest-toggle
+            # Make Ctrl+W remove one path segment instead of the whole path
+            WORDCHARS=''${WORDCHARS/\/}
+
+            # Highlight the selected suggestion
+            zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
+            zstyle ':completion:*' menu yes=long select
+
+              if [ $(uname) = "Darwin" ]; then
+                path=("$HOME/.nix-profile/bin" "/run/wrappers/bin" "/etc/profiles/per-user/$USER/bin" "/nix/var/nix/profiles/default/bin" "/run/current-system/sw/bin" "/opt/homebrew/bin" $path)
+                export DOCKER_HOST="unix://$HOME/.colima/default/docker.sock"
+                alias flush-dns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
+                alias lsblk="diskutil list"
+                ulimit -n 2048
+              fi
+              export LANG=en_US.UTF-8
+              export LC_CTYPE=en_US.UTF-8
+              export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
 
-          bindkey '^[[A' history-substring-search-up
-          bindkey '^[[B' history-substring-search-down
+              bindkey '^[[A' history-substring-search-up
+              bindkey '^[[B' history-substring-search-down
 
-          if command -v motd &> /dev/null
-          then
-            motd
-          fi
-          bindkey -e
-          eval "$(terminal-wakatime init)"
+              if command -v motd &> /dev/null
+              then
+                motd
+              fi
+              bindkey -e
+              eval "$(terminal-wakatime init)"
 
 
       '';

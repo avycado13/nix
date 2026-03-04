@@ -13,6 +13,7 @@ cask "arc"
 cask "visual-studio-code"
 cask "foks"
 cask "android-studio"
+cask "sikarugir", tap: "Sikarugir-App/sikarugir"
 
 # Mac App Store apps
 mas "Xcode", id: 497799835

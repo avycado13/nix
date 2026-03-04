@@ -1,10 +1,6 @@
 { pkgs, ... }:
 {
   programs = {
-    neovim = {
-      enable = true;
-      defaultEditor = false;
-    };
 
     helix = {
       enable = true;
