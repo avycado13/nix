@@ -62,6 +62,8 @@ in
         hostName = "eu.nixbuild.net";
         system = "x86_64-linux";
         maxJobs = 100;
+        sshUser = "avycado13";
+        sshKey = "/Users/avy/.ssh/avy";
         supportedFeatures = [
           "benchmark"
           "big-parallel"
@@ -71,6 +73,8 @@ in
         hostName = "eu.nixbuild.net";
         system = "aarch64-linux";
         maxJobs = 100;
+        sshUser = "avycado13";
+        sshKey = "/Users/avy/.ssh/avy";
         supportedFeatures = [
           "benchmark"
           "big-parallel"
@@ -80,6 +84,8 @@ in
         hostName = "eu.nixbuild.net";
         system = "armv7l-linux";
         maxJobs = 100;
+        sshUser = "avycado13";
+        sshKey = "/Users/avy/.ssh/avy";
         supportedFeatures = [
           "benchmark"
           "big-parallel"
@@ -89,6 +95,8 @@ in
         hostName = "eu.nixbuild.net";
         system = "i686-linux";
         maxJobs = 100;
+        sshUser = "avycado13";
+        sshKey = "/Users/avy/.ssh/avy";
         supportedFeatures = [
           "benchmark"
           "big-parallel"

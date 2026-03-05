@@ -52,7 +52,7 @@
         auto_https off
       '';
       virtualHosts = {
-        "http://${config.homelab.baseDomainName}" = {
+        "https://${config.homelab.baseDomainName}" = {
           extraConfig = ''
             redir https://{host}{uri}
           '';

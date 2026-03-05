@@ -4,6 +4,7 @@
 }:
 {
   nix.settings.trusted-users = [ "avy" ];
+  programs.zsh.enable = true;
 
   # age.secrets.hashedUserPassword = {
   #   file = "${inputs.secrets}/hashedUserPassword.age";

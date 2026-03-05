@@ -1,5 +1,9 @@
 { lib, ... }:
 {
+  programs.nix-index.enable = lib.mkForce false;
+  programs.nix-index-database.comma.enable = lib.mkForce false;
+  home-manager.users.avy.programs.nix-index.enable = lib.mkForce false;
+  home-manager.users.avy.programs.nix-index-database.comma.enable = lib.mkForce false;
   nix.settings.trusted-users = [ "@wheel" ];
   system.stateVersion = "25.11";
 

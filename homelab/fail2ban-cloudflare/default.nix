@@ -9,9 +9,7 @@ let
 in
 {
   options.services.fail2ban-cloudflare = {
-    enable = lib.mkEnableOption {
-      description = "Enable fail2ban-cloudflare";
-    };
+    enable = lib.mkEnableOption "Enable fail2ban-cloudflare";
     apiKeyFile = lib.mkOption {
       description = "File containing your API key, scoped to Firewall Rules: Edit";
       type = lib.types.str;
