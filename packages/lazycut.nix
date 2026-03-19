@@ -23,8 +23,10 @@ stdenv.mkDerivation rec {
     hash =
       if stdenv.isDarwin && stdenv.isAarch64 then
         "sha256-GLmK+EvNYo9VHeZ0YWTse6ft5o2v5noBnoSBtaQbeew="
-      else
+      else if stdenv.isDarwin then
         "sha256-zs8xQzsWzy0PVkewVpJMTsxebzwpltc48xbpH+o2LnQ=";
+      else
+        throw "Unsupported platform";
   };
 
   sourceRoot = ".";
