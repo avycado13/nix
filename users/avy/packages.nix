@@ -23,6 +23,15 @@ let
       ;
   };
 
+  lazycut = import ../../packages/lazycut.nix {
+    inherit pkgs;
+    inherit (pkgs)
+      lib
+      stdenv
+      fetchurl
+      ;
+  };
+
   ai = with inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
     qwen-code
     amp
@@ -92,6 +101,7 @@ in
   home.packages = ai ++ [
     irc-pkg
     zmx
+    lazycut
     inputs.wakatime-ls.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # Basic Utilities
