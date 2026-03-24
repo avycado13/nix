@@ -13,15 +13,15 @@ let
     ]
   );
 
-  zmx = import ../../packages/zmx.nix {
-    inherit pkgs;
-    inherit (pkgs)
-      lib
-      stdenv
-      fetchurl
-      autoPatchelfHook
-      ;
-  };
+  # zmx = import ../../packages/zmx.nix {
+  #   inherit pkgs;
+  #   inherit (pkgs)
+  #     lib
+  #     stdenv
+  #     fetchurl
+  #     autoPatchelfHook
+  #     ;
+  # };
 
   ai = with inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
     qwen-code
@@ -91,7 +91,7 @@ in
 {
   home.packages = ai ++ [
     irc-pkg
-    zmx
+    pkgs.nur.repos.avycado13.zmx
     inputs.wakatime-ls.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # Basic Utilities
