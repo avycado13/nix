@@ -55,6 +55,7 @@ in
     };
     gc = {
       automatic = true;
+      options = "-d --delete-older-than 30d";
     };
     distributedBuilds = true;
     buildMachines = [

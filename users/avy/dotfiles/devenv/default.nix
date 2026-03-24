@@ -1,4 +1,9 @@
-{ pkgs, config, ... }:
+{
+  pkgs,
+  config,
+  inputs,
+  ...
+}:
 {
   programs = {
     bun = {
@@ -63,6 +68,16 @@
     pkgs.surge-cli
     pkgs.deno
     # pkgs.kicad
+    # Rust
+    pkgs.cargo
+    pkgs.rustc
+    inputs.gws-cli.packages.${pkgs.system}.gws
+    # ruby
+    pkgs.ruby
+    # pkgs.bundler
+    #
+
+    pkgs.postgresql
   ];
   programs.zsh.initExtra = ''
     export CONTEXT7_API_KEY="$(cat ${config.age.secrets.context7_api_key.path})"

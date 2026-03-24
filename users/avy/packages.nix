@@ -133,6 +133,12 @@ in
     pkgs.typescript-language-server
     pkgs.typescript
 
+    pkgs.pipes
+    pkgs.cbonsai
+    pkgs.tarts
+    pkgs.macchina
+    pkgs.cloudflared
+
     inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default
 

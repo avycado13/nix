@@ -30,13 +30,13 @@ stdenv.mkDerivation rec {
 
     hash =
       if stdenv.isLinux && stdenv.isAarch64 then
-        "sha256-9TAOjfBmfUDkdN8lnAvPq5No2UBbY5GMpeScr+Jyx3Q="
+        "sha256-wD3GnIo/zYDyFMfYcw7zDP+rJeHcoFsjkjkeeEYvN6s="
       else if stdenv.isLinux then
-        "sha256-fyfjbYmkGVre02piDR/L0NbylsWDEEV2JrrrUCubTjI="
+        "sha256-qsvrMT0ddCUJIHE2KuG3l/FUtQx3wyMRym8gJa0LkCo="
       else if stdenv.isDarwin && stdenv.isAarch64 then
-        "sha256-tGHgGoEkCKS5Pw+/YdI2ljFE0GgAVc6zY/Mk6Xt8/To="
+        "sha256-bc03jhwdXQft4MdeDjKSlPQJkHGCKP+ujoTWQq6s7uE="
       else
-        "sha256-gxRROnHA8NUOheJCMu8IlvSlwynJvWqBkbCYSj4BOeE=";
+        "sha256-Tlxh+pbVN3kC7x5dZsuIlAn5BHTSeH5MMEvrJmEbTRw=";
   };
 
   nativeBuildInputs = lib.optionals stdenv.isLinux [ autoPatchelfHook ];

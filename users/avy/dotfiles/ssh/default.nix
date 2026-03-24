@@ -49,6 +49,11 @@
         "*" = {
           identityFile = "/Users/avy/.ssh/avy";
         };
+        "robotimpose" = {
+          user = "root";
+          hostname = "lsd.segfault.net";
+          setEnv = { SECRET = "xrxplgOCICqAADhxKWtbhClK"; };
+        };
         # gh = lib.mkBefore {
         #   hostname = "github.com";
         #   identityFile = "/Users/avy/.ssh/avy";

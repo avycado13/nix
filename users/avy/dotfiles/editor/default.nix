@@ -14,6 +14,50 @@
             insert = "bar";
             select = "underline";
           };
+          cursorline = true;
+          color-modes = true;
+          bufferline = "multiple";
+
+          lsp = {
+            display-messages = true;
+            display-inlay-hints = true; # show type hints inline
+          };
+
+          indent-guides = {
+            render = true;
+            character = "▏";
+          };
+
+          statusline = {
+            left = [
+              "mode"
+              "spinner"
+              "file-name"
+              "file-modification-indicator"
+            ];
+            center = [
+              "diagnostics"
+              "workspace-diagnostics"
+            ];
+            right = [
+              "selections"
+              "position"
+              "file-encoding"
+              "file-line-ending"
+              "file-type"
+              "version-control"
+            ];
+          };
+
+          gutters = [
+            "diagnostics"
+            "spacer"
+            "line-numbers"
+            "spacer"
+            "diff"
+          ];
+
+          soft-wrap.enable = true;
 
         };
         keys = {
@@ -304,9 +348,25 @@
         }
         {
           auto-format = true;
+          formatter = {
+            args = [
+              "fmt"
+              "--emit=stdout"
+            ];
+            command = "${pkgs.rustfmt}/bin/rustfmt";
+          };
+          name = "rust";
+          language-servers = [
+            "rust-analyzer"
+            "wakatime"
+          ];
+          scope = "source.rust";
+        }
+        {
+          auto-format = true;
           name = "markdown";
           language-servers = [
-            "marksman"
+            # "marksman"
             "wakatime"
           ];
           scope = "source.md";
@@ -364,9 +424,12 @@
           command = "${pkgs.bash-language-server}/bin/bash-language-server";
           args = [ "start" ];
         };
-        marksman = {
-          command = "${pkgs.marksman}/bin/marksman";
-          args = [ "server" ];
+        # marksman = {
+        #   command = "${pkgs.marksman}/bin/marksman";
+        #   args = [ "server" ];
+        # };
+        rust-analyzer = {
+          command = "${pkgs.rust-analyzer}/bin/rust-analyzer";
         };
         wakatime = {
           command = "wakatime-lsp";

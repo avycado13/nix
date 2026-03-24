@@ -97,7 +97,7 @@
           "unixorn/warhol.plugin.zsh"
           "MichaelAquilina/zsh-you-should-use"
           "Aloxaf/fzf-tab"
-          "unixorn/git-extra-commands@main"
+          "unixorn/git-extra-commands kind:clone branch:main"
         ];
         useFriendlyNames = true;
       };
@@ -126,6 +126,7 @@
         rr = "rm -Rf";
         ghrpc = "gh repo create -c";
         goops = "git commit --amend --no-edit && git push --force-with-lease";
+        jsenv = "rg -o --no-filename 'process\\.env\\.[A-Z0-9_]+' | sort -u | awk -F. '{print $3\"=\\\"\\\"\"}'";
       };
 
       initContent = ''

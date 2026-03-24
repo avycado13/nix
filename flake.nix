@@ -17,10 +17,6 @@
       url = "github:astro/microvm.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -109,6 +105,7 @@
       url = "github:plmercereau/nixos-pi-zero-2";
     };
     srvos.url = "github:nix-community/srvos";
+    gws-cli.url = "github:googleworkspace/cli";
 
   };
 
@@ -126,6 +123,13 @@
         [
           inputs.nixos-pi-zero-2.nixosModules.sd-image
           inputs.nixos-pi-zero-2.nixosModules.hardware
+        ]
+      )
+
+      (mkNixos "oracle" inputs.nixpkgs "x86_64-linux"
+        [ ]
+        [
+          inputs.srvos.nixosModules.server
         ]
       )
 

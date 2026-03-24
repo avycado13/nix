@@ -2,6 +2,34 @@
   # System-wide defaults
   system = {
     defaults = {
+      NSGlobalDomain = {
+        AppleICUForce24HourTime = true;
+        "com.apple.swipescrolldirection" = true;
+        PMPrintingExpandedStateForPrint = true;
+        PMPrintingExpandedStateForPrint2 = true;
+
+      };
+      SoftwareUpdate.AutomaticallyInstallMacOSUpdates = true;
+      menuExtraClock = {
+        Show24Hour = true;
+        ShowAMPM = false;
+        ShowDate = 1;
+        ShowDayOfWeek = true;
+        ShowSeconds = true;
+      };
+
+      controlcenter = {
+        BatteryShowPercentage = true;
+        Sound = true;
+        FocusModes = true;
+        NowPlaying = false;
+      };
+      iCal.CalendarSidebarShown = true;
+      iCal."TimeZone support enabled" = true;
+      screencapture.location = "/Users/avy/Desktop/screenshots";
+      screensaver.askForPassword = true;
+      screensaver.askForPasswordDelay = 0;
+
       # Dock settings
       dock = {
         autohide = true;
@@ -10,6 +38,15 @@
         mineffect = "genie";
         mru-spaces = false;
         expose-group-apps = true;
+        # Top left quick action = nothing
+        wvous-tl-corner = 1;
+        # bottom left quick action = desktop
+        wvous-bl-corner = 4;
+        # Top right quick action = application windows
+        wvous-tr-corner = 3;
+        # bottom right quick action = Dashboard (apps?)/spotlight apps
+        wvous-br-corner = 7;
+
       };
 
       # Finder settings
@@ -17,6 +54,8 @@
         AppleShowAllExtensions = true;
         FXEnableExtensionChangeWarning = false;
         _FXShowPosixPathInTitle = true;
+        ShowStatusBar = true;
+        ShowPathbar = true;
       };
 
       # Trackpad settings
