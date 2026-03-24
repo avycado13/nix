@@ -25,6 +25,7 @@ in
     ./dotfiles/gpg/default.nix
     ./dotfiles/devenv/default.nix
     ./dotfiles/theme/default.nix
+    ./dotfiles/email/default.nix
   ];
 
   programs.home-manager.enable = true;

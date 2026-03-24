@@ -161,7 +161,7 @@ in
       mkCfDnsService =
         vh:
         let
-          mkRecord = network: addr: ''
+          mkRecord = _network: addr: ''
             TOKEN=$(cat ${vh.cloudflare.apiTokenFile})
             ZONE=${vh.cloudflare.zoneId}
             HOSTNAME="${vh.name}.${config.fqdn}"

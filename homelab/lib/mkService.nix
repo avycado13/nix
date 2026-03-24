@@ -61,9 +61,10 @@ let
   cfg = config.homelab.services.${name};
 
   resolvedExtraOptions =
-    if builtins.isFunction extraOptions
-    then extraOptions { inherit lib config pkgs; }
-    else extraOptions;
+    if builtins.isFunction extraOptions then
+      extraOptions { inherit lib config pkgs; }
+    else
+      extraOptions;
 
   # Generate start command based on runtime
   defaultStartCommand =

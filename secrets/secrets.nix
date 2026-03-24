@@ -15,4 +15,5 @@ in
   "context7_api_key.age".publicKeys = keys;
   "gh_mcp_token.age".publicKeys = keys;
   "chroma_mcp_token.age".publicKeys = keys;
+  "icloud_email_password.age".publicKeys = keys;
 }

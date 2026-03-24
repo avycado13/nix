@@ -104,7 +104,7 @@ in
         # "${inputs.secrets}/default.nix"
         inputs.nix-mineral.nixosModules.nix-mineral
         # inputs.nixos-conf-editor.packages.${system}.nixos-conf-editor
-        inputs.microvm.nixosModules.microvm
+
         inputs.agenix.nixosModules.default
         inputs.nix-topology.nixosModules.default
         # inputs
@@ -130,6 +130,15 @@ in
         inputs.disko.nixosModules.disko
       ]
       ++ extraModules;
+    };
+    deploy.nodes.${machineHostname} = {
+      hostname = machineHostname;
+      profiles.system = {
+        user = "root";
+        path =
+          inputs.deploy-rs.lib.${hardware}.activate.nixos
+            inputs.self.nixosConfigurations.${machineHostname};
+      };
     };
   };
 

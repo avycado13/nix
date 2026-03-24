@@ -1,5 +1,4 @@
 {
-  lib,
   pkgs,
   modulesPath,
   ...
@@ -26,7 +25,7 @@
 
   networking = {
     hostName = "oracle";
-    hostId = lib.mkForce "b3316d41";
+    hostId = "b3316d41";
     useDHCP = true;
     firewall = {
       enable = true;

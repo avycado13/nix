@@ -13,10 +13,7 @@
     };
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
     nixos-shell.url = "github:Mic92/nixos-shell";
-    microvm = {
-      url = "github:astro/microvm.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";

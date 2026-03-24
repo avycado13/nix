@@ -27,6 +27,9 @@
       chroma_mcp_token = {
         file = ../../secrets/chroma_mcp_token.age;
       };
+      icloud_email_password = {
+        file = ../../secrets/icloud_email_password.age;
+      };
     };
   };
 }

@@ -52,7 +52,17 @@
         "robotimpose" = {
           user = "root";
           hostname = "lsd.segfault.net";
-          setEnv = { SECRET = "xrxplgOCICqAADhxKWtbhClK"; };
+          setEnv = {
+            SECRET = "xrxplgOCICqAADhxKWtbhClK";
+          };
+        };
+        "loudbind" = {
+
+          user = "root";
+          hostname = "lsd.segfault.net";
+          setEnv = {
+            SECRET = "USQSiYZJlqmgqgzNsqfkdKtq";
+          };
         };
         # gh = lib.mkBefore {
         #   hostname = "github.com";
