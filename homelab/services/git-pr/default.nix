@@ -3,7 +3,7 @@ let
 in
 mkService {
   name = "git-pr";
-  description = "pico/git-pr patch request service";
+  description = "picosh/git-pr patch request service";
   defaultPort = 3000;
   runtime = "container";
   defaultImage = "ghcr.io/picosh/pico/git-pr:latest";
