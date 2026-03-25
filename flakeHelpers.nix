@@ -6,6 +6,7 @@ let
       inputs.lazygit.overlays.default
       inputs.nur.overlays.default
       inputs.nix-vscode-extensions.overlays.default
+      inputs.copyparty.overlays.default
     ];
     config = {
       allowUnfree = true;
@@ -113,6 +114,7 @@ in
         inputs.extra-container.nixosModules.default
         inputs.nix-minecraft.nixosModules.minecraft-servers
         inputs.home-manager.nixosModules.home-manager
+        inputs.copyparty.nixosModules.default
         {
           programs.nix-index-database.comma.enable = true;
         }

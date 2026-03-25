@@ -106,6 +106,7 @@
     };
     srvos.url = "github:nix-community/srvos";
     gws-cli.url = "github:googleworkspace/cli";
+    copyparty.url = "github:9001/copyparty";
 
   };
 
