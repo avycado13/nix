@@ -19,6 +19,12 @@ in
       description = "Domain to serve git-pr web UI on";
     };
 
+    url = lib.mkOption {
+      type = lib.types.str;
+      default = if cfg.domain != null then cfg.domain else "localhost";
+      description = "Public URL used by git-pr (without protocol)";
+    };
+
     port = lib.mkOption {
       type = lib.types.port;
       default = 3000;
@@ -61,7 +67,6 @@ in
       isSystemUser = true;
       group = name;
       home = cfg.dataDir;
-      createHome = true;
     };
     users.groups.${name} = { };
 
@@ -76,13 +81,16 @@ in
       path = [ package ];
       preStart = ''
         mkdir -p ${cfg.configDir}
-        if [ ! -f ${cfg.configFile} ]; then
-          cat > ${cfg.configFile} <<EOF
-url = "${if cfg.domain != null then cfg.domain else "localhost"}"
+        chown -R ${name}:${name} ${cfg.dataDir}
+        chown -R ${name}:${name} ${cfg.configDir}
+        if [ ! -f "${cfg.configFile}" ]; then
+          umask 0077
+          cat > "${cfg.configFile}" <<EOF
+url = "${cfg.url}"
 data_dir = "${cfg.dataDir}"
 EOF
         fi
-        chown -R ${name}:${name} ${cfg.dataDir}
+        chown ${name}:${name} "${cfg.configFile}"
       '';
       serviceConfig = {
         Type = "exec";
