@@ -68,5 +68,6 @@
 
   imports = [
     ./miniflux
+    ./git-pr
   ];
 }
