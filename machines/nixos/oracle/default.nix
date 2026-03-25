@@ -10,11 +10,8 @@
   ];
 
   # Boot configuration for Oracle Cloud (UEFI)
-  boot.loader.grub = {
-    efiSupport = true;
-    efiInstallAsRemovable = true;
-    device = "nodev";
-  };
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = false;
   boot.initrd.availableKernelModules = [
     "xhci_pci"
     "virtio_scsi"
@@ -26,7 +23,8 @@
   networking = {
     hostName = "oracle";
     hostId = "b3316d41";
-    useDHCP = true;
+    useDHCP = false;
+    interfaces.ens3.useDHCP = true;
     firewall = {
       enable = true;
       allowedTCPPorts = [
