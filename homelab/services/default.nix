@@ -67,6 +67,12 @@
   };
 
   imports = [
+    ./auth
+    ./bentopdf
     ./miniflux
+    ./myspeed
+    ./postgres
+    ./upsnap
+    ./vhosts
   ];
 }
