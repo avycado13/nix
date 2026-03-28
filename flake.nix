@@ -11,25 +11,18 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nixos-shell.url = "github:Mic92/nixos-shell";
 
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    extra-container.url = "github:erikarvstedt/extra-container";
-    extra-container.inputs.nixpkgs.follows = "nixpkgs";
     alejandra = {
-      url = "github:kamadorueda/alejandra/3.1.0";
+      url = "github:kamadorueda/alejandra/4.0.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    gitignore = {
-      url = "github:hercules-ci/gitignore.nix";
-      # Use the same nixpkgs
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     # Optional: Declarative tap management
     homebrew-core = {
       url = "github:homebrew/homebrew-core";
@@ -69,7 +62,6 @@
       flake = false;
     };
     catppuccin.url = "github:catppuccin/nix";
-    nixos-facter-modules.url = "github:numtide/nixos-facter-modules";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
     lazygit.url = "github:jesseduffield/lazygit";
@@ -103,6 +95,10 @@
     };
     srvos.url = "github:nix-community/srvos";
     gws-cli.url = "github:googleworkspace/cli";
+    unf = {
+      url = "git+https://git.atagen.co/atagen/unf";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
   };
 
@@ -113,7 +109,7 @@
       inherit (helpers) mkMerge mkDarwin mkNixos;
     in
     mkMerge [
-      (mkDarwin "Avys-Mac" inputs.nixpkgs [ ] [ ])
+      (mkDarwin "Avys-Mac" inputs.nixpkgs "aarch64-darwin" [ ] [ ])
 
       (mkNixos "pi0" inputs.nixpkgs "aarch64-linux"
         [ ]
@@ -156,6 +152,7 @@
               inputs.agenix.packages.${system}.default
               pkgs.agenix-rekey
               pkgs.nil
+              # inputs.alejandra.defaultPackage.${system}
             ];
           };
         }

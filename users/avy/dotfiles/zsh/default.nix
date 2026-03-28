@@ -1,6 +1,7 @@
 {
   pkgs,
   config,
+  agenixOptions ? null,
   ...
 }:
 {
@@ -49,7 +50,6 @@
         };
       };
     };
-
     bat = {
       enable = true;
     };
@@ -61,6 +61,13 @@
       enable = true;
       enableZshIntegration = true;
       options = [ "--cmd cd" ];
+    };
+
+    nix-search-tv = {
+      enable = true;
+      settings = {
+        experimental.options_file = { } // (if agenixOptions != null then { agenix = "${agenixOptions}"; } else { });
+      };
     };
     yt-dlp = {
       enable = false;

@@ -280,7 +280,7 @@ in
           alt-d = "workspace D";
           alt-e = "workspace E";
           alt-equal = "resize smart +50";
-          alt-f = "workspace F";
+          # alt-f = "workspace F";
           alt-g = "workspace G";
           alt-h = "focus left";
           alt-i = "workspace I";
@@ -289,7 +289,7 @@ in
           alt-l = "focus right";
           alt-m = "workspace M";
           alt-minus = "resize smart -50";
-          alt-n = "workspace N";
+          # alt-n = "workspace N";
           alt-o = "workspace O";
           alt-p = "workspace P";
           alt-q = "workspace Q";

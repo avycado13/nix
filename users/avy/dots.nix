@@ -17,6 +17,7 @@ in
 
   imports = [
     ./dotfiles/zsh/default.nix
+    ./dotfiles/zellij/default.nix
     ./dotfiles/editor/default.nix
     ./dotfiles/ssh/default.nix
     ./packages.nix

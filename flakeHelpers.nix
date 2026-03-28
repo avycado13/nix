@@ -12,19 +12,28 @@ let
       allowUnfreePredicate = _: true;
     };
   };
-  # System must be set separately as it's platform-specific
-  # NixOS includes it via lib.nixosSystem(system=...)
-  # Darwin/home-manager set it in their respective builders
+
+  mkOpts =
+    system: module:
+    inputs.unf.lib.json {
+      pkgs = inputs.nixpkgs.legacyPackages.${system};
+      modules = [ module ];
+    };
   homeManagerCfg =
     {
       userPackages,
-      isDarwin ? false,
+      system ? "aarch64-darwin",
       extraImports ? [ ],
+      lib,
     }:
+    let
+      agenixModule = inputs.agenix.homeManagerModules.default;
+    in
     {
       home-manager.useGlobalPkgs = false;
       home-manager.extraSpecialArgs = {
         inherit inputs;
+        agenixOptions = mkOpts system agenixModule;
       };
       home-manager.users.avy.imports = [
         inputs.agenix.homeManagerModules.default
@@ -33,7 +42,9 @@ let
         ./users/avy/dots.nix
         ./users/avy/age.nix
       ]
-      ++ (if isDarwin then [ inputs.mac-app-util.homeManagerModules.default ] else [ ])
+      ++ (
+        if (lib.hasSuffix "-darwin" system) then [ inputs.mac-app-util.homeManagerModules.default ] else [ ]
+      )
       ++ extraImports;
       home-manager.backupFileExtension = "bak";
       home-manager.useUserPackages = userPackages;
@@ -41,13 +52,11 @@ let
 in
 {
   inherit nixpkgsCfg;
-  mkDarwin = machineHostname: _nixpkgsVersion: extraHmModules: extraModules: {
+
+  mkDarwin = machineHostname: _nixpkgsVersion: system: extraHmModules: extraModules: {
     darwinConfigurations.${machineHostname} = inputs.darwin.lib.darwinSystem {
-      # It is better to define 'system' here so it can be referenced via 'rec'
-      system = "aarch64-darwin";
-
+      system = system;
       specialArgs = { inherit inputs; };
-
       modules = [
         inputs.agenix.darwinModules.default
         ./machines/darwin
@@ -56,13 +65,9 @@ in
         inputs.home-manager.darwinModules.home-manager
         inputs.nix-index-database.darwinModules.nix-index
         inputs.virby.darwinModules.default
-        # inputs.catppuccin.darwinModules.catppuccin
         inputs.nix-homebrew.darwinModules.nix-homebrew
-
-        # Inline module to handle packages and home-manager settings
         {
           home-manager.users.avy.home.homeDirectory = inputs.nixpkgs.lib.mkForce "/Users/avy";
-
           nix-homebrew = {
             enable = true;
             enableRosetta = false;
@@ -77,56 +82,40 @@ in
             autoMigrate = true;
           };
         }
-
-        # Merge your extra Home Manager config
         (homeManagerCfg {
           userPackages = true;
-          isDarwin = true;
+          system = system;
           extraImports = extraHmModules;
+          lib = inputs.nixpkgs.lib;
         })
       ]
-      ++ extraModules; # Ensure extraModules are actually appended
+      ++ extraModules;
     };
   };
+
   mkNixos = machineHostname: nixpkgsVersion: hardware: extraHmModules: extraModules: {
-    # apps = inputs.nixinate.nixinate.x86_64-linux self;
     nixosConfigurations.${machineHostname} = nixpkgsVersion.lib.nixosSystem {
       system = hardware;
-      specialArgs = {
-        inherit inputs;
-        # vars = import ./machines/nixos/vars.nix;
-      };
+      specialArgs = { inherit inputs; };
       modules = [
         ./homelab
-        # ./machines/nixos/_common
         ./machines/nixos/${machineHostname}
         ./modules/email
-        # "${inputs.secrets}/default.nix"
         inputs.nix-mineral.nixosModules.nix-mineral
-        # inputs.nixos-conf-editor.packages.${system}.nixos-conf-editor
-
         inputs.agenix.nixosModules.default
         inputs.nix-topology.nixosModules.default
-        # inputs
         inputs.nix-index-database.nixosModules.nix-index
         inputs.nixos-shell.nixosModules.nixos-shell
-        inputs.extra-container.nixosModules.default
         inputs.nix-minecraft.nixosModules.minecraft-servers
         inputs.home-manager.nixosModules.home-manager
-        {
-          programs.nix-index-database.comma.enable = true;
-        }
+        { programs.nix-index-database.comma.enable = true; }
         ./users/avy
         (homeManagerCfg {
           userPackages = true;
-          isDarwin = false;
+          system = hardware;
           extraImports = extraHmModules;
+          lib = nixpkgsVersion.lib;
         })
-        # Disabled facter for now - file access issues in pure nix eval
-        # inputs.nixos-facter-modules.nixosModules.facter
-        # {
-        #   config.facter.reportPath = "${toString ./.}/machines/nixos/${machineHostname}/facter.json";
-        # }
         inputs.disko.nixosModules.disko
       ]
       ++ extraModules;
@@ -151,7 +140,6 @@ in
       pkgs = import nixpkgsVersion { system = builtins.currentSystem or "x86_64-linux"; };
       modules = [
         inputs.agenix.homeManagerModules.default
-        # inputs.nix-index-database.homeModules.default
         ./users/avy/dots.nix
         {
           home = {
@@ -165,27 +153,31 @@ in
       extraSpecialArgs = { inherit inputs; };
     };
   };
+
   mkDebian = machineHostname: _nixpkgsVersion: _extraHmModules: extraModules: {
     systemConfigs.${machineHostname} = inputs.system-manager.lib.makeSystemConfig {
       modules = [
         ./modules/email
         ./users/avy
-
-        (homeManagerCfg { userPackages = false; })
+        (homeManagerCfg {
+          userPackages = false;
+          system = "x86_64-linux";
+          lib = inputs.nixpkgs.lib;
+        })
       ]
       ++ extraModules;
     };
+  };
 
-    mkColemna = _system: _extraModules: {
-      colmenaHive = inputs.colmena.lib.makeHive {
-        meta = {
-          nixpkgs = import inputs.nixpkgs {
-            system = "aarch64-darwin";
-            overlays = [ ];
-            config = {
-              allowUnfree = true;
-              allowUnfreePredicate = _: true;
-            };
+  mkColmena = _system: _extraModules: {
+    colmenaHive = inputs.colmena.lib.makeHive {
+      meta = {
+        nixpkgs = import inputs.nixpkgs {
+          system = "aarch64-darwin";
+          overlays = [ ];
+          config = {
+            allowUnfree = true;
+            allowUnfreePredicate = _: true;
           };
         };
       };

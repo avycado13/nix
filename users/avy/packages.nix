@@ -177,6 +177,14 @@ in
           --preview-window '~4,+{2}+4/3,<80(up)' \
           --query "$*"
     '')
+    (pkgs.writeShellApplication {
+      name = "ns";
+      runtimeInputs = with pkgs; [
+        fzf
+        nix-search-tv
+      ];
+      text = builtins.readFile "${pkgs.nix-search-tv.src}/nixpkgs.sh";
+    })
 
     (pkgs.writeShellScriptBin "git-select-branch" ''
       if [ -d "./.git" ]; then

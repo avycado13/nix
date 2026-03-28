@@ -11,7 +11,6 @@
     enable = true;
     vimKeys = true;
   };
-  programs.aerc.enable = true;
   programs.notmuch = {
     enable = true;
     hooks.preNew = "mbsync --all";

@@ -16,6 +16,7 @@
           controlMaster = lib.mkDefault "no";
           controlPath = lib.mkDefault "~/.ssh/master-%r@%n:%p";
           controlPersist = lib.mkDefault "no";
+          identityFile = "/Users/avy/.ssh/avy";
         };
         "github.com" = {
           hostname = "github.com";
@@ -45,9 +46,7 @@
           hostname = "eu.nixbuild.net";
           user = "avycado13";
           identityFile = "/Users/avy/.ssh/avy";
-        };
-        "*" = {
-          identityFile = "/Users/avy/.ssh/avy";
+          serverAliveInterval = 60;
         };
         "robotimpose" = {
           user = "root";
@@ -71,9 +70,8 @@
       };
       extraConfig = ''
         Host eu.nixbuild.net
-        PubkeyAcceptedKeyTypes ssh-ed25519
-        ServerAliveInterval 60
-        IPQoS throughput
+          PubkeyAcceptedKeyTypes ssh-ed25519
+          IPQoS throughput
       '';
     };
   };
