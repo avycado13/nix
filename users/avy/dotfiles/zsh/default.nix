@@ -1,7 +1,7 @@
 {
   pkgs,
   config,
-  agenixOptions ? null,
+  # agenixOptions ? null,
   ...
 }:
 {
@@ -66,7 +66,7 @@
     nix-search-tv = {
       enable = true;
       settings = {
-        experimental.options_file = { } // (if agenixOptions != null then { agenix = "${agenixOptions}"; } else { });
+        # experimental.options_file = { } // (if agenixOptions != null then { agenix = "${agenixOptions}"; } else { });
       };
     };
     yt-dlp = {

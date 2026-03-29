@@ -60,6 +60,9 @@
 
       };
     };
+    awscli = {
+      enable = true;
+    };
   };
   home.packages = [
     pkgs.biome

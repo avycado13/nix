@@ -6,6 +6,11 @@ on:
 
 jobs:
   update-flake-lock:
+    permissions:
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,6 +22,8 @@ jobs:
           pr-title: "chore(flake.lock): update"
           pr-labels: auto-merge
           token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Print PR number
+        run: echo Pull request number is ${{ steps.update.outputs.pull-request-number }}.
       - name: Merge
         run: gh pr merge --auto "${{ steps.update.outputs.pull-request-number }}" --rebase
         env:

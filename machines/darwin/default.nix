@@ -49,13 +49,14 @@ in
       connect-timeout = lib.mkDefault 5;
       fallback = true;
       builders-use-substitutes = true;
+      auto-optimise-store = true;
     };
     optimise = {
       automatic = true;
     };
     gc = {
       automatic = true;
-      options = "-d --delete-older-than 30d";
+      options = "-d --delete-older-than 7d";
     };
     distributedBuilds = true;
     buildMachines = [
