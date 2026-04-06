@@ -75,6 +75,17 @@
       type = lib.types.str;
       description = "Email address used for ACME certificate registration and other notifications";
     };
+
+    notifications.ntfySecretsFile = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      default = null;
+      description = ''
+        Path to an agenix secret containing NTFY_TOPIC=<url>.
+        When set, a notify-failure@ systemd template unit is created that
+        POSTs to that topic whenever a monitored service fails.
+        Example URL: https://ntfy.example.com/my-alerts
+      '';
+    };
   };
   imports = [
     ./services

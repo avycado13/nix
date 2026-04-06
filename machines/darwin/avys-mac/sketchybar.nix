@@ -341,6 +341,7 @@ in
           alt-y = "workspace Y";
           alt-z = "workspace Z";
           alt-ctrl-tab = "move-workspace-to-monitor --wrap-around next";
+          alt-ctrl-s = "exec-and-forget screencapture -i -c";
         };
 
         service.binding = {

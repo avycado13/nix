@@ -10,6 +10,8 @@
       enable = true;
       enableGitIntegration = true;
     };
+    go.enable = true;
+    try.enable = true;
     ruff = {
       enable = true;
       settings = {
@@ -26,6 +28,7 @@
     ty = {
       enable = true;
     };
+    java.enable = true;
     mcp = {
       enable = true;
       servers = {
@@ -72,8 +75,13 @@
     pkgs.deno
     # pkgs.kicad
     # Rust
-    pkgs.cargo
-    pkgs.rustc
+    (pkgs.fenix.complete.withComponents [
+      "cargo"
+      "clippy"
+      "rust-src"
+      "rustc"
+      "rustfmt"
+    ])
     inputs.gws-cli.packages.${pkgs.system}.gws
     # ruby
     pkgs.ruby

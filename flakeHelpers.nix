@@ -6,6 +6,7 @@ let
       inputs.lazygit.overlays.default
       inputs.nur.overlays.default
       inputs.nix-vscode-extensions.overlays.default
+      inputs.fenix.overlays.default
     ];
     config = {
       allowUnfree = true;
@@ -13,12 +14,6 @@ let
     };
   };
 
-  mkOpts =
-    system: module:
-    inputs.unf.lib.json {
-      pkgs = inputs.nixpkgs.legacyPackages.${system};
-      modules = [ module ];
-    };
   homeManagerCfg =
     {
       userPackages,
@@ -26,19 +21,16 @@ let
       extraImports ? [ ],
       lib,
     }:
-    let
-      agenixModule = inputs.agenix.homeManagerModules.default;
-    in
     {
       home-manager.useGlobalPkgs = false;
       home-manager.extraSpecialArgs = {
         inherit inputs;
-        agenixOptions = mkOpts system agenixModule;
       };
       home-manager.users.avy.imports = [
         inputs.agenix.homeManagerModules.default
         inputs.nix-index-database.homeModules.nix-index
         inputs.catppuccin.homeModules.catppuccin
+        inputs.try.homeModules.default
         ./users/avy/dots.nix
         ./users/avy/age.nix
       ]

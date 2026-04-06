@@ -40,6 +40,7 @@ let
     nanocoder
     codex
     ccusage-amp
+    claude-code
   ];
   aiMap = builtins.listToAttrs (
     map (
@@ -138,6 +139,9 @@ in
     pkgs.tarts
     pkgs.macchina
     pkgs.cloudflared
+    pkgs.hexyl
+    pkgs.sd
+    pkgs.stripe-cli
 
     inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default
@@ -241,6 +245,17 @@ in
       ${pkgs.jq}/bin/jq -r '"\nTop Projects:", (.projects | sort_by(-.total)[0:5][] | "  \(.key): \(.total/3600|floor)h")' /tmp/hackatime-$$.json
 
       rm -f /tmp/hackatime-$$.json
+    '')
+    (pkgs.writeShellScriptBin "gcomp" ''
+            fzf \
+          --disabled \
+      --prompt "Google❯ " \
+          --bind 'change:reload:Q=$(echo {q} | sed "s/ /+/g"); curl -s "https://suggestqueries.google.com/complete/search?client=firefox&q=$Q" 2>/dev/null | python3 -c "import sys,json; [print(s) for s in json.load(sys.stdin)[1]]" 2>/dev/null || true' \
+          --height=30% \
+          --border=rounded \
+          --color=prompt:cyan \
+          --print-query \
+          < /dev/null
     '')
   ];
 }

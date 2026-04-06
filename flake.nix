@@ -99,6 +99,12 @@
       url = "git+https://git.atagen.co/atagen/unf";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    impermanence.url = "github:nix-community/impermanence";
+    try.url = "github:tobi/try";
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
   };
 
@@ -114,8 +120,7 @@
       (mkNixos "pi0" inputs.nixpkgs "aarch64-linux"
         [ ]
         [
-          inputs.nixos-pi-zero-2.nixosModules.sd-image
-          inputs.nixos-pi-zero-2.nixosModules.hardware
+          "${inputs.nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
         ]
       )
 
@@ -157,5 +162,10 @@
           };
         }
       ))
+      ({
+        checks = builtins.mapAttrs (
+          system: deployLib: deployLib.deployChecks inputs.self.deploy
+        ) inputs.deploy-rs.lib;
+      })
     ];
 }

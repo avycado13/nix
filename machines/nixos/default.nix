@@ -8,6 +8,7 @@ let
 in
 {
   nixpkgs = helpers.nixpkgsCfg;
+  imports = [ ../../modules/nix/default.nix ];
   virtualisation = {
     podman = {
       enable = true;
@@ -36,5 +37,11 @@ in
   nix-mineral = {
     enable = true;
     preset = "compatibility";
+  };
+
+  # Monitor disk health where drives are present; no-op on VMs/SD cards
+  services.smartd = {
+    enable = true;
+    autodetect = true;
   };
 }

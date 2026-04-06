@@ -10,6 +10,28 @@
   };
 
   config = lib.mkIf config.homelab.services.enable {
+    # Template unit: any service can opt in by setting
+    #   serviceConfig.OnFailure = "notify-failure@%n.service"
+    # %i = instance name (the failing service), %H = hostname — both
+    # expanded by systemd before exec, passed as $1 and $2 to the script.
+    systemd.services."notify-failure@" = lib.mkIf (
+      config.homelab.notifications.ntfySecretsFile != null
+    ) {
+      description = "Send ntfy alert for failed service %i";
+      serviceConfig = {
+        Type = "oneshot";
+        # Secrets file must contain: NTFY_TOPIC=https://ntfy.example.com/topic
+        EnvironmentFile = config.homelab.notifications.ntfySecretsFile;
+        ExecStart = pkgs.writeShellScript "notify-failure" ''
+          ${pkgs.curl}/bin/curl -sS -X POST "$NTFY_TOPIC" \
+            -H "Title: ❌ $1 failed on $2" \
+            -H "Priority: urgent" \
+            -H "Tags: sos,warning" \
+            -d "Service $1 has failed. Run: journalctl -u $1 -n 50"
+        '' + " %i %H";
+      };
+    };
+
     virtualisation.podman = {
       enable = true;
       dockerCompat = true;
@@ -68,5 +90,10 @@
 
   imports = [
     ./miniflux
+    ./ntfy
+    ./healthchecks
+    ./glance
+    ./scrutiny
+    ./restic
   ];
 }

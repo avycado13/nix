@@ -371,6 +371,33 @@
           ];
           scope = "source.md";
         }
+        {
+          auto-format = true;
+          name = "go";
+          language-servers = [
+            "gopls"
+            "golangci-lint-lsp"
+            "wakatime"
+          ];
+        }
+        {
+          name = "templ";
+          scope = "source.templ";
+          file-types = [ "templ" ];
+          roots = [
+            "go.work"
+            "go.mod"
+          ];
+          comment-token = "//";
+          indent = {
+            tab-width = 2;
+            unit = "  ";
+          };
+          language-servers = [
+            "templ"
+            "wakatime"
+          ];
+        }
       ];
 
       languages.language-server = {
@@ -403,6 +430,7 @@
         superhtml = {
           command = "${pkgs.superhtml}/bin/superhtml";
           args = [ "lsp" ];
+          except-features = [ "format" ];
         };
         vscode-css-language-server = {
           command = "${pkgs.vscode-langservers-extracted}/bin/vscode-css-language-server";
@@ -432,8 +460,28 @@
           command = "${pkgs.rust-analyzer}/bin/rust-analyzer";
         };
         wakatime = {
-          command = "wakatime-lsp";
+          command = "wakatime-ls";
         };
+        gopls = {
+          command = "${pkgs.gopls}/bin/gopls";
+          args = [ "serve" ];
+        };
+        golang-ci-langserver = {
+          command = "${pkgs.golangci-lint-langserver}/bin/golangci-lint-langserver";
+          args = [
+            "run"
+            "--output.json.path"
+            "stdout"
+            "--show-stats=false"
+            "--issues-exit-code=1"
+          ];
+
+        };
+        templ = {
+          command = "${pkgs.templ}/bin/templ";
+          args = [ "lsp" ];
+        };
+
       };
     };
 

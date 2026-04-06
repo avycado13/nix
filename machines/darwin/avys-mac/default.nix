@@ -5,7 +5,10 @@
   ...
 }:
 {
-  imports = [ ./sketchybar.nix ];
+  imports = [
+    ./sketchybar.nix
+    ./system.nix
+  ];
   homebrew = {
     enable = true;
     onActivation.autoUpdate = true;
@@ -26,6 +29,7 @@
       "obsidian"
       "keybase"
       "cloudflare-warp"
+      "raycast"
       # "sikarugir"
     ];
 

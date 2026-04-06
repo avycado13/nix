@@ -62,6 +62,8 @@
       enableZshIntegration = true;
       options = [ "--cmd cd" ];
     };
+    fd.enable = true;
+    pandoc.enable = true;
 
     nix-search-tv = {
       enable = true;
@@ -109,7 +111,7 @@
         useFriendlyNames = true;
       };
       shellAliases = {
-        manix-fzf = "'manix' | rg '^# ' | sed 's/^# \\(.*\\) (.*/\\1/;s/ (.*//;s/^# //' | fzf --preview=\"manix '{}'\" | xargs manix";
+        fzmanix = "'manix' | rg '^# ' | sed 's/^# \\(.*\\) (.*/\\1/;s/ (.*//;s/^# //' | fzf --preview=\"manix '{}'\" | xargs manix";
         cat = "bat";
         ls = "eza";
         df = "df -h";
