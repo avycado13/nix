@@ -138,6 +138,12 @@
           inputs.srvos.nixosModules.server
         ]
       )
+      (mkNixos "eclipse" inputs.nixpkgs "x86_64-linux"
+        [ ]
+        [
+          inputs.srvos.nixosModules.server
+        ]
+      )
 
       (inputs.flake-utils.lib.eachDefaultSystem (
         system:
