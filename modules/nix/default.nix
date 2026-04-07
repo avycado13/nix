@@ -27,7 +27,7 @@
       min-free = lib.mkDefault (512 * 1024 * 1024);
       extra-substituters = [
         "https://cache.numtide.com"
-        "ssh://eu.nixbuild.net"
+        "ssh-ng://eu.nixbuild.net"
         "https://colmena.cachix.org"
         "https://catppuccin.cachix.org"
         "https://virby-nix-darwin.cachix.org"
