@@ -80,6 +80,7 @@
     htop
     curl
     git
+    sudo
   ];
 
   system.stateVersion = "25.05";
