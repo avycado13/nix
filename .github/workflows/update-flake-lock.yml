@@ -2,26 +2,22 @@ name: update-flake-lock
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 3 * * *'
-  push:
-  
+    - cron: '47 6 * * *'
 
 jobs:
   update-flake-lock:
     permissions:
       contents: write
-      id-token: write
-      issues: write
-      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@v12
-      - id: update
-        uses: DeterminateSystems/update-flake-lock@v23
-        with:
-          commit-msg: "chore(flake.lock): update"
-          pr-title: "chore(flake.lock): update"
-          pr-labels: auto-merge
-      - name: Print PR number
-        run: echo Pull request number is ${{ steps.update.outputs.pull-request-number }}.
+      - name: Update flake.lock
+        run: nix flake update
+      - name: Commit flake.lock
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add flake.lock
+          git diff --cached --quiet || git commit -m "chore(flake.lock): update"
+          git push

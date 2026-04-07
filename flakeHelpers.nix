@@ -35,7 +35,12 @@ let
         ./users/avy/age.nix
       ]
       ++ (
-        if (lib.hasSuffix "-darwin" system) then [ inputs.mac-app-util.homeManagerModules.default ] else [ ]
+        if (lib.hasSuffix "-darwin" system) then
+          [
+            inputs.mac-app-util.homeManagerModules.default
+          ]
+        else
+          [ ]
       )
       ++ extraImports;
       home-manager.backupFileExtension = "bak";

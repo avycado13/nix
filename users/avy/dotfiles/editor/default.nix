@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 {
   programs = {
 
@@ -441,7 +446,7 @@
           args = [ "--stdio" ];
         };
         graphql-language-server = {
-          command = "${pkgs.nodePackages.graphql-language-service-cli}/bin/graphql-lsp";
+          command = "${pkgs.graphql-language-service-cli}/bin/graphql-lsp";
           args = [
             "server"
             "-m"

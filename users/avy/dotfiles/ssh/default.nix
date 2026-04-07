@@ -63,6 +63,10 @@
             SECRET = "USQSiYZJlqmgqgzNsqfkdKtq";
           };
         };
+        "oracle" = {
+          user = "root";
+          hostname = "159.54.165.53";
+        };
         # gh = lib.mkBefore {
         #   hostname = "github.com";
         #   identityFile = "/Users/avy/.ssh/avy";

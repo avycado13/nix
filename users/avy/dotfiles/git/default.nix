@@ -90,7 +90,27 @@
       };
     };
   };
-  programs.gh-dash.enable = true;
+  programs.gh-dash = {
+    enable = false;
+    settings = {
+      prSections = [
+        {
+          title = "My PRs";
+          filters = "is:open author:@me";
+        }
+        {
+          title = "Needs Review";
+          filters = "is:open review-requested:@me";
+        }
+      ];
+      issuesSections = [
+        {
+          title = "My Issues";
+          filters = "is:open author:@me";
+        }
+      ];
+    };
+  };
   programs.lazygit = {
     enable = true;
     package = pkgs.lazygit;

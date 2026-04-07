@@ -142,6 +142,10 @@ in
     pkgs.hexyl
     pkgs.sd
     pkgs.stripe-cli
+    pkgs.nix-du
+    pkgs.nix-diff
+    pkgs.dix
+    pkgs.nix-tree
 
     inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default
