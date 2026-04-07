@@ -11,7 +11,7 @@
   # Preserve space by sacrificing documentation and history
   documentation.nixos.enable = false;
   nix.gc.automatic = true;
-  nix.gc.options = "--delete-older-than 30d";
+  nix.gc.options = "--delete-older-than 14d";
   boot.cleanTmpDir = true;
 
   # Configure basic SSH access

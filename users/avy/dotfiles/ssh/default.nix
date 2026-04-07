@@ -67,6 +67,11 @@
           user = "root";
           hostname = "159.54.165.53";
         };
+        "eclipse" = {
+          user = "root";
+          hostname = "n1.eclipsesystems.org";
+          port = 25033;
+        };
         # gh = lib.mkBefore {
         #   hostname = "github.com";
         #   identityFile = "/Users/avy/.ssh/avy";

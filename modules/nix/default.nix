@@ -1,6 +1,7 @@
 {
   inputs,
   lib,
+  config,
   ...
 }:
 # let
@@ -52,6 +53,8 @@
       fallback = true;
       builders-use-substitutes = true;
       auto-optimise-store = true;
+      netrc-file = "/etc/nix/netrc";
+      narinfo-cache-positive-ttl = 3600;
     };
     optimise = {
       automatic = true;
@@ -109,4 +112,15 @@
     ];
   };
   programs.nix-index.enable = true;
+
+  # Agenix secrets for nixos only
+  age.secrets = lib.mkIf (builtins.hasAttr "age" config) {
+    garnix_netrc = {
+      file = ../../secrets/garnix_netrc.age;
+      owner = "root";
+      group = "root";
+      mode = "0600";
+      path = "/etc/nix/netrc";
+    };
+  };
 }

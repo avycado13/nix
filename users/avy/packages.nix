@@ -146,6 +146,7 @@ in
     pkgs.nix-diff
     pkgs.dix
     pkgs.nix-tree
+    pkgs.cachix
 
     inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default

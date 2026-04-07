@@ -124,6 +124,14 @@
         ]
       )
 
+      (mkNixos "pi1" inputs.nixpkgs "aarch64-linux"
+        [ ]
+        [
+          "${inputs.nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
+          inputs.nixos-hardware.nixosModules.raspberry-pi-3
+        ]
+      )
+
       (mkNixos "oracle" inputs.nixpkgs "x86_64-linux"
         [ ]
         [
@@ -157,6 +165,7 @@
               inputs.agenix.packages.${system}.default
               pkgs.agenix-rekey
               pkgs.nil
+              pkgs.cachix
               # inputs.alejandra.defaultPackage.${system}
             ];
           };

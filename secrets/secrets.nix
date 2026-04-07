@@ -16,4 +16,5 @@ in
   "gh_mcp_token.age".publicKeys = keys;
   "chroma_mcp_token.age".publicKeys = keys;
   "icloud_email_password.age".publicKeys = keys;
+  "garnix-netrc.age".publicKeys = keys;
 }
