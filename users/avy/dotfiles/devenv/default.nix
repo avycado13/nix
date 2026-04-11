@@ -67,6 +67,7 @@
       enable = true;
     };
   };
+
   home.packages = [
     pkgs.biome
     pkgs.nodejs
@@ -89,6 +90,7 @@
     #
 
     pkgs.postgresql
+    pkgs.ollama
   ];
   programs.zsh.initExtra = ''
     export CONTEXT7_API_KEY="$(cat ${config.age.secrets.context7_api_key.path})"

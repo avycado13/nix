@@ -133,6 +133,7 @@ in
     pkgs.just
     pkgs.typescript-language-server
     pkgs.typescript
+    pkgs.ddgr
 
     pkgs.pipes
     pkgs.cbonsai
