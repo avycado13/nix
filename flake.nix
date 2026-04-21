@@ -105,6 +105,10 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    brew-anylinuxfs-gui = {
+      url = "github:fenio/homebrew-tap";
+      flake = false;
+    };
 
   };
 

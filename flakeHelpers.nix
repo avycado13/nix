@@ -70,12 +70,19 @@ in
             enableRosetta = false;
             user = "avy";
             taps = {
-              "homebrew/homebrew-core" = inputs.homebrew-core;
+              "homebrew/homebrew-core" = inputs.nixpkgs.legacyPackages.${system}.fetchFromGitHub {
+                owner = "homebrew";
+                repo = "homebrew-core";
+                rev = inputs.homebrew-core.rev;
+                hash = inputs.homebrew-core.narHash;
+                name = "homebrew-core-tap";
+              };
               "homebrew/homebrew-cask" = inputs.homebrew-cask;
-              "TheBoredTeam/boring-notch" = inputs.brew-boring-notch;
-              "Sikarugir-App/sikarugir" = inputs.brew-sikarugir;
+              "TheBoredTeam/homebrew-boring-notch" = inputs.brew-boring-notch;
+              "Sikarugir-App/homebrew-sikarugir" = inputs.brew-sikarugir;
+              "fenio/homebrew-tap" = inputs.brew-anylinuxfs-gui;
             };
-            mutableTaps = true;
+            mutableTaps = false;
             autoMigrate = true;
           };
         }

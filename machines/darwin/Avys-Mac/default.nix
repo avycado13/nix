@@ -31,6 +31,7 @@
       "cloudflare-warp"
       "raycast"
       # "sikarugir"
+      # "anylinuxfs-gui"
     ];
 
     masApps = {

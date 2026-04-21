@@ -93,6 +93,22 @@
         "type": "github"
       }
     },
+    "brew-anylinuxfs-gui": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1776539282,
+        "narHash": "sha256-N90TmNdcmHdKrM7AVWUDd6LXisI/qbxVtbtPL6tNdQM=",
+        "owner": "fenio",
+        "repo": "homebrew-tap",
+        "rev": "24aa0037e2a26ad61877422837fa9718e7157bbd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "fenio",
+        "repo": "homebrew-tap",
+        "type": "github"
+      }
+    },
     "brew-boring-notch": {
       "flake": false,
       "locked": {
@@ -2143,6 +2159,7 @@
         "agenix": "agenix",
         "agenix-rekey": "agenix-rekey",
         "alejandra": "alejandra",
+        "brew-anylinuxfs-gui": "brew-anylinuxfs-gui",
         "brew-boring-notch": "brew-boring-notch",
         "brew-sikarugir": "brew-sikarugir",
         "catppuccin": "catppuccin",

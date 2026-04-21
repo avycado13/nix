@@ -1,0 +1,87 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - id: set
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          runner_for() {
+            case "$1" in
+              aarch64-darwin) echo "macos-latest" ;;
+              x86_64-darwin)  echo "macos-13" ;;
+              aarch64-linux)  echo "ubuntu-24.04-arm" ;;
+              x86_64-linux)   echo "ubuntu-latest" ;;
+              *) echo "" ;;
+            esac
+          }
+
+          eval_hosts() {
+            local key="$1"
+            nix eval --json ".#$key" \
+              --apply 'cfgs: builtins.attrNames cfgs' 2>/dev/null \
+              | nix run nixpkgs#jq -- -r '.[]?' || true
+          }
+
+          eval_system() {
+            local key="$1" host="$2"
+            nix eval --raw ".#$key.$host.pkgs.system" 2>/dev/null || true
+          }
+
+          entries=()
+
+          for host in $(eval_hosts darwinConfigurations); do
+            sys=$(eval_system darwinConfigurations "$host")
+            runner=$(runner_for "$sys")
+            [ -z "$runner" ] && continue
+            entries+=("{\"host\":\"$host\",\"attr\":\"darwinConfigurations.$host.system\",\"runner\":\"$runner\"}")
+          done
+
+          for host in $(eval_hosts nixosConfigurations); do
+            sys=$(eval_system nixosConfigurations "$host")
+            runner=$(runner_for "$sys")
+            [ -z "$runner" ] && continue
+            entries+=("{\"host\":\"$host\",\"attr\":\"nixosConfigurations.$host.config.system.build.toplevel\",\"runner\":\"$runner\"}")
+          done
+
+          joined=$(IFS=,; echo "${entries[*]}")
+          echo "matrix={\"include\":[$joined]}" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: discover
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.discover.outputs.matrix) }}
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v15
+        with:
+          name: avycado13
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+      - run: nix build --accept-flake-config .#${{ matrix.attr }}
+
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v15
+        with:
+          name: avycado13
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+      - run: nix flake check --accept-flake-config --no-build

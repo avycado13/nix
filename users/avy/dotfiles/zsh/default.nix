@@ -50,6 +50,7 @@
         };
       };
     };
+    rclone.enable = true;
     bat = {
       enable = true;
     };

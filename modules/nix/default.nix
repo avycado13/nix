@@ -2,6 +2,7 @@
   inputs,
   lib,
   config,
+  pkgs,
   ...
 }:
 # let
@@ -35,6 +36,7 @@
         "https://nix-community.cachix.org"
         "https://cache.garnix.io"
         "fenix.cachix.org"
+        "avycado13.cachix.org"
       ];
       extra-trusted-public-keys = [
         "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
@@ -46,7 +48,7 @@
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
         "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
         "fenix.cachix.org-1:ecJhr+RdYEdcVgUkjruiYhjbBloIEGov7bos90cZi0Q="
-
+        "avycado13.cachix.org-1:omae3JdfM9Oeri1fAPbWwqLhRbXmbs1tcI//1Hi48qs="
       ];
 
       connect-timeout = lib.mkDefault 5;
@@ -55,6 +57,7 @@
       auto-optimise-store = true;
       netrc-file = "/etc/nix/netrc";
       narinfo-cache-positive-ttl = 3600;
+      post-build-hook = "${pkgs.cachix}/bin/cachix push avycado13";
     };
     optimise = {
       automatic = true;

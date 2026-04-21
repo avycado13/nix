@@ -5,7 +5,8 @@
   # NixOS wants to enable GRUB by default
 
   environment.systemPackages = with pkgs; [
-    raspberrypi-tools
+    libraspberrypi
+    raspberrypi-eeprom
   ];
 
   # Preserve space by sacrificing documentation and history
