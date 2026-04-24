@@ -955,11 +955,11 @@
         "zon2nix": "zon2nix"
       },
       "locked": {
-        "lastModified": 1776966350,
-        "narHash": "sha256-jkY/HlytNRo1+rOA0aRbNjOAegdjvgxixRnyNpIXnCc=",
+        "lastModified": 1777006226,
+        "narHash": "sha256-mZjoK+Sr8vbAqYsFCgPESN5R+FVLaFENWoWMe3UTOeg=",
         "owner": "ghostty-org",
         "repo": "ghostty",
-        "rev": "2f1a30ddb047162a4d3acc20c2f83aadfcfe3fbb",
+        "rev": "b0d359cbbd945f9f3807327526ef79fcaf0477df",
         "type": "github"
       },
       "original": {
@@ -1102,11 +1102,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777003139,
-        "narHash": "sha256-t+wvQH5t/K9N7hnnwpv1bC/ER8RSQVKjleGE5xiDSi8=",
+        "lastModified": 1777004352,
+        "narHash": "sha256-SV+9PgNwZ8jHVCjK6YaCBzaheLSW7cDnm5DpOYrD8Vw=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "b869d6cadbc6c0d9135799b8ee31fc7275cab225",
+        "rev": "6012cf1fed3eba66115f3fd117b9be6bd2a15b2f",
         "type": "github"
       },
       "original": {
@@ -1139,11 +1139,11 @@
     "homebrew-cask": {
       "flake": false,
       "locked": {
-        "lastModified": 1776996732,
-        "narHash": "sha256-/5Hs/WIP4vXFfgkD/QTVjoc5+zmkk80AlbTDO2T4umI=",
+        "lastModified": 1777017599,
+        "narHash": "sha256-Nfr8i89CEg44UH79cgY/CMz9HKWdMu30eSoOj01Sjas=",
         "owner": "homebrew",
         "repo": "homebrew-cask",
-        "rev": "2a7a61418c95a7192253bc463dfb03f2719fb12d",
+        "rev": "78f33f7165d68f447e7241f7113c4e1945e7fd4a",
         "type": "github"
       },
       "original": {
@@ -1155,11 +1155,11 @@
     "homebrew-core": {
       "flake": false,
       "locked": {
-        "lastModified": 1777003411,
-        "narHash": "sha256-wbvcbu5dq48VVzyyXLbAzKuB3QeIQgOyJYQISIjVN88=",
+        "lastModified": 1777017133,
+        "narHash": "sha256-q+R2GbxoWXbVvJ6crGVaoeqCkSpYueoOSgF48DogYOg=",
         "owner": "homebrew",
         "repo": "homebrew-core",
-        "rev": "e621ed2b86db0aef40f0851624c18749ec21a4bd",
+        "rev": "b49a94b4d7cf48069ce77e60e3f4b19c177a1c01",
         "type": "github"
       },
       "original": {
@@ -1234,11 +1234,11 @@
         "treefmt-nix": "treefmt-nix_3"
       },
       "locked": {
-        "lastModified": 1776992723,
-        "narHash": "sha256-tD6ngOVJ91pevxuA/HVCxU56/E+DPhWJzOPtzubkTmU=",
+        "lastModified": 1777014782,
+        "narHash": "sha256-YeeftyBM0vwj74TN5QgqxpzFIAbHdYA1YYZILtYXbgM=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "5c7895e3b5ea1746365a347c8245577ef08ad4f2",
+        "rev": "425d24f9d5493d9a090331534b80deeb29592bb4",
         "type": "github"
       },
       "original": {
@@ -2123,11 +2123,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777003665,
-        "narHash": "sha256-YVWEAC98qtS7FG8A8zAm/3TdU3ATro8UwTvGna1jfnY=",
+        "lastModified": 1777019030,
+        "narHash": "sha256-pW6+DMHGD7OHBsjxBWzgXWhtDS8XJ17YIZ5TKVAC9Yc=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "95ecf20378e1caa2706561d26d6a0e36181c12e4",
+        "rev": "f576e668499ef1ff21e9a29c19d423bee6c473df",
         "type": "github"
       },
       "original": {
@@ -2948,11 +2948,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1776208985,
-        "narHash": "sha256-IOuRFpbeQ9jSk54OURX5yvjoC759ujgSNjkMKpChdDA=",
+        "lastModified": 1776888758,
+        "narHash": "sha256-OlQexlc8pMXAPhGrT89MtDcPCJv8MsFJcxFPMibRBho=",
         "ref": "refs/heads/main",
-        "rev": "e8ee348125247e7bd74932cc42ac92df90961d5b",
-        "revCount": 1666,
+        "rev": "a380ec6969faf5fae32f08b96f8529a3bca55d42",
+        "revCount": 1672,
         "type": "git",
         "url": "https://codeberg.org/jcollie/zig-overlay.git"
       },
@@ -2988,11 +2988,11 @@
         "zig": "zig_2"
       },
       "locked": {
-        "lastModified": 1776613749,
-        "narHash": "sha256-9TgoEDSagvvG59NSYvE6WUDrkyJuf0PyVLFKRSySs7M=",
+        "lastModified": 1776999674,
+        "narHash": "sha256-dEuWd2li80+H7f0k7RA25/Od49G91Pn3El3TcbEpONw=",
         "owner": "jcollie",
         "repo": "zon2nix",
-        "rev": "7eacc96583245cfdb04edb31183d9e60eacca51d",
+        "rev": "fe860f11b076bba30708d1efb4830459ecf85f0d",
         "type": "github"
       },
       "original": {
