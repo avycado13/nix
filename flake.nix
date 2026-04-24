@@ -102,11 +102,19 @@
     impermanence.url = "github:nix-community/impermanence";
     try.url = "github:tobi/try";
     fenix = {
-      url = "github:nix-community/fenix";
+      url = "github:nix-community/fenix/monthly";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     brew-anylinuxfs-gui = {
       url = "github:fenio/homebrew-tap";
+      flake = false;
+    };
+    brew-anylinuxfs = {
+      url = "github:nohajc/homebrew-anylinuxfs";
+      flake = false;
+    };
+    brew-krun = {
+      url = "github:slp/homebrew-krun";
       flake = false;
     };
 

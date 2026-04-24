@@ -93,6 +93,7 @@ in
   home.packages = ai ++ [
     irc-pkg
     pkgs.nur.repos.avycado13.zmx
+    # pkgs.nur.repos.avycado13.anylinuxfs-gui
     inputs.wakatime-ls.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # Basic Utilities
@@ -148,6 +149,8 @@ in
     pkgs.dix
     pkgs.nix-tree
     pkgs.cachix
+
+    pkgs.unpigz
 
     inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default

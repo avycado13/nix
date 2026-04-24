@@ -81,6 +81,8 @@ in
               "TheBoredTeam/homebrew-boring-notch" = inputs.brew-boring-notch;
               "Sikarugir-App/homebrew-sikarugir" = inputs.brew-sikarugir;
               "fenio/homebrew-tap" = inputs.brew-anylinuxfs-gui;
+              "nohajc/homebrew-anylinuxfs" = inputs.brew-anylinuxfs;
+              "slp/homebrew-krun" = inputs.brew-krun;
             };
             mutableTaps = false;
             autoMigrate = true;

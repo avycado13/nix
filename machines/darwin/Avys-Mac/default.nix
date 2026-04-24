@@ -19,6 +19,7 @@
       "git-crypt"
       "docker"
       "docker-compose"
+      "nohajc/anylinuxfs/anylinuxfs"
     ];
 
     casks = [
@@ -31,7 +32,7 @@
       "cloudflare-warp"
       "raycast"
       # "sikarugir"
-      # "anylinuxfs-gui"
+      "anylinuxfs-gui"
     ];
 
     masApps = {
