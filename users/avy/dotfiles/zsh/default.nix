@@ -73,7 +73,7 @@
       };
     };
     yt-dlp = {
-      enable = false;
+      enable = true;
     };
     direnv = {
       enable = true;

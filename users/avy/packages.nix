@@ -135,6 +135,7 @@ in
     pkgs.typescript-language-server
     pkgs.typescript
     pkgs.ddgr
+    pkgs.beets
 
     pkgs.pipes
     pkgs.cbonsai
@@ -150,7 +151,7 @@ in
     pkgs.nix-tree
     pkgs.cachix
 
-    pkgs.unpigz
+    pkgs.pigz
 
     inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default
