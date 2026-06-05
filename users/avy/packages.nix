@@ -37,6 +37,9 @@ let
     pi
     opencode
     gemini-cli
+    antigravity-cli
+    grok
+    reasonix
     nanocoder
     codex
     claude-code
