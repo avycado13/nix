@@ -20,19 +20,21 @@
       "docker"
       "docker-compose"
       "nohajc/anylinuxfs/anylinuxfs"
+      "mole"
+      "chromaprint"
     ];
 
     casks = [
-      "foks"
       "android-studio"
+      "foks"
+      "raycast"
+      "anylinuxfs-gui"
+      "keybase"
       "tailscale-app"
       "boring-notch"
-      "obsidian"
-      "keybase"
+      "linearmouse"
       "cloudflare-warp"
-      "raycast"
       # "sikarugir"
-      "anylinuxfs-gui"
     ];
 
     masApps = {
@@ -48,6 +50,7 @@
     pkgs.zstd
     pkgs.duf
     pkgs.ffmpeg
+    pkgs.syncthing-macos
     pkgs.nur.repos.forkprince.helium-nightly
     inputs.nix-auth.packages.aarch64-darwin.default
   ];

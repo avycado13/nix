@@ -26,7 +26,8 @@ in
     ./dotfiles/gpg/default.nix
     ./dotfiles/devenv/default.nix
     ./dotfiles/theme/default.nix
-    ./dotfiles/email/default.nix
+    ./dotfiles/syncthing/default.nix
+    # ./dotfiles/email/default.nix
   ];
 
   programs.home-manager.enable = true;
@@ -35,7 +36,7 @@ in
       enable = true;
       store = {
         cleanup = true;
-        options = "--delete-older-than 14d";
+        options = "--delete-older-than 7d";
       };
     };
     autoUpgrade = {

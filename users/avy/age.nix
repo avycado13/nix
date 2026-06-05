@@ -30,6 +30,17 @@
       icloud_email_password = {
         file = ../../secrets/icloud_email_password.age;
       };
+      syncthing = {
+        file = ../../secrets/syncthing.json.age;
+        path = "/Users/avy/.config/syncthing/secrets.json";
+        mode = "0400";
+      };
+      syncthing-guipass = {
+        file = ../../secrets/syncthing-guipass.age;
+        path = "/Users/avy/.config/syncthing/guiPass";
+        mode = "0400";
+      };
+
     };
   };
 }

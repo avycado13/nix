@@ -17,4 +17,6 @@ in
   "chroma_mcp_token.age".publicKeys = keys;
   "icloud_email_password.age".publicKeys = keys;
   "garnix-netrc.age".publicKeys = keys;
+  "syncthing.json.age".publicKeys = keys;
+  "syncthing-guipass.age".publicKeys = keys;
 }

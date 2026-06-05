@@ -73,7 +73,7 @@
         system = "x86_64-linux";
         maxJobs = 100;
         sshUser = "avycado13";
-        sshKey = "/Users/avy/.ssh/avy";
+        sshKey = "~/.ssh/avy";
         supportedFeatures = [
           "benchmark"
           "big-parallel"
@@ -84,7 +84,7 @@
         system = "aarch64-linux";
         maxJobs = 100;
         sshUser = "avycado13";
-        sshKey = "/Users/avy/.ssh/avy";
+        sshKey = "~/.ssh/avy";
         supportedFeatures = [
           "benchmark"
           "big-parallel"
@@ -95,7 +95,7 @@
         system = "armv7l-linux";
         maxJobs = 100;
         sshUser = "avycado13";
-        sshKey = "/Users/avy/.ssh/avy";
+        sshKey = "~/.ssh/avy";
         supportedFeatures = [
           "benchmark"
           "big-parallel"
@@ -106,7 +106,7 @@
         system = "i686-linux";
         maxJobs = 100;
         sshUser = "avycado13";
-        sshKey = "/Users/avy/.ssh/avy";
+        sshKey = "~/.ssh/avy";
         supportedFeatures = [
           "benchmark"
           "big-parallel"

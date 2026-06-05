@@ -91,6 +91,7 @@
 
     pkgs.postgresql
     pkgs.ollama
+    pkgs.secretspec
   ];
   programs.zsh.initExtra = ''
     export CONTEXT7_API_KEY="$(cat ${config.age.secrets.context7_api_key.path})"

@@ -115,13 +115,17 @@ in
         inputs.nix-minecraft.nixosModules.minecraft-servers
         inputs.home-manager.nixosModules.home-manager
         { programs.nix-index-database.comma.enable = true; }
-        ./users/avy
-        (homeManagerCfg {
-          userPackages = true;
-          system = hardware;
-          extraImports = extraHmModules;
-          lib = nixpkgsVersion.lib;
-        })
+        inputs.catppuccin.nixosModules.catppuccin
+        {
+          # home-manager.users.avy.home.stateVersion = "25.05";
+        }
+        # ./users/avy
+        # (homeManagerCfg {
+        # userPackages = true;
+        # system = hardware;
+        # extraImports = extraHmModules;
+        # lib = nixpkgsVersion.lib;
+        # })
         inputs.disko.nixosModules.disko
       ]
       ++ extraModules;

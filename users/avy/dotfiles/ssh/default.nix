@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, config, ... }:
 {
   programs = {
     ssh = {
@@ -16,36 +16,36 @@
           controlMaster = lib.mkDefault "no";
           controlPath = lib.mkDefault "~/.ssh/master-%r@%n:%p";
           controlPersist = lib.mkDefault "no";
-          identityFile = "/Users/avy/.ssh/avy";
+          identityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         "github.com" = {
           hostname = "github.com";
           user = "git";
-          identityFile = "/Users/avy/.ssh/avy";
+          identityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         "gh" = {
           hostname = "github.com";
           user = "git";
-          identityFile = "/Users/avy/.ssh/avy";
+          identityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         "hackclub.app" = {
           hostname = "hackclub.app";
           user = "avycado13";
-          identityFile = "/Users/avy/.ssh/avy";
+          identityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         "*pi*.*" = {
           user = "pi";
-          identityFile = "/Users/avy/.ssh/avy";
+          identityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         "hashbang" = {
           hostname = "de1.hashbang.sh";
           user = "avycado";
-          identityFile = "/Users/avy/.ssh/avy";
+          identityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         "eu.nixbuild.net" = {
           hostname = "eu.nixbuild.net";
           user = "avycado13";
-          identityFile = "/Users/avy/.ssh/avy";
+          identityFile = "${config.home.homeDirectory}/.ssh/avy";
           serverAliveInterval = 60;
         };
         "robotimpose" = {
@@ -65,12 +65,23 @@
         };
         "oracle" = {
           user = "root";
-          hostname = "159.54.165.53";
+          hostname = "192.9.130.175";
         };
         "eclipse" = {
           user = "root";
           hostname = "n1.eclipsesystems.org";
           port = 25033;
+        };
+        "nest" = {
+          user = "avycado13";
+          hostname = "hackclub.app";
+          identityFile = "${config.home.homeDirectory}/.ssh/avy";
+        };
+        "club" = {
+
+          user = "avycado13";
+          hostname = "tilde.club";
+          identityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         # gh = lib.mkBefore {
         #   hostname = "github.com";
@@ -81,6 +92,11 @@
         Host eu.nixbuild.net
           PubkeyAcceptedKeyTypes ssh-ed25519
           IPQoS throughput
+
+        # Host *
+          # IPQoS throughput
+          # ServerAliveInterval 60
+          # ServerAliveCountMax 3
       '';
     };
   };

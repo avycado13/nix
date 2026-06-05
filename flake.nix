@@ -124,7 +124,12 @@
     { ... }@inputs:
     let
       helpers = import ./flakeHelpers.nix inputs;
-      inherit (helpers) mkMerge mkDarwin mkNixos;
+      inherit (helpers)
+        mkMerge
+        mkDarwin
+        mkNixos
+        mkHome
+        ;
     in
     mkMerge [
       (mkDarwin "Avys-Mac" inputs.nixpkgs "aarch64-darwin" [ ] [ ])
@@ -184,6 +189,7 @@
               pkgs.agenix-rekey
               pkgs.nil
               pkgs.cachix
+              pkgs.nix-output-monitor
               # inputs.alejandra.defaultPackage.${system}
             ];
           };

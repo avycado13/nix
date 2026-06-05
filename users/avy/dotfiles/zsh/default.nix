@@ -1,21 +1,85 @@
 {
   pkgs,
   config,
+  lib,
   # agenixOptions ? null,
   ...
 }:
+let
+  musicDir = "${config.home.homeDirectory}/Music/Library";
+  mpdDataDir = "${config.xdg.dataHome}/mpd";
+  mpdPlaylistDir = "${mpdDataDir}/playlists";
+  mpdConfDarwin = pkgs.writeText "mpd.conf" ''
+    music_directory     "${musicDir}"
+    playlist_directory  "${mpdPlaylistDir}"
+    db_file             "${mpdDataDir}/tag_cache"
+    state_file          "${mpdDataDir}/state"
+    sticker_file        "${mpdDataDir}/sticker.sql"
+    log_file            "${mpdDataDir}/mpd.log"
+    bind_to_address     "127.0.0.1"
+    port                "6600"
+
+    audio_output {
+      type "osx"
+      name "CoreAudio"
+    }
+  '';
+in
 {
   home.sessionPath = [
     "$HOME/finance/bin"
     "$HOME/.local/bin"
   ];
-  home.packages = with pkgs; [
-    grc
-    scooter
-    dua
-    procs
-    scc
-  ];
+  home.packages =
+    with pkgs;
+    [
+      grc
+      scooter
+      dua
+      procs
+      scc
+    ]
+    # `services.mpd` is Linux-only in home-manager, so install the package
+    # directly on Darwin to keep `mpd` available for ncmpcpp.
+    ++ lib.optional pkgs.stdenv.isDarwin pkgs.mpd;
+
+  # home-manager's services.mpd module asserts Linux (it generates a
+  # systemd user unit), so only enable it on Linux.
+  services.mpd = lib.mkIf pkgs.stdenv.isLinux {
+    enable = true;
+    musicDirectory = musicDir;
+    network.startWhenNeeded = true;
+
+    extraConfig = ''
+      audio_output {
+        type "pipewire"
+        name "PipeWire Sound Server"
+      }
+    '';
+  };
+
+  # On Darwin, run mpd via a launchd user agent.
+  launchd.agents.mpd = lib.mkIf pkgs.stdenv.isDarwin {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.mpd}/bin/mpd"
+        "--no-daemon"
+        "${mpdConfDarwin}"
+      ];
+      KeepAlive = true;
+      RunAtLoad = true;
+      ProcessType = "Interactive";
+      StandardOutPath = "${mpdDataDir}/mpd.log";
+      StandardErrorPath = "${mpdDataDir}/mpd.log";
+    };
+  };
+
+  home.activation.createMpdDirs = lib.mkIf pkgs.stdenv.isDarwin (
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      run mkdir -p ${lib.escapeShellArg mpdDataDir} ${lib.escapeShellArg mpdPlaylistDir} ${lib.escapeShellArg musicDir}
+    ''
+  );
   programs = {
     nix-index-database.comma.enable = true;
     starship = {
@@ -50,6 +114,10 @@
         };
       };
     };
+    ncmpcpp = {
+      enable = true;
+      mpdMusicDir = musicDir;
+    };
     rclone.enable = true;
     bat = {
       enable = true;
@@ -74,6 +142,9 @@
     };
     yt-dlp = {
       enable = true;
+      extraConfig = ''
+        --ffmpeg-location ${lib.getExe pkgs.ffmpeg}
+      '';
     };
     direnv = {
       enable = true;
@@ -121,6 +192,7 @@
         yh = "yt-dlp --continue --no-check-certificate --format=bestvideo+bestaudio --exec='ffmpeg -i {} -c:a copy -c:v copy {}.mkv && rm {}'";
         yd = "yt-dlp --continue --no-check-certificate --format=bestvideo+bestaudio --exec='ffmpeg -i {} -c:v prores_ks -profile:v 1 -vf fps=25/1 -pix_fmt yuv422p -c:a pcm_s16le {}.mov && rm {}'";
         ya = "yt-dlp --continue --no-check-certificate --format=bestaudio -x --audio-format wav";
+        yam = "yt-dlp --embed-metadata --embed-thumbnail -x --audio-format m4a -o '%(title)s.%(ext)s'";
         ols = "ls -la --color=never | awk '{k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/)*2^(8-i));if(k)printf(\" %0o \",k);print}'";
         fzkill = "(date; ps -ef) |
   fzf --bind='ctrl-r:reload(date; ps -ef)' \
@@ -194,6 +266,7 @@
               bindkey -e
               eval "$(terminal-wakatime init)"
 
+              mdc() { mkdir -p "$1" && cd "$1"; }
 
       '';
     };

@@ -280,6 +280,7 @@ in
           alt-d = "workspace D";
           alt-e = "workspace E";
           alt-equal = "resize smart +50";
+          alt-shift-equal = "flatten-workspace-tree";
           # alt-f = "workspace F";
           alt-g = "workspace G";
           alt-h = "focus left";
@@ -403,5 +404,17 @@ in
         }
       ];
     };
+  };
+  services.jankyborders = {
+    enable = true;
+    style = "round";
+    width = 4.0;
+    hidpi = true;
+    active_color = "0xFFCBA6F7"; # Mauve
+    inactive_color = "0xFF585B70"; # Surface2
+    background_color = "0x00000000"; # Transparent
+    blur_radius = 0.0;
+    order = "above";
+    ax_focus = false;
   };
 }
