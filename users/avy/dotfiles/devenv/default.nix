@@ -93,7 +93,7 @@
     pkgs.ollama
     pkgs.secretspec
   ];
-  programs.zsh.initExtra = ''
+  programs.zsh.initContent = ''
     export CONTEXT7_API_KEY="$(cat ${config.age.secrets.context7_api_key.path})"
     export GH_MCP_TOKEN="$(cat ${config.age.secrets.gh_mcp_token.path})"
     export CHROMA_MCP_TOKEN="$(cat ${config.age.secrets.chroma_mcp_token.path})"

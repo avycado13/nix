@@ -32,7 +32,7 @@ let
     kilocode-cli
     goose-cli
     letta-code
-    forge
+    forgecode
     cursor-agent
     pi
     opencode
@@ -131,6 +131,8 @@ in
     pkgs.cmus
     pkgs.gum
     pkgs.jq
+    pkgs.ts
+    pkgs.hyperfine
     pkgs.duf
     pkgs.wireguard-tools
     pkgs.hledger

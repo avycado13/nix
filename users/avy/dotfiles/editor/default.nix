@@ -67,7 +67,7 @@
         };
         keys = {
           normal = {
-            C-g = [
+            C-1 = [
               ":w"
               ":write-all"
               ":insert-output lazygit >/dev/tty"

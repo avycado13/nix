@@ -105,7 +105,9 @@ in
     };
     navi = {
       enable = true;
-      enableZshIntegration = true;
+      # Loaded via zsh-defer in initContent instead (only binds a widget, so it
+      # doesn't need to block the first prompt).
+      enableZshIntegration = false;
       settings = {
         cheats = {
           paths = [
@@ -160,6 +162,9 @@ in
       antidote = {
         enable = true;
         plugins = [
+          # Deferred loading: lets us push non-essential init off the critical
+          # path so the prompt renders immediately. Must load first.
+          "romkatv/zsh-defer"
           "ohmyzsh/ohmyzsh path:lib"
           "getantidote/use-omz"
           "ohmyzsh/ohmyzsh path:plugins/direnv"
@@ -171,10 +176,7 @@ in
           "ohmyzsh/ohmyzsh path:plugins/sudo"
           "ohmyzsh/ohmyzsh path:plugins/colored-man-pages"
           "ohmyzsh/ohmyzsh path:plugins/uv"
-          "zsh-users/zsh-autosuggestions"
-          "zsh-users/zsh-syntax-highlighting"
           "zsh-users/zsh-completions"
-          "zsh-users/zsh-history-substring-search"
           "unixorn/warhol.plugin.zsh"
           "MichaelAquilina/zsh-you-should-use"
           "Aloxaf/fzf-tab"
@@ -182,6 +184,9 @@ in
         ];
         useFriendlyNames = true;
       };
+      syntaxHighlighting.enable = true;
+      autosuggestion.enable = true;
+      historySubstringSearch.enable = true;
       shellAliases = {
         fzmanix = "'manix' | rg '^# ' | sed 's/^# \\(.*\\) (.*/\\1/;s/ (.*//;s/^# //' | fzf --preview=\"manix '{}'\" | xargs manix";
         cat = "bat";
@@ -233,9 +238,7 @@ in
         zle -N fancy-ctrl-z
         bindkey '^Z' fancy-ctrl-z
 
-            # Cycle back in the suggestions menu using Shift+Tab
-            bindkey '^[[Z' reverse-menu-complete
-
+            
             bindkey '^B' autosuggest-toggle
             # Make Ctrl+W remove one path segment instead of the whole path
             WORDCHARS=''${WORDCHARS/\/}
@@ -256,15 +259,20 @@ in
               export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
 
-              bindkey '^[[A' history-substring-search-up
-              bindkey '^[[B' history-substring-search-down
 
               if command -v motd &> /dev/null
               then
                 motd
               fi
               bindkey -e
-              eval "$(terminal-wakatime init)"
+
+              # Defer non-prompt-critical integrations so the first prompt
+              # renders immediately; these finish loading right after it appears.
+              # The single-quoted inner string ensures the subprocess only runs
+              # when zsh-defer fires (not at startup).
+              zsh-defer eval 'eval "$(terminal-wakatime init)"'
+              zsh-defer eval 'eval "$(navi widget zsh)"'
+              zsh-defer eval 'eval "$(atuin init zsh)"'
 
               mdc() { mkdir -p "$1" && cd "$1"; }
 
@@ -305,6 +313,9 @@ in
     };
     atuin = {
       enable = true;
+      # Loaded via zsh-defer in initContent instead; the keybindings/hooks are
+      # ready a few ms after the prompt appears, which is imperceptible.
+      enableZshIntegration = false;
       settings = {
         auto_sync = true;
         sync_frequency = "5m";
