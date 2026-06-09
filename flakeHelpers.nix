@@ -7,6 +7,24 @@ let
       inputs.nur.overlays.default
       inputs.nix-vscode-extensions.overlays.default
       inputs.fenix.overlays.default
+      # ollama 0.30.x auto-enables the MLX Metal backend on aarch64-darwin,
+      # which fails in the Nix sandbox (no xcrun/metal toolchain). Disable it
+      # by passing -DOLLAMA_MLX_BACKENDS="" to cmake. This mirrors the upstream
+      # nixpkgs fix (commit b195b40) until nixos-unstable advances past it.
+      # The llama.cpp Metal backend is unaffected.
+      (_final: prev: {
+        ollama = prev.ollama.overrideAttrs (old: {
+          preBuild =
+            builtins.replaceStrings
+              [ ''-DFETCHCONTENT_SOURCE_DIR_LLAMA_CPP="$TMPDIR/llama-cpp-src" \'' ]
+              [
+                ''
+                  -DFETCHCONTENT_SOURCE_DIR_LLAMA_CPP="$TMPDIR/llama-cpp-src" \
+                      -DOLLAMA_MLX_BACKENDS="" \''
+              ]
+              old.preBuild;
+        });
+      })
     ];
     config = {
       allowUnfree = true;
@@ -27,12 +45,13 @@ let
         inherit inputs;
       };
       home-manager.users.avy.imports = [
-        inputs.agenix.homeManagerModules.default
+        inputs.sops-nix.homeManagerModules.sops
+        ./modules/secrets/home.nix
         inputs.nix-index-database.homeModules.nix-index
         inputs.catppuccin.homeModules.catppuccin
         inputs.try.homeModules.default
         ./users/avy/dots.nix
-        ./users/avy/age.nix
+        ./users/avy/sops.nix
       ]
       ++ (
         if (lib.hasSuffix "-darwin" system) then
@@ -55,9 +74,10 @@ in
       system = system;
       specialArgs = { inherit inputs; };
       modules = [
-        inputs.agenix.darwinModules.default
         ./machines/darwin
         ./machines/darwin/${machineHostname}
+        inputs.sops-nix.darwinModules.sops
+        ./modules/secrets
         inputs.mac-app-util.darwinModules.default
         inputs.home-manager.darwinModules.home-manager
         inputs.nix-index-database.darwinModules.nix-index
@@ -99,7 +119,7 @@ in
     };
   };
 
-  mkNixos = machineHostname: nixpkgsVersion: hardware: extraHmModules: extraModules: {
+  mkNixos = machineHostname: nixpkgsVersion: hardware: _extraHmModules: extraModules: {
     nixosConfigurations.${machineHostname} = nixpkgsVersion.lib.nixosSystem {
       system = hardware;
       specialArgs = { inherit inputs; };
@@ -108,7 +128,8 @@ in
         ./machines/nixos/${machineHostname}
         ./modules/email
         inputs.nix-mineral.nixosModules.nix-mineral
-        inputs.agenix.nixosModules.default
+        inputs.sops-nix.nixosModules.sops
+        ./modules/secrets
         inputs.nix-topology.nixosModules.default
         inputs.nix-index-database.nixosModules.nix-index
         inputs.nixos-shell.nixosModules.nixos-shell
@@ -149,7 +170,9 @@ in
     homeConfigurations.${username} = inputs.home-manager.lib.homeManagerConfiguration {
       pkgs = import nixpkgsVersion { system = builtins.currentSystem or "x86_64-linux"; };
       modules = [
-        inputs.agenix.homeManagerModules.default
+        inputs.sops-nix.homeManagerModules.sops
+        ./modules/secrets/home.nix
+        ./users/avy/sops.nix
         ./users/avy/dots.nix
         {
           home = {

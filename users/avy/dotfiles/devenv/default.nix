@@ -94,8 +94,8 @@
     pkgs.secretspec
   ];
   programs.zsh.initContent = ''
-    export CONTEXT7_API_KEY="$(cat ${config.age.secrets.context7_api_key.path})"
-    export GH_MCP_TOKEN="$(cat ${config.age.secrets.gh_mcp_token.path})"
-    export CHROMA_MCP_TOKEN="$(cat ${config.age.secrets.chroma_mcp_token.path})"
+    export CONTEXT7_API_KEY="$(cat ${config.sops.secrets.context7_api_key.path})"
+    export GH_MCP_TOKEN="$(cat ${config.sops.secrets.gh_mcp_token.path})"
+    export CHROMA_MCP_TOKEN="$(cat ${config.sops.secrets.chroma_mcp_token.path})"
   '';
 }

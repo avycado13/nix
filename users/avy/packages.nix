@@ -105,6 +105,7 @@ in
     pkgs.devenv
     pkgs.caligula
     pkgs.manix
+    pkgs.sops
     pkgs.pnpm
     pkgs.magic-wormhole
     gdk
@@ -159,7 +160,7 @@ in
     pkgs.stripe-cli
     pkgs.nix-du
     pkgs.nix-diff
-    pkgs.dix
+    # pkgs.dix # FIXME: tests fail in sandbox on aarch64-darwin (path/symlink tests, /private/tmp). Re-enable when nixpkgs fixes checkPhase.
     pkgs.nix-tree
     pkgs.cachix
     pkgs.sqlmap
@@ -168,7 +169,6 @@ in
     pkgs.pigz
 
     inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
-    inputs.agenix.packages."${pkgs.stdenv.hostPlatform.system}".default
 
     # Scripts
     (pkgs.writeShellScriptBin "aipick" ''
@@ -236,7 +236,7 @@ in
 
     (pkgs.writeShellScriptBin "hackatime-summary" ''
       # Fixed variable escaping for Nix
-      user_id=$(${pkgs.coreutils}/bin/cat ${config.age.secrets.slack_user_id.path} 2>/dev/null || echo "")
+      user_id=$(${pkgs.coreutils}/bin/cat ${config.sops.secrets.slack_user_id.path} 2>/dev/null || echo "")
       use_waka=false
 
       while [[ $# -gt 0 ]]; do

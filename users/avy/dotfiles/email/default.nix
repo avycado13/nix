@@ -45,7 +45,7 @@
         key = "680098B290681E1D28F555A90F7A57CF72410272";
         signByDefault = true;
       };
-      passwordCommand = "${pkgs.coreutils}/bin/cat ${config.age.secrets.icloud_email_password.path}";
+      passwordCommand = "${pkgs.coreutils}/bin/cat ${config.sops.secrets.icloud_email_password.path}";
       smtp = {
         host = "smtp.mail.me.com";
         port = 587;
@@ -78,7 +78,7 @@
         userName = "avycado13@icloud.com";
         passwordCommand = [
           "${pkgs.coreutils}/bin/cat"
-          "${config.age.secrets.icloud_email_password.path}"
+          "${config.sops.secrets.icloud_email_password.path}"
         ];
       };
       vdirsyncer.enable = true;
@@ -97,7 +97,7 @@
         userName = "avycado13@icloud.com";
         passwordCommand = [
           "${pkgs.coreutils}/bin/cat"
-          "${config.age.secrets.icloud_email_password.path}"
+          "${config.sops.secrets.icloud_email_password.path}"
         ];
       };
       vdirsyncer.enable = true;

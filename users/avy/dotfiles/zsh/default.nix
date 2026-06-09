@@ -321,8 +321,8 @@ in
         sync_frequency = "5m";
         sync_address = "https://api.atuin.sh";
         search_mode = "fuzzy";
-        session_path = config.age.secrets.atuin-session.path;
-        key_path = config.age.secrets.atuin-key.path;
+        session_path = config.sops.secrets.atuin-session.path;
+        key_path = config.sops.secrets.atuin-key.path;
       };
     };
   };

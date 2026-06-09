@@ -13,15 +13,21 @@
   nix.settings.trusted-users = [ "@wheel" ];
   system.stateVersion = "25.11";
 
+  sops.secrets."wifi-password".key = "wifi/password";
+  sops.templates."wireless.conf".content = ''
+    psk_samosa=${config.sops.placeholder."wifi-password"}
+  '';
+
   networking = {
     interfaces."wlan0".useDHCP = true;
     wireless = {
       enable = true;
       interfaces = [ "wlan0" ];
+      secretsFile = config.sops.templates."wireless.conf".path;
       # ! Change the following to connect to your own network
       networks = {
         "samosa" = {
-          psk = "maplec29";
+          pskRaw = "ext:psk_samosa";
         };
       };
     };

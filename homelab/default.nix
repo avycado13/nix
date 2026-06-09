@@ -80,7 +80,7 @@
       type = lib.types.nullOr lib.types.path;
       default = null;
       description = ''
-        Path to an agenix secret containing NTFY_TOPIC=<url>.
+        Path to a secret file containing NTFY_TOPIC=<url> (e.g. a sops secret).
         When set, a notify-failure@ systemd template unit is created that
         POSTs to that topic whenever a monitored service fails.
         Example URL: https://ntfy.example.com/my-alerts

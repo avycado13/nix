@@ -213,7 +213,7 @@ in
     secretsFile = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
-      description = "Path to agenix secrets file";
+      description = "Path to a secrets EnvironmentFile (e.g. a sops secret)";
     };
 
     environment = lib.mkOption {

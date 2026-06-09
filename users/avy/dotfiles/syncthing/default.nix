@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  lib,
   ...
 }:
 let
@@ -18,7 +17,7 @@ in
     guiAddress = "0.0.0.0:8384";
     guiCredentials = {
       username = "avy";
-      passwordFile = config.age.secrets.syncthing-guipass.path;
+      passwordFile = config.sops.secrets.syncthing-guipass.path;
     };
     settings = {
       options.relaysEnabled = true;

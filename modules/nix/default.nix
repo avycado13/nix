@@ -1,7 +1,5 @@
 {
-  inputs,
   lib,
-  config,
   pkgs,
   ...
 }:
@@ -116,14 +114,12 @@
   };
   programs.nix-index.enable = true;
 
-  # Agenix secrets for nixos only
-  age.secrets = lib.mkIf (builtins.hasAttr "age" config) {
-    garnix_netrc = {
-      file = ../../secrets/garnix_netrc.age;
-      owner = "root";
-      group = "root";
-      mode = "0600";
-      path = "/etc/nix/netrc";
-    };
+  # Garnix binary cache netrc (sops, nixos only)
+  sops.secrets.garnix_netrc = {
+    sopsFile = ../../secrets/secrets.yaml;
+    owner = "root";
+    group = "root";
+    mode = "0600";
+    path = "/etc/nix/netrc";
   };
 }

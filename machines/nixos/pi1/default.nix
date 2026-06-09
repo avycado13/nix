@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 {
   imports = [ ./disko.nix ];
 
@@ -27,11 +27,17 @@
     }
   ];
 
+  sops.secrets."wifi-password".key = "wifi/password";
+  sops.templates."wireless.conf".content = ''
+    psk_samosa=${config.sops.placeholder."wifi-password"}
+  '';
+
   networking = {
     hostName = "pi1";
     wireless = {
       enable = true;
-      networks."samosa".psk = "maplec29";
+      secretsFile = config.sops.templates."wireless.conf".path;
+      networks."samosa".pskRaw = "ext:psk_samosa";
       interfaces = [ "wlan0" ];
     };
   };

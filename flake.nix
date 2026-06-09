@@ -43,11 +43,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     deploy-rs.url = "github:serokell/deploy-rs";
-    agenix.url = "github:ryantm/agenix";
-    agenix-rekey = {
-      url = "github:oddlama/agenix-rekey";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     nix-mineral = {
       url = "github:cynicsketch/nix-mineral"; # Refers to the main branch and is updated to the latest commit when you use "nix flake update"
     };
@@ -128,7 +125,6 @@
         mkMerge
         mkDarwin
         mkNixos
-        mkHome
         ;
     in
     mkMerge [
@@ -167,7 +163,6 @@
         let
           pkgs = import inputs.nixpkgs {
             inherit system;
-            overlays = [ inputs.agenix-rekey.overlays.default ];
           };
           treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs {
             projectRootFile = "flake.nix";
@@ -185,8 +180,8 @@
               pkgs.nh
               pkgs.nixos-rebuild-ng
               treefmtEval.config.build.wrapper
-              inputs.agenix.packages.${system}.default
-              pkgs.agenix-rekey
+              pkgs.sops
+              pkgs.ssh-to-age
               pkgs.nil
               pkgs.cachix
               pkgs.nix-output-monitor
@@ -197,7 +192,7 @@
       ))
       ({
         checks = builtins.mapAttrs (
-          system: deployLib: deployLib.deployChecks inputs.self.deploy
+          _system: deployLib: deployLib.deployChecks inputs.self.deploy
         ) inputs.deploy-rs.lib;
       })
     ];
