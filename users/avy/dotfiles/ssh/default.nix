@@ -3,100 +3,89 @@
   programs = {
     ssh = {
       enable = true;
-      enableDefaultConfig = true;
-      matchBlocks = {
+      enableDefaultConfig = false;
+      settings = {
         "*" = {
-          forwardAgent = lib.mkDefault false;
-          addKeysToAgent = lib.mkDefault "no";
-          compression = lib.mkDefault false;
-          serverAliveInterval = lib.mkDefault 0;
-          serverAliveCountMax = lib.mkDefault 3;
-          hashKnownHosts = lib.mkDefault false;
-          userKnownHostsFile = lib.mkDefault "~/.ssh/known_hosts";
-          controlMaster = lib.mkDefault "no";
-          controlPath = lib.mkDefault "~/.ssh/master-%r@%n:%p";
-          controlPersist = lib.mkDefault "no";
-          identityFile = "${config.home.homeDirectory}/.ssh/avy";
+          ForwardAgent = lib.mkDefault false;
+          AddKeysToAgent = lib.mkDefault "no";
+          Compression = lib.mkDefault false;
+          ServerAliveInterval = lib.mkDefault 0;
+          ServerAliveCountMax = lib.mkDefault 3;
+          HashKnownHosts = lib.mkDefault false;
+          UserKnownHostsFile = lib.mkDefault "~/.ssh/known_hosts";
+          ControlMaster = lib.mkDefault "no";
+          ControlPath = lib.mkDefault "~/.ssh/master-%r@%n:%p";
+          ControlPersist = lib.mkDefault "no";
+          IdentityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         "github.com" = {
-          hostname = "github.com";
-          user = "git";
-          identityFile = "${config.home.homeDirectory}/.ssh/avy";
+          HostName = "github.com";
+          User = "git";
+          IdentityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         "gh" = {
-          hostname = "github.com";
-          user = "git";
-          identityFile = "${config.home.homeDirectory}/.ssh/avy";
+          HostName = "github.com";
+          User = "git";
+          IdentityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         "hackclub.app" = {
-          hostname = "hackclub.app";
-          user = "avycado13";
-          identityFile = "${config.home.homeDirectory}/.ssh/avy";
+          HostName = "hackclub.app";
+          User = "avycado13";
+          IdentityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         "*pi*.*" = {
-          user = "pi";
-          identityFile = "${config.home.homeDirectory}/.ssh/avy";
+          User = "pi";
+          IdentityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         "hashbang" = {
-          hostname = "de1.hashbang.sh";
-          user = "avycado";
-          identityFile = "${config.home.homeDirectory}/.ssh/avy";
+          HostName = "de1.hashbang.sh";
+          User = "avycado";
+          IdentityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         "eu.nixbuild.net" = {
-          hostname = "eu.nixbuild.net";
-          user = "avycado13";
-          identityFile = "${config.home.homeDirectory}/.ssh/avy";
-          serverAliveInterval = 60;
+          HostName = "eu.nixbuild.net";
+          User = "avycado13";
+          IdentityFile = "${config.home.homeDirectory}/.ssh/avy";
+          ServerAliveInterval = 60;
         };
         "robotimpose" = {
-          user = "root";
-          hostname = "lsd.segfault.net";
-          setEnv = {
+          User = "root";
+          HostName = "lsd.segfault.net";
+          SetEnv = {
             SECRET = "xrxplgOCICqAADhxKWtbhClK";
           };
         };
         "loudbind" = {
-
-          user = "root";
-          hostname = "lsd.segfault.net";
-          setEnv = {
+          User = "root";
+          HostName = "lsd.segfault.net";
+          SetEnv = {
             SECRET = "USQSiYZJlqmgqgzNsqfkdKtq";
           };
         };
         "oracle" = {
-          user = "root";
-          hostname = "192.9.130.175";
+          User = "root";
+          HostName = "192.9.130.175";
         };
         "eclipse" = {
-          user = "root";
-          hostname = "n1.eclipsesystems.org";
-          port = 25033;
+          User = "root";
+          HostName = "n1.eclipsesystems.org";
+          Port = 25033;
         };
         "nest" = {
-          user = "avycado13";
-          hostname = "hackclub.app";
-          identityFile = "${config.home.homeDirectory}/.ssh/avy";
+          User = "avycado13";
+          HostName = "hackclub.app";
+          IdentityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
         "club" = {
-
-          user = "avycado13";
-          hostname = "tilde.club";
-          identityFile = "${config.home.homeDirectory}/.ssh/avy";
+          User = "avycado13";
+          HostName = "tilde.club";
+          IdentityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
-        # gh = lib.mkBefore {
-        #   hostname = "github.com";
-        #   identityFile = "/Users/avy/.ssh/avy";
-        # };
       };
       extraConfig = ''
         Host eu.nixbuild.net
           PubkeyAcceptedKeyTypes ssh-ed25519
           IPQoS throughput
-
-        # Host *
-          # IPQoS throughput
-          # ServerAliveInterval 60
-          # ServerAliveCountMax 3
       '';
     };
   };

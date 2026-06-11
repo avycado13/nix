@@ -43,26 +43,25 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.restic.backups.homelab =
-      {
-        paths = cfg.paths;
-        repository = cfg.repository;
-        passwordFile = cfg.passwordFile;
-        timerConfig = {
-          OnCalendar = cfg.schedule;
-          Persistent = true;
-          RandomizedDelaySec = "10m";
-        };
-        pruneOpts = [
-          "--keep-daily 7"
-          "--keep-weekly 4"
-          "--keep-monthly 3"
-        ];
-        initialize = true;
-      }
-      // lib.optionalAttrs (cfg.environmentFile != null) {
-        environmentFile = cfg.environmentFile;
+    services.restic.backups.homelab = {
+      paths = cfg.paths;
+      repository = cfg.repository;
+      passwordFile = cfg.passwordFile;
+      timerConfig = {
+        OnCalendar = cfg.schedule;
+        Persistent = true;
+        RandomizedDelaySec = "10m";
       };
+      pruneOpts = [
+        "--keep-daily 7"
+        "--keep-weekly 4"
+        "--keep-monthly 3"
+      ];
+      initialize = true;
+    }
+    // lib.optionalAttrs (cfg.environmentFile != null) {
+      environmentFile = cfg.environmentFile;
+    };
 
     systemd.services."restic-backups-homelab".serviceConfig.OnFailure = lib.mkIf (
       hl.notifications.ntfySecretsFile != null
