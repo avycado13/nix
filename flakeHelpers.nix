@@ -1,5 +1,13 @@
 inputs:
 let
+  mkOpts =
+    system: module:
+    inputs.unf.lib.json {
+      inherit (inputs) self;
+      pkgs = inputs.nixpkgs.legacyPackages.${system};
+      modules = [ module ];
+    };
+
   nixpkgsCfg = {
     overlays = [
       inputs.nix-topology.overlays.default
@@ -25,6 +33,9 @@ let
               old.preBuild;
         });
       })
+      (final: prev: {
+        zjstatus = inputs.zjstatus.packages.${prev.system}.default;
+      })
     ];
     config = {
       allowUnfree = true;
@@ -43,6 +54,7 @@ let
       home-manager.useGlobalPkgs = false;
       home-manager.extraSpecialArgs = {
         inherit inputs;
+        inherit mkOpts;
       };
       home-manager.users.avy.imports = [
         inputs.sops-nix.homeManagerModules.sops
@@ -125,6 +137,7 @@ in
       specialArgs = { inherit inputs; };
       modules = [
         ./homelab
+        ./machines/nixos
         ./machines/nixos/${machineHostname}
         ./modules/email
         inputs.nix-mineral.nixosModules.nix-mineral

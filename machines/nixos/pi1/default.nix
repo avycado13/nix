@@ -1,23 +1,16 @@
-{ pkgs, config, ... }:
+{ pkgs, lib, config, ... }:
 {
   imports = [ ./disko.nix ];
-
-  # NixOS wants to enable GRUB by default
 
   environment.systemPackages = with pkgs; [
     libraspberrypi
     raspberrypi-eeprom
   ];
 
-  # Preserve space by sacrificing documentation and history
-  documentation.nixos.enable = false;
-  nix.gc.automatic = true;
-  nix.gc.options = "--delete-older-than 14d";
-  boot.cleanTmpDir = true;
+  boot.tmp.cleanOnBoot = true;
 
-  # Configure basic SSH access
-  services.openssh.enable = true;
-  services.openssh.permitRootLogin = "yes";
+  # Allow root SSH login for initial setup; override the shared default.
+  services.openssh.settings.PermitRootLogin = lib.mkForce "yes";
 
   # Use 1GB of additional swap memory
   swapDevices = [
@@ -49,10 +42,10 @@
       password = "password";
       extraGroups = [ "wheel" ];
     };
-    users.root = {
-      password = "root";
-    };
+    users.root.password = "root";
+    # avy user comes from machines/nixos/default.nix; lock it on this host.
+    users.avy.hashedPassword = "!";
   };
-  services.tailscale.enable = true;
+
   system.stateVersion = "25.05";
 }

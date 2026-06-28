@@ -2,7 +2,6 @@
   pkgs,
   config,
   lib,
-  # agenixOptions ? null,
   ...
 }:
 let
@@ -139,7 +138,24 @@ in
     nix-search-tv = {
       enable = true;
       settings = {
-        # experimental.options_file = { } // (if agenixOptions != null then { agenix = "${agenixOptions}"; } else { });
+        indexes = [
+          "nixpkgs"
+          "nixos"
+          "home-manager"
+          "nur"
+          "noogle"
+          "darwin"
+        ];
+        experimental.options_file = {
+          # sops-nix-home = mkOpts pkgs.stdenv.hostPlatform.system inputs.sops-nix.homeModules.default;
+          # sops-nix-darwin = mkOpts pkgs.stdenv.hostPlatform.system inputs.sops-nix.darwinModules.default;
+          # sops-nix-nixos = mkOpts pkgs.stdenv.hostPlatform.system inputs.sops-nix.nixosModules.default;
+          # catppuccin-home = mkOpts pkgs.stdenv.hostPlatform.system inputs.catppuccin.homeModules.default;
+          # catppuccin-nixos = mkOpts pkgs.stdenv.hostPlatform.system inputs.catppuccin.nixosModules.default;
+        };
+        render_docs_indexes = {
+          home-manager = "https://nix-community.github.io/home-manager/options.xhtml";
+        };
       };
     };
     yt-dlp = {
@@ -225,7 +241,8 @@ in
             export ANDROID_HOME="$HOME/Library/Android/sdk"
             export ANDROID_SDK_ROOT="$ANDROID_HOME"
             export PATH="$PATH:$ANDROID_HOME/platform-tools"
-
+            export PATH="$HOME/.cargo/bin:$PATH"
+            export PATH="/Users/avy/.bun/bin:$PATH"
             fancy-ctrl-z() {
           if [[ -z $BUFFER ]]; then
             BUFFER="fg"
@@ -272,7 +289,8 @@ in
               # when zsh-defer fires (not at startup).
               zsh-defer eval 'eval "$(terminal-wakatime init)"'
               zsh-defer eval 'eval "$(navi widget zsh)"'
-              zsh-defer eval 'eval "$(atuin init zsh)"'
+              bindkey '^[n' _navi_widget
+              bindkey -r '^G' # remove ^G mapping for navi
 
               mdc() { mkdir -p "$1" && cd "$1"; }
 
@@ -313,9 +331,7 @@ in
     };
     atuin = {
       enable = true;
-      # Loaded via zsh-defer in initContent instead; the keybindings/hooks are
-      # ready a few ms after the prompt appears, which is imperceptible.
-      enableZshIntegration = false;
+      enableZshIntegration = true;
       settings = {
         auto_sync = true;
         sync_frequency = "5m";

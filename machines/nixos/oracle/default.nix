@@ -30,60 +30,12 @@
     hostId = "b3316d41";
     useDHCP = false;
     interfaces.ens3.useDHCP = true;
-    firewall = {
-      enable = true;
-      allowedTCPPorts = [
-        22
-        80
-        443
-      ];
-    };
   };
 
-  # SSH access
-  services.openssh = {
-    enable = true;
-    settings = {
-      PasswordAuthentication = false;
-      PermitRootLogin = "prohibit-password";
-    };
-  };
-
-  users.users.avy = {
-    isNormalUser = true;
-    home = "/home/avy";
-    description = "avy";
-    extraGroups = [
-      "wheel"
-      "docker"
-    ];
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAPm9/uwsYQ2KrzaVcpulcDUKnBOCMCYogfC+D+TcrK7"
-    ];
-  };
-
-  security.sudo = {
-    enable = true;
-    wheelNeedsPassword = false;
-  };
-
-  # Oracle Cloud optimizations
-  nix.gc = {
-    automatic = true;
-    options = "--delete-older-than 14d";
-  };
-  documentation.nixos.enable = false;
-
-  # Tailscale for networking
-  services.tailscale.enable = true;
-
-  environment.systemPackages = with pkgs; [
-    vim
-    htop
-    curl
-    git
+  users.users.avy.extraGroups = [
+    "wheel"
+    "docker"
   ];
 
   system.stateVersion = "25.05";
-
 }

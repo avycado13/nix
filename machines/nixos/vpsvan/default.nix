@@ -8,26 +8,21 @@
     ./disko.nix
   ];
 
-  # Boot configuration (GRUB, BIOS + EFI hybrid)
   boot.loader.grub = {
     enable = true;
-    efiSupport = true;
-    efiInstallAsRemovable = true;
     device = "/dev/vda";
   };
+  boot.supportedFilesystems = [ "zfs" ];
+  boot.zfs.devNodes = "/dev/disk/by-id";
   boot.initrd.availableKernelModules = [
     "virtio_pci"
-    "virtio_scsi"
     "virtio_blk"
     "virtio_net"
   ];
-  boot.tmp.cleanOnBoot = true;
-
-  # Serial console
-  boot.kernelParams = [ "console=ttyS0,115200" ];
 
   networking = {
-    hostName = "eclipse";
+    hostName = "vpsvan";
+    hostId = "86d0ecdc";
     useDHCP = true;
   };
 

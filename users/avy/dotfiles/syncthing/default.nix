@@ -6,7 +6,11 @@
 let
   # Pick the right upstream package per platform.
   syncthingPackage = if pkgs.stdenv.isDarwin then pkgs.syncthing-macos else pkgs.syncthing;
-
+  musicPath =
+    if pkgs.stdenv.isDarwin then
+      "${config.home.homeDirectory}/Music/Library"
+    else
+      "${config.home.homeDirectory}/Music";
 in
 {
   services.syncthing = {
@@ -23,22 +27,18 @@ in
       options.relaysEnabled = true;
       urAccepted = -1;
       devices = {
-        "Avys-Mac" = {
-          # Replace with the actual device ID from `syncthing --device-id`
-          id = "ZU2VV6Q-KU2QH2C-Z6PELOK-7YXOH7B-D6PAZNY-WROV7VD-4CNJNBG-CSZ4EQP";
-        };
-        "pixel-3" = {
-          # Replace with the actual device ID from the Syncthing app on the Pixel 3
-          id = "XRQ5W4J-V3BJKXH-2NIAP4E-JRPWVGQ-GQ5EFKG-IRFYUGD-55F62F3-GETMOAI";
-        };
+        "Avys-Mac".id = "ZU2VV6Q-KU2QH2C-Z6PELOK-7YXOH7B-D6PAZNY-WROV7VD-4CNJNBG-CSZ4EQP";
+        "Pixel-3".id = "XRQ5W4J-V3BJKXH-2NIAP4E-JRPWVGQ-GQ5EFKG-IRFYUGD-55F62F3-GETMOAI";
+        "Avys-Iphone".id = "ZFO4ZOC-NXLX55J-CUI2ADD-GTHUHAA-4M2HBXI-632UESR-6SQEUDV-QWLD6AJ";
       };
 
       folders = {
         "music" = {
-          path = "${config.home.homeDirectory}/Music/Library";
+          path = musicPath;
           devices = [
             "Avys-Mac"
-            "pixel-3"
+            "Pixel-3"
+            "Avys-Iphone"
           ];
         };
       };

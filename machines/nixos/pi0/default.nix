@@ -5,6 +5,7 @@
   ...
 }:
 {
+  nix-mineral.enable = lib.mkForce false;
   programs.nix-index.enable = lib.mkForce false;
   programs.nix-index-database.comma.enable = lib.mkForce false;
   # home-manager.users.avy.programs.nix-index.enable = lib.mkForce false;
@@ -13,6 +14,7 @@
   nix.settings.trusted-users = [ "@wheel" ];
   system.stateVersion = "25.11";
 
+  sops.age.generateKey = true;
   sops.secrets."wifi-password".key = "wifi/password";
   sops.templates."wireless.conf".content = ''
     psk_samosa=${config.sops.placeholder."wifi-password"}
@@ -39,16 +41,9 @@
   # NTP time sync.
   services.timesyncd.enable = lib.mkForce true;
   users.users.avy = {
-    isNormalUser = true;
-    home = "/home/avy";
-    description = "avy";
     extraGroups = [
       "wheel"
       "networkmanager"
-    ];
-    # ! Be sure to put your own public key here
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAPm9/uwsYQ2KrzaVcpulcDUKnBOCMCYogfC+D+TcrK7"
     ];
   };
   security.sudo = {

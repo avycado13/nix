@@ -114,6 +114,9 @@
       url = "github:slp/homebrew-krun";
       flake = false;
     };
+    zjstatus = {
+      url = "github:dj95/zjstatus";
+    };
 
   };
 
@@ -149,12 +152,26 @@
         [ ]
         [
           inputs.srvos.nixosModules.server
+          "${inputs.nixpkgs}/nixos/modules/virtualisation/oci-image.nix"
         ]
       )
       (mkNixos "eclipse" inputs.nixpkgs "x86_64-linux"
         [ ]
         [
           inputs.srvos.nixosModules.server
+        ]
+      )
+      (mkNixos "vpsvan" inputs.nixpkgs "x86_64-linux"
+        [ ]
+        [
+          inputs.srvos.nixosModules.server
+        ]
+      )
+      (mkNixos "gce" inputs.nixpkgs "x86_64-linux"
+        [ ]
+        [
+          inputs.srvos.nixosModules.server
+          "${inputs.nixpkgs}/nixos/modules/virtualisation/google-compute-image.nix"
         ]
       )
 
@@ -190,10 +207,10 @@
           };
         }
       ))
-      ({
+      {
         checks = builtins.mapAttrs (
           _system: deployLib: deployLib.deployChecks inputs.self.deploy
         ) inputs.deploy-rs.lib;
-      })
+      }
     ];
 }

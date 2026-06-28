@@ -1,7 +1,14 @@
 {
   pkgs,
+  config,
   ...
 }:
+let
+  flakeDir = "${config.home.homeDirectory}/nix";
+  flakeExpr = "(builtins.getFlake \"${flakeDir}\")";
+  host = config.networking.hostName;
+  user = config.home.username;
+in
 {
   programs = {
 
@@ -106,9 +113,9 @@
                 ":set mouse true"
               ];
             };
-            g = {
-              a = "code_action";
-            }; # Maps `ga` to show possible code actions
+
+            g.a = "code_action";
+            # Maps `ga` to show possible code actions
 
           };
         };
@@ -413,6 +420,12 @@
         };
         nixd = {
           command = "${pkgs.nixd}/bin/nixd";
+          config.nixd = {
+            options = {
+              nix-darwin.expr = "${flakeExpr}.darwinConfigurations.\"Avys-Mac\".options";
+              home-manager.expr = "${flakeExpr}.darwinConfigurations.\"Avys-Mac\".options.home-manager.users.type.getSubOptions []";
+            };
+          };
         };
         ty = {
           command = "${pkgs.ty}/bin/ty";
@@ -489,7 +502,7 @@
     };
 
     vscode = {
-      enable = true;
+      enable = false;
       profiles.default = {
         extensions = with pkgs.vscode-extensions; [
           esbenp.prettier-vscode

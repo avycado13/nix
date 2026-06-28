@@ -1,5 +1,6 @@
 {
   inputs,
+  lib,
   pkgs,
   ...
 }:
@@ -9,30 +10,6 @@ in
 {
   nixpkgs = helpers.nixpkgsCfg;
   imports = [ ../../modules/nix/default.nix ];
-  virtualisation = {
-    podman = {
-      enable = true;
-      dockerSocket.enable = true;
-      defaultNetwork.dnsname.enable = true;
-      defaultNetwork.settings.dns_enabled = true;
-      dockerCompat = true;
-    };
-    containers.enable = true;
-    oci-containers.backend = "podman";
-    oci-containers.containers = {
-      # container-name = {
-      #   image = "container-image";
-      #   autoStart = true;
-      #   ports = [ "127.0.0.1:1234:1234" ];
-      # };
-    };
-  };
-  environment.systemPackages = with pkgs; [
-    dive # look into docker image layers
-    podman-tui # status of containers in the terminal
-    docker-compose # start group of containers for dev
-    #podman-compose # start group of containers for dev
-  ];
 
   nix-mineral = {
     enable = true;
@@ -44,4 +21,47 @@ in
     enable = true;
     autodetect = true;
   };
+
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "prohibit-password";
+    };
+  };
+
+  users.users.avy = {
+    isNormalUser = true;
+    home = "/home/avy";
+    description = "avy";
+    extraGroups = lib.mkDefault [ "wheel" ];
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAPm9/uwsYQ2KrzaVcpulcDUKnBOCMCYogfC+D+TcrK7"
+    ];
+  };
+
+  security.sudo = {
+    enable = true;
+    wheelNeedsPassword = false;
+  };
+
+  services.tailscale.enable = true;
+
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [
+      22
+      80
+      443
+    ];
+  };
+
+  documentation.nixos.enable = false;
+
+  environment.systemPackages = with pkgs; [
+    vim
+    htop
+    curl
+    git
+  ];
 }

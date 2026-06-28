@@ -74,16 +74,32 @@
     pkgs.nil
     pkgs.surge-cli
     pkgs.deno
+
+    pkgs.qemu
     # pkgs.kicad
     # Rust
-    (pkgs.fenix.complete.withComponents [
-      "cargo"
-      "clippy"
-      "rust-src"
-      "rustc"
-      "rustfmt"
+    (pkgs.fenix.combine [
+      (pkgs.fenix.complete.withComponents [
+        "cargo"
+        "clippy"
+        "miri"
+        "rust-src"
+        "rustc"
+        "rustfmt"
+        "llvm-tools-preview"
+      ])
+
+      pkgs.fenix.targets.aarch64-unknown-none.latest.rust-std
+      pkgs.fenix.targets.wasm32-wasip1.latest.rust-std
+      pkgs.fenix.targets.wasm32-wasip2.latest.rust-std
+      pkgs.fenix.targets.x86_64-unknown-linux-gnu.latest.rust-std
+      pkgs.fenix.targets.aarch64-unknown-linux-gnu.latest.rust-std
+      pkgs.fenix.targets.aarch64-apple-darwin.latest.rust-std
+      pkgs.fenix.targets.aarch64-unknown-linux-musl.latest.rust-std
+      pkgs.fenix.targets.x86_64-unknown-linux-musl.latest.rust-std
+      pkgs.fenix.targets.armv7-unknown-linux-gnueabihf.latest.rust-std
     ])
-    inputs.gws-cli.packages.${pkgs.system}.gws
+    inputs.gws-cli.packages.${pkgs.stdenv.hostPlatform.system}.gws
     # ruby
     pkgs.ruby
     # pkgs.bundler
@@ -92,6 +108,7 @@
     pkgs.postgresql
     pkgs.ollama
     pkgs.secretspec
+    # pkgs.eas-cli
   ];
   programs.zsh.initContent = ''
     export CONTEXT7_API_KEY="$(cat ${config.sops.secrets.context7_api_key.path})"

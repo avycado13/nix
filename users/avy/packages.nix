@@ -105,6 +105,10 @@ in
     pkgs.devenv
     pkgs.caligula
     pkgs.manix
+    pkgs.nh
+    pkgs.nix-bisect
+    pkgs.nix-btm
+    pkgs.nix-check-deps
     pkgs.sops
     pkgs.pnpm
     pkgs.magic-wormhole
@@ -128,7 +132,8 @@ in
     pkgs.gnutar
     pkgs.gawk
     pkgs.coreutils
-    pkgs.pkgconf
+    # pkgs.pkgconf
+    pkgs.pkg-config
     pkgs.dbus
     pkgs.cmake
     pkgs.wakatime-cli

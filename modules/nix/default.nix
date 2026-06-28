@@ -1,11 +1,14 @@
 {
   lib,
   pkgs,
+  inputs,
+  config,
   ...
 }:
-# let
-#   helpers = import ../../flakeHelpers.nix inputs;
-# in
+let
+  # helpers = import ../../flakeHelpers.nix inputs;
+  sshKey = "${config.users.users.avy.home}/.ssh/avy";
+in
 {
   # nixpkgs = helpers.nixpkgsCfg;
 
@@ -26,15 +29,15 @@
       min-free = lib.mkDefault (512 * 1024 * 1024);
       extra-substituters = [
         "https://cache.numtide.com"
-        "ssh-ng://eu.nixbuild.net"
+        # "ssh-ng://eu.nixbuild.net"
         "https://colmena.cachix.org"
         "https://catppuccin.cachix.org"
         "https://virby-nix-darwin.cachix.org"
         "https://numtide.cachix.org"
         "https://nix-community.cachix.org"
         "https://cache.garnix.io"
-        "fenix.cachix.org"
-        "avycado13.cachix.org"
+        "https://fenix.cachix.org"
+        "https://avycado13.cachix.org"
       ];
       extra-trusted-public-keys = [
         "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
@@ -55,8 +58,19 @@
       auto-optimise-store = true;
       netrc-file = "/etc/nix/netrc";
       narinfo-cache-positive-ttl = 3600;
-      post-build-hook = "${pkgs.cachix}/bin/cachix push avycado13";
+      # Runs as the nix-daemon (root), which has no ~/.config/cachix.
+      # Point HOME at avy's home so cachix finds the auth token, and make
+      # the push best-effort so a transient cachix/network failure can't
+      # fail an otherwise-successful rebuild.
+      post-build-hook = pkgs.writeShellScript "cachix-push" ''
+        export HOME=${config.users.users.avy.home}
+        ${pkgs.cachix}/bin/cachix push avycado13 || true
+      '';
     };
+    nixPath = [
+      "nixpkgs=${inputs.nixpkgs}"
+    ];
+    registry.nixpkgs.flake = inputs.nixpkgs;
     optimise = {
       automatic = true;
     };
@@ -70,19 +84,25 @@
         hostName = "eu.nixbuild.net";
         system = "x86_64-linux";
         maxJobs = 100;
+        # protocol = "ssh-ng";
         sshUser = "avycado13";
-        sshKey = "~/.ssh/avy";
+        sshKey = sshKey;
         supportedFeatures = [
           "benchmark"
           "big-parallel"
+          # KVM builds (e.g. disk images, NixOS VM tests) are only
+          # supported on x86_64-linux by nixbuild.net.
+          "kvm"
+          "nixos-test"
         ];
       }
       {
         hostName = "eu.nixbuild.net";
         system = "aarch64-linux";
         maxJobs = 100;
+        # protocol = "ssh-ng";
         sshUser = "avycado13";
-        sshKey = "~/.ssh/avy";
+        sshKey = sshKey;
         supportedFeatures = [
           "benchmark"
           "big-parallel"
@@ -92,8 +112,9 @@
         hostName = "eu.nixbuild.net";
         system = "armv7l-linux";
         maxJobs = 100;
+        # protocol = "ssh-ng";
         sshUser = "avycado13";
-        sshKey = "~/.ssh/avy";
+        sshKey = sshKey;
         supportedFeatures = [
           "benchmark"
           "big-parallel"
@@ -103,8 +124,9 @@
         hostName = "eu.nixbuild.net";
         system = "i686-linux";
         maxJobs = 100;
+        # protocol = "ssh-ng";
         sshUser = "avycado13";
-        sshKey = "~/.ssh/avy";
+        sshKey = sshKey;
         supportedFeatures = [
           "benchmark"
           "big-parallel"
