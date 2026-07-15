@@ -33,10 +33,6 @@
           User = "avycado13";
           IdentityFile = "${config.home.homeDirectory}/.ssh/avy";
         };
-        "*pi*.*" = {
-          User = "pi";
-          IdentityFile = "${config.home.homeDirectory}/.ssh/avy";
-        };
         "hashbang" = {
           HostName = "de1.hashbang.sh";
           User = "avycado";
@@ -80,6 +76,11 @@
           User = "avycado13";
           HostName = "tilde.club";
           IdentityFile = "${config.home.homeDirectory}/.ssh/avy";
+        };
+        "pi1" = {
+          User = "avy";
+          HostName = "10.0.0.227";
+
         };
       };
       extraConfig = ''

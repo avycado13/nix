@@ -108,6 +108,8 @@
     pkgs.postgresql
     pkgs.ollama
     pkgs.secretspec
+    pkgs.qmk
+    pkgs.xcodegen
     # pkgs.eas-cli
   ];
   programs.zsh.initContent = ''

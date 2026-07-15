@@ -44,6 +44,7 @@ in
     enable = true;
     wheelNeedsPassword = false;
   };
+  time.timeZone = "America/Los_Angeles";
 
   services.tailscale.enable = true;
 

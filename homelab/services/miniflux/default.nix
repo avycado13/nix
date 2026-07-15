@@ -55,7 +55,7 @@ in
           OAUTH2_PROVIDER = "oidc";
           OAUTH2_CLIENT_ID = "miniflux";
           OAUTH2_REDIRECT_URL = "https://${cfg.url}/oauth2/oidc/callback";
-          OAUTH2_OIDC_DISCOVERY_ENDPOINT = "https://${hl.services.indiko.url}/.well-known/openid-configuration";
+          OAUTH2_OIDC_DISCOVERY_ENDPOINT = "https://${hl.services.indiko.domain}/.well-known/openid-configuration";
           OAUTH2_USER_CREATION = "1";
           DISABLE_LOCAL_AUTH = "true";
         };

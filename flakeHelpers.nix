@@ -95,6 +95,7 @@ in
         inputs.nix-index-database.darwinModules.nix-index
         inputs.virby.darwinModules.default
         inputs.nix-homebrew.darwinModules.nix-homebrew
+        inputs.srvos.nixosModules.mixins-terminfo
         {
           home-manager.users.avy.home.homeDirectory = inputs.nixpkgs.lib.mkForce "/Users/avy";
           nix-homebrew = {
@@ -140,16 +141,17 @@ in
         ./machines/nixos
         ./machines/nixos/${machineHostname}
         ./modules/email
+        ./modules/ddns
         inputs.nix-mineral.nixosModules.nix-mineral
         inputs.sops-nix.nixosModules.sops
         ./modules/secrets
         inputs.nix-topology.nixosModules.default
         inputs.nix-index-database.nixosModules.nix-index
-        inputs.nixos-shell.nixosModules.nixos-shell
         inputs.nix-minecraft.nixosModules.minecraft-servers
         inputs.home-manager.nixosModules.home-manager
         { programs.nix-index-database.comma.enable = true; }
         inputs.catppuccin.nixosModules.catppuccin
+        inputs.srvos.nixosModules.mixins-terminfo
         {
           # home-manager.users.avy.home.stateVersion = "25.05";
         }

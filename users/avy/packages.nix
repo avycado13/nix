@@ -80,6 +80,7 @@ let
           edit
           multiline
           url_hint
+          wee-slack
         ];
         # ++ [
         #   (pkgs.linkFarm "weechat-scripts" {
@@ -144,7 +145,24 @@ in
     pkgs.hyperfine
     pkgs.duf
     pkgs.wireguard-tools
+    pkgs.exiftool
+    pkgs.chafa
+    pkgs.gophertube
+    pkgs.lesspipe
     pkgs.hledger
+    (
+      (pkgs.buku.override {
+        withServer = true;
+      }).overrideAttrs
+      (old: {
+        doCheck = false;
+        preCheck = (old.preCheck or "") + ''
+          rm tests/test_{server,views}.py
+        '';
+      })
+    )
+    pkgs.dos2unix
+    pkgs.bunbun
     pkgs.glow
     pkgs.just
     pkgs.typescript-language-server

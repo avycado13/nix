@@ -6,7 +6,7 @@
 }:
 {
   imports = [
-    ./sketchybar.nix
+    ./ricing.nix
     ./system.nix
   ];
   homebrew = {
@@ -94,4 +94,5 @@
     home = "/Users/avy";
     shell = pkgs.zsh;
   };
+  # nix.linux-builder.enable = true; doesnt seem to work rn; will reimplement
 }

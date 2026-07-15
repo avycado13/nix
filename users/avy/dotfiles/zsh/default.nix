@@ -174,7 +174,7 @@ in
     };
     zsh = {
       enable = true;
-      enableCompletion = false;
+      enableCompletion = true;
       antidote = {
         enable = true;
         plugins = [
@@ -194,12 +194,27 @@ in
           "ohmyzsh/ohmyzsh path:plugins/uv"
           "zsh-users/zsh-completions"
           "unixorn/warhol.plugin.zsh"
-          "MichaelAquilina/zsh-you-should-use"
-          "Aloxaf/fzf-tab"
+          # "MichaelAquilina/zsh-you-should-use"
+          # "Aloxaf/fzf-tab"
           "unixorn/git-extra-commands kind:clone branch:main"
         ];
         useFriendlyNames = true;
       };
+      plugins = [
+        {
+          name = pkgs.zsh-fzf-tab.pname;
+          src = pkgs.zsh-fzf-tab.src;
+        }
+        {
+          name = pkgs.zsh-you-should-use.pname;
+          src = pkgs.zsh-you-should-use.src;
+        }
+        {
+          name = pkgs.fzf-zsh-plugin.pname;
+          src = pkgs.fzf-zsh-plugin.src;
+          file = "fzf-zsh-plugin.zsh";
+        }
+      ];
       syntaxHighlighting.enable = true;
       autosuggestion.enable = true;
       historySubstringSearch.enable = true;
@@ -227,73 +242,75 @@ in
         mv = "mv -iv";
         cfip = ''dig @1.1.1.1 ch txt whoami.cloudflare +short | tr -d '"' '';
         rr = "rm -Rf";
-        ghrpc = "gh repo create -c";
+        ghrpc = "${lib.getExe pkgs.gh} repo create -c";
         goops = "git commit --amend --no-edit && git push --force-with-lease";
-        jsenv = "rg -o --no-filename 'process\\.env\\.[A-Z0-9_]+' | sort -u | awk -F. '{print $3\"=\\\"\\\"\"}'";
+        jsenv = "${lib.getExe pkgs.ripgrep} -o --no-filename 'process\\.env\\.[A-Z0-9_]+' | sort -u | awk -F. '{print $3\"=\\\"\\\"\"}'";
+        b = "${lib.getExe pkgs.buku} --suggest";
       };
 
       initContent = ''
-            export LEDGER_FILE=~/finance/main.journal
+                # zmodload zsh/zprof
+                    export LEDGER_FILE=~/finance/main.journal
 
-            mkdir -p "$HOME/Library/pnpm"
-            export PNPM_HOME="$HOME/Library/pnpm"
-            export PATH="$PNPM_HOME:$PATH"
-            export ANDROID_HOME="$HOME/Library/Android/sdk"
-            export ANDROID_SDK_ROOT="$ANDROID_HOME"
-            export PATH="$PATH:$ANDROID_HOME/platform-tools"
-            export PATH="$HOME/.cargo/bin:$PATH"
-            export PATH="/Users/avy/.bun/bin:$PATH"
-            fancy-ctrl-z() {
-          if [[ -z $BUFFER ]]; then
-            BUFFER="fg"
-            zle accept-line
-          else
-            zle push-input
-            zle clear-screen
-          fi
-        }
-        zle -N fancy-ctrl-z
-        bindkey '^Z' fancy-ctrl-z
+                    mkdir -p "$HOME/Library/pnpm"
+                    export PNPM_HOME="$HOME/Library/pnpm"
+                    export PATH="$PNPM_HOME:$PATH"
+                    export ANDROID_HOME="$HOME/Library/Android/sdk"
+                    export ANDROID_SDK_ROOT="$ANDROID_HOME"
+                    export PATH="$PATH:$ANDROID_HOME/platform-tools"
+                    export PATH="$HOME/.cargo/bin:$PATH"
+                    export PATH="$HOME/.bun/bin:$PATH"
+                    fancy-ctrl-z() {
+                  if [[ -z $BUFFER ]]; then
+                    BUFFER="fg"
+                    zle accept-line
+                  else
+                    zle push-input
+                    zle clear-screen
+                  fi
+                }
+                zle -N fancy-ctrl-z
+                bindkey '^Z' fancy-ctrl-z
 
-            
-            bindkey '^B' autosuggest-toggle
-            # Make Ctrl+W remove one path segment instead of the whole path
-            WORDCHARS=''${WORDCHARS/\/}
+                    
+                    bindkey '^B' autosuggest-toggle
+                    # Make Ctrl+W remove one path segment instead of the whole path
+                    WORDCHARS=''${WORDCHARS/\/}
 
-            # Highlight the selected suggestion
-            zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
-            zstyle ':completion:*' menu yes=long select
+                    # Highlight the selected suggestion
+                    zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
+                    zstyle ':completion:*' menu yes=long select
 
-              if [ $(uname) = "Darwin" ]; then
-                path=("$HOME/.nix-profile/bin" "/run/wrappers/bin" "/etc/profiles/per-user/$USER/bin" "/nix/var/nix/profiles/default/bin" "/run/current-system/sw/bin" "/opt/homebrew/bin" $path)
-                export DOCKER_HOST="unix://$HOME/.colima/default/docker.sock"
-                alias flush-dns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
-                alias lsblk="diskutil list"
-                ulimit -n 2048
-              fi
-              export LANG=en_US.UTF-8
-              export LC_CTYPE=en_US.UTF-8
-              export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+                      if [ $(uname) = "Darwin" ]; then
+                        path=("$HOME/.nix-profile/bin" "/run/wrappers/bin" "/etc/profiles/per-user/$USER/bin" "/nix/var/nix/profiles/default/bin" "/run/current-system/sw/bin" "/opt/homebrew/bin" $path)
+                        export DOCKER_HOST="unix://$HOME/.colima/default/docker.sock"
+                        alias flush-dns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
+                        alias lsblk="diskutil list"
+                        builtin ulimit -n 2048
+                      fi
+                      export LANG=en_US.UTF-8
+                      export LC_CTYPE=en_US.UTF-8
+                      export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
 
 
-              if command -v motd &> /dev/null
-              then
-                motd
-              fi
-              bindkey -e
+                      if command -v motd &> /dev/null
+                      then
+                        motd
+                      fi
+                      bindkey -e
 
-              # Defer non-prompt-critical integrations so the first prompt
-              # renders immediately; these finish loading right after it appears.
-              # The single-quoted inner string ensures the subprocess only runs
-              # when zsh-defer fires (not at startup).
-              zsh-defer eval 'eval "$(terminal-wakatime init)"'
-              zsh-defer eval 'eval "$(navi widget zsh)"'
-              bindkey '^[n' _navi_widget
-              bindkey -r '^G' # remove ^G mapping for navi
+                      # Defer non-prompt-critical integrations so the first prompt
+                      # renders immediately; these finish loading right after it appears.
+                      # The single-quoted inner string ensures the subprocess only runs
+                      # when zsh-defer fires (not at startup).
+                      zsh-defer eval 'eval "$(terminal-wakatime init)"'
+                      zsh-defer eval 'eval "$(navi widget zsh)"'
+                      bindkey '^[n' _navi_widget
+                      bindkey -r '^G' # remove ^G mapping for navi
 
-              mdc() { mkdir -p "$1" && cd "$1"; }
-
+                      mdc() { mkdir -p "$1" && cd "$1"; }
+        # zprof
       '';
     };
     eza = {
@@ -306,6 +323,7 @@ in
     fzf = {
       enable = true;
       enableZshIntegration = true;
+      historyWidget.command = "";
       colors = {
         # fg = "#D8DEE9";
         # bg = "#2E3440";

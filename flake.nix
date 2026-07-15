@@ -129,9 +129,55 @@
         mkDarwin
         mkNixos
         ;
+      linuxSystem = builtins.replaceStrings [ "darwin" ] [ "linux" ] "aarch64-darwin";
+
+      darwin-builder = inputs.nixpkgs.lib.nixosSystem {
+        system = linuxSystem;
+        modules = [
+          "${inputs.nixpkgs}/nixos/modules/profiles/nix-builder-vm.nix"
+          {
+            virtualisation = {
+              host.pkgs = inputs.nixpkgs.legacyPackages.aarch64-darwin;
+              darwin-builder.workingDirectory = "/var/lib/darwin-builder";
+              darwin-builder.hostPort = 22;
+            };
+          }
+        ];
+      };
     in
     mkMerge [
-      (mkDarwin "Avys-Mac" inputs.nixpkgs "aarch64-darwin" [ ] [ ])
+      (mkDarwin "Avys-Mac" inputs.nixpkgs "aarch64-darwin"
+        [ ]
+        [
+          # {
+          #   nix.distributedBuilds = true;
+          #   nix.buildMachines = [
+          #     {
+          #       hostName = "localhost";
+          #       sshUser = "builder";
+          #       sshKey = "/etc/nix/builder_ed25519";
+          #       system = linuxSystem;
+          #       maxJobs = 4;
+          #       supportedFeatures = [
+          #         "kvm"
+          #         "benchmark"
+          #         "big-parallel"
+          #       ];
+          #     }
+          #   ];
+
+          #   launchd.daemons.darwin-builder = {
+          #     command = "${darwin-builder.config.system.build.macos-builder-installer}/bin/create-builder";
+          #     serviceConfig = {
+          #       KeepAlive = true;
+          #       RunAtLoad = true;
+          #       StandardOutPath = "/var/log/darwin-builder.log";
+          #       StandardErrorPath = "/var/log/darwin-builder.log";
+          #     };
+          #   };
+          # }
+        ]
+      )
 
       (mkNixos "pi0" inputs.nixpkgs "aarch64-linux"
         [ ]

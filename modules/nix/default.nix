@@ -90,8 +90,6 @@ in
         supportedFeatures = [
           "benchmark"
           "big-parallel"
-          # KVM builds (e.g. disk images, NixOS VM tests) are only
-          # supported on x86_64-linux by nixbuild.net.
           "kvm"
           "nixos-test"
         ];
@@ -100,12 +98,15 @@ in
         hostName = "eu.nixbuild.net";
         system = "aarch64-linux";
         maxJobs = 100;
+        speedFactor = 10;
         # protocol = "ssh-ng";
         sshUser = "avycado13";
         sshKey = sshKey;
         supportedFeatures = [
           "benchmark"
           "big-parallel"
+          "kvm"
+          "nixos-test"
         ];
       }
       {
@@ -118,6 +119,8 @@ in
         supportedFeatures = [
           "benchmark"
           "big-parallel"
+          "kvm"
+          "nixos-test"
         ];
       }
       {
@@ -130,6 +133,8 @@ in
         supportedFeatures = [
           "benchmark"
           "big-parallel"
+          "kvm"
+          "nixos-test"
         ];
       }
     ];

@@ -34,20 +34,6 @@
           };
         };
 
-    virtualisation.podman = {
-      enable = true;
-      dockerCompat = true;
-      autoPrune.enable = true;
-      extraPackages = [ ];
-      defaultNetwork.settings = {
-        dns_enabled = true;
-      };
-    };
-    virtualisation.oci-containers = {
-      backend = "podman";
-    };
-
-    networking.firewall.interfaces.podman0.allowedUDPPorts = [ 53 ];
     networking.firewall.allowedTCPPorts = [
       80
       443
@@ -68,10 +54,7 @@
     };
     services.caddy = {
       enable = true;
-      package = pkgs.caddy.withPlugins {
-        plugins = [ "github.com/caddy-dns/powerdns@v1.0.1" ];
-        hash = "sha256-F/jqR4iEsklJFycTjSaW8B/V3iTGqqGOzwYBUXxRKrc=";
-      };
+      package = pkgs.caddy;
       globalConfig = ''
         auto_https off
       '';
@@ -92,10 +75,11 @@
 
   imports = [
     ./miniflux
-    ./ntfy
-    ./healthchecks
-    ./glance
-    ./scrutiny
-    ./restic
+    ./auth
+    # ./ntfy
+    # ./healthchecks
+    # ./glance
+    # ./scrutiny
+    # ./restic
   ];
 }

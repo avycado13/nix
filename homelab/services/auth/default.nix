@@ -8,16 +8,10 @@
     enable = lib.mkEnableOption "Auth Services";
   };
   config = lib.mkIf config.homelab.services.auth.enable {
-    cfg.indiko = {
-      enable = true;
-    };
-    cfg.lldap = {
-      enable = true;
-    };
+    homelab.services.indiko.enable = true;
   };
 
   imports = [
-    ./pocketid
-    ./lldap
+    ./indiko
   ];
 }

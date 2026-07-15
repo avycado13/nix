@@ -26,7 +26,7 @@ in
         lib.types.submodule {
           options = {
             serviceName = lib.mkOption {
-              example = "vaultwarden";
+              example = "miniflux";
               type = lib.types.str;
             };
             failRegex = lib.mkOption {

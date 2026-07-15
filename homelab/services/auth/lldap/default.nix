@@ -1,3 +1,4 @@
+{ lib, ... }:
 let
   mkService = import ../../../lib/mkService.nix;
 in
@@ -108,7 +109,6 @@ mkService {
 
   extraConfig =
     cfg:
-    { lib, ... }:
     {
       homelab.services.lldap.container = {
         ports = [

@@ -1,49 +1,102 @@
-{ pkgs, lib, config, ... }:
 {
-  imports = [ ./disko.nix ];
+  lib,
+  config,
+  pkgs,
+  ...
+}:
+{
+  imports = [
+    ./hardware-configuration.nix
+    ./homelab.nix
+  ];
+  # Disable modules that conflict with SD image builds or are inappropriate
+  # for a small embedded device.
+  nix-mineral.enable = lib.mkForce false;
+  programs.nix-index.enable = lib.mkForce false;
+  programs.nix-index-database.comma.enable = lib.mkForce false;
+  services.smartd.enable = lib.mkForce false;
 
   environment.systemPackages = with pkgs; [
     libraspberrypi
     raspberrypi-eeprom
   ];
 
-  boot.tmp.cleanOnBoot = true;
+  boot = {
+    tmp.cleanOnBoot = true;
+    swraid.enable = lib.mkForce false;
+    supportedFilesystems.zfs = lib.mkForce false;
+    zfs.forceImportRoot = lib.mkForce false;
+    loader = {
+      grub.enable = false;
+      generic-extlinux-compatible.enable = true;
+    };
+    initrd.availableKernelModules = [
+      "xhci_pci"
+      "usbhid"
+      "usb_storage"
+    ];
+  };
 
-  # Allow root SSH login for initial setup; override the shared default.
   services.openssh.settings.PermitRootLogin = lib.mkForce "yes";
 
-  # Use 1GB of additional swap memory
   swapDevices = [
     {
-      device = "/swapfile";
-      size = 1024;
+      device = "/var/lib/swapfile";
+      size = 4 * 1024; # size in MiB
     }
   ];
 
-  sops.secrets."wifi-password".key = "wifi/password";
-  sops.templates."wireless.conf".content = ''
-    psk_samosa=${config.sops.placeholder."wifi-password"}
-  '';
-
   networking = {
     hostName = "pi1";
+    useDHCP = false;
+    interfaces."wlan0".useDHCP = true;
     wireless = {
       enable = true;
-      secretsFile = config.sops.templates."wireless.conf".path;
-      networks."samosa".pskRaw = "ext:psk_samosa";
       interfaces = [ "wlan0" ];
+      networks."samosa".psk = "maplec29";
     };
+    firewall.allowedUDPPorts = [ config.services.tailscale.port ];
+  };
+
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+    publish = {
+      enable = true;
+      addresses = true;
+      domain = true;
+      workstation = true;
+    };
+  };
+
+  services.tailscale.enable = true;
+  services.timesyncd.enable = lib.mkForce true;
+  services.getty.autologinUser = "avy";
+
+  hardware = {
+    enableRedistributableFirmware = lib.mkForce true;
+    firmware = [ pkgs.raspberrypiWirelessFirmware ];
+  };
+
+  nixpkgs.overlays = [
+    (_final: super: {
+      makeModulesClosure = x: super.makeModulesClosure (x // { allowMissing = true; });
+    })
+  ];
+
+  nixpkgs.hostPlatform = "aarch64-linux";
+
+  sdImage.compressImage = true;
+
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
   };
 
   users = {
     mutableUsers = false;
-    users."pi" = {
-      isNormalUser = true;
-      password = "password";
-      extraGroups = [ "wheel" ];
-    };
     users.root.password = "root";
-    # avy user comes from machines/nixos/default.nix; lock it on this host.
     users.avy.hashedPassword = "!";
   };
 
