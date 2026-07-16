@@ -18,13 +18,11 @@ root_ocid="$(
 		--query "data[?contains(id,'tenancy')].id | [0]"
 )"
 
-bucket_ocid="$(
-	oci os bucket create \
-		-c "$root_ocid" \
-		--name "$bucket" \
-		--raw-output \
-		--query "data.id"
-)"
+oci os bucket create \
+	-c "$root_ocid" \
+	--name "$bucket" \
+	--raw-output \
+	--query "data.id" >/dev/null
 
 # Cleanup on exit
 trap 'echo "Removing temporary bucket"; oci os bucket delete --force --name "$bucket"' INT TERM EXIT

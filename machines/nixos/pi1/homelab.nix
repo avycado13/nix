@@ -27,6 +27,10 @@
       sopsFile = ../../../secrets/secrets.yaml;
       key = "ntfy_topic";
     };
+    speedtest-tracker-app-key = {
+      sopsFile = ../../../secrets/services.yaml;
+      key = "speedtest-tracker/app_key";
+    };
 
   };
 
@@ -76,6 +80,12 @@
       uptime-kuma = {
         enable = true;
         url = "uptime.avyay.in";
+      };
+
+      speedtest-tracker = {
+        enable = true;
+        url = "speedtest.avyay.in";
+        appKeyFile = config.sops.secrets.speedtest-tracker-app-key.path;
       };
     };
   };

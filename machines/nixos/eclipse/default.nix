@@ -23,6 +23,10 @@
   ];
   boot.tmp.cleanOnBoot = true;
 
+  # /boot lives on the root partition (only /boot/efi is separate), so
+  # nix-mineral's separate-partition hardening for it doesn't apply.
+  nix-mineral.filesystems.normal."/boot".enable = false;
+
   # Serial console
   boot.kernelParams = [ "console=ttyS0,115200" ];
 

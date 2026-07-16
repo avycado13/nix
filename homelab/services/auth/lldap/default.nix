@@ -107,41 +107,39 @@ mkService {
       };
     };
 
-  extraConfig =
-    cfg:
-    {
-      homelab.services.lldap.container = {
-        ports = [
-          "${toString cfg.port}:${toString cfg.port}"
-          "${toString cfg.ldapPort}:${toString cfg.ldapPort}"
-        ];
-        volumes = [ "${cfg.dataDir}:/data" ];
-      };
-
-      homelab.services.lldap.environment = {
-        LLDAP_LDAP_BASE_DN = cfg.ldapBaseDn;
-        LLDAP_LDAP_PORT = toString cfg.ldapPort;
-        LLDAP_HTTP_PORT = toString cfg.port;
-        LLDAP_HTTP_URL = cfg.httpUrl;
-        LLDAP_LDAP_USER_DN = cfg.adminUser;
-        LLDAP_VERBOSE = lib.boolToString cfg.verbose;
-      }
-      // lib.optionalAttrs (cfg.adminEmail != "") {
-        LLDAP_LDAP_USER_EMAIL = cfg.adminEmail;
-      }
-      // lib.optionalAttrs (cfg.smtp != null) {
-        LLDAP_SMTP_OPTIONS__HOST = cfg.smtp.host;
-        LLDAP_SMTP_OPTIONS__PORT = toString cfg.smtp.port;
-        LLDAP_SMTP_OPTIONS__USER = cfg.smtp.user;
-        LLDAP_SMTP_OPTIONS__PASSWORD = cfg.smtp.password;
-        LLDAP_SMTP_OPTIONS__FROM = cfg.smtp.from;
-        LLDAP_SMTP_OPTIONS__SMTP_ENCRYPTION = cfg.smtp.encryption;
-        LLDAP_SMTP_OPTIONS__ENABLE_PASSWORD_RESET = "true";
-      }
-      // lib.optionalAttrs (cfg.ldaps != null) {
-        LLDAP_LDAPS_OPTIONS__ENABLED = "true";
-        LLDAP_LDAPS_OPTIONS__CERT_PATH = cfg.ldaps.certPath;
-        LLDAP_LDAPS_OPTIONS__KEY_PATH = cfg.ldaps.keyPath;
-      };
+  extraConfig = cfg: {
+    homelab.services.lldap.container = {
+      ports = [
+        "${toString cfg.port}:${toString cfg.port}"
+        "${toString cfg.ldapPort}:${toString cfg.ldapPort}"
+      ];
+      volumes = [ "${cfg.dataDir}:/data" ];
     };
+
+    homelab.services.lldap.environment = {
+      LLDAP_LDAP_BASE_DN = cfg.ldapBaseDn;
+      LLDAP_LDAP_PORT = toString cfg.ldapPort;
+      LLDAP_HTTP_PORT = toString cfg.port;
+      LLDAP_HTTP_URL = cfg.httpUrl;
+      LLDAP_LDAP_USER_DN = cfg.adminUser;
+      LLDAP_VERBOSE = lib.boolToString cfg.verbose;
+    }
+    // lib.optionalAttrs (cfg.adminEmail != "") {
+      LLDAP_LDAP_USER_EMAIL = cfg.adminEmail;
+    }
+    // lib.optionalAttrs (cfg.smtp != null) {
+      LLDAP_SMTP_OPTIONS__HOST = cfg.smtp.host;
+      LLDAP_SMTP_OPTIONS__PORT = toString cfg.smtp.port;
+      LLDAP_SMTP_OPTIONS__USER = cfg.smtp.user;
+      LLDAP_SMTP_OPTIONS__PASSWORD = cfg.smtp.password;
+      LLDAP_SMTP_OPTIONS__FROM = cfg.smtp.from;
+      LLDAP_SMTP_OPTIONS__SMTP_ENCRYPTION = cfg.smtp.encryption;
+      LLDAP_SMTP_OPTIONS__ENABLE_PASSWORD_RESET = "true";
+    }
+    // lib.optionalAttrs (cfg.ldaps != null) {
+      LLDAP_LDAPS_OPTIONS__ENABLED = "true";
+      LLDAP_LDAPS_OPTIONS__CERT_PATH = cfg.ldaps.certPath;
+      LLDAP_LDAPS_OPTIONS__KEY_PATH = cfg.ldaps.keyPath;
+    };
+  };
 }

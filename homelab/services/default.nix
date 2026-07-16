@@ -78,6 +78,7 @@
     ./auth
     ./glance
     ./uptime-kuma
+    ./speedtest-tracker
     # ./ntfy
     # ./healthchecks
     # ./scrutiny

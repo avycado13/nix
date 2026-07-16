@@ -6,8 +6,6 @@
 let
   flakeDir = "${config.home.homeDirectory}/nix";
   flakeExpr = "(builtins.getFlake \"${flakeDir}\")";
-  host = config.networking.hostName;
-  user = config.home.username;
 in
 {
   programs = {

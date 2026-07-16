@@ -33,7 +33,7 @@ let
               old.preBuild;
         });
       })
-      (final: prev: {
+      (_final: prev: {
         zjstatus = inputs.zjstatus.packages.${prev.system}.default;
       })
     ];
@@ -95,7 +95,6 @@ in
         inputs.nix-index-database.darwinModules.nix-index
         inputs.virby.darwinModules.default
         inputs.nix-homebrew.darwinModules.nix-homebrew
-        inputs.srvos.nixosModules.mixins-terminfo
         {
           home-manager.users.avy.home.homeDirectory = inputs.nixpkgs.lib.mkForce "/Users/avy";
           nix-homebrew = {
@@ -199,21 +198,6 @@ in
       ]
       ++ extraHmModules;
       extraSpecialArgs = { inherit inputs; };
-    };
-  };
-
-  mkDebian = machineHostname: _nixpkgsVersion: _extraHmModules: extraModules: {
-    systemConfigs.${machineHostname} = inputs.system-manager.lib.makeSystemConfig {
-      modules = [
-        ./modules/email
-        ./users/avy
-        (homeManagerCfg {
-          userPackages = false;
-          system = "x86_64-linux";
-          lib = inputs.nixpkgs.lib;
-        })
-      ]
-      ++ extraModules;
     };
   };
 

@@ -38,10 +38,6 @@
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     mac-app-util.url = "github:hraban/mac-app-util";
-    system-manager = {
-      url = "github:numtide/system-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     deploy-rs.url = "github:serokell/deploy-rs";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -129,21 +125,6 @@
         mkDarwin
         mkNixos
         ;
-      linuxSystem = builtins.replaceStrings [ "darwin" ] [ "linux" ] "aarch64-darwin";
-
-      darwin-builder = inputs.nixpkgs.lib.nixosSystem {
-        system = linuxSystem;
-        modules = [
-          "${inputs.nixpkgs}/nixos/modules/profiles/nix-builder-vm.nix"
-          {
-            virtualisation = {
-              host.pkgs = inputs.nixpkgs.legacyPackages.aarch64-darwin;
-              darwin-builder.workingDirectory = "/var/lib/darwin-builder";
-              darwin-builder.hostPort = 22;
-            };
-          }
-        ];
-      };
     in
     mkMerge [
       (mkDarwin "Avys-Mac" inputs.nixpkgs "aarch64-darwin"
@@ -207,12 +188,6 @@
           inputs.srvos.nixosModules.server
         ]
       )
-      (mkNixos "vpsvan" inputs.nixpkgs "x86_64-linux"
-        [ ]
-        [
-          inputs.srvos.nixosModules.server
-        ]
-      )
       (mkNixos "gce" inputs.nixpkgs "x86_64-linux"
         [ ]
         [
@@ -220,6 +195,30 @@
           "${inputs.nixpkgs}/nixos/modules/virtualisation/google-compute-image.nix"
         ]
       )
+
+      {
+        # Per-host SSH connection overrides for deploy-rs — mkNixos defaults
+        # `hostname` to the flake attr name, which isn't a resolvable
+        # address/alias for these hosts. Merged over the deploy.nodes.* set
+        # by mkNixos via mkMerge's recursiveUpdate, so profiles.system.path
+        # (already correct) is left untouched.
+        deploy.nodes.oracle = {
+          hostname = "192.9.130.175";
+          sshUser = "root";
+        };
+        deploy.nodes.eclipse = {
+          hostname = "n1.eclipsesystems.org";
+          sshUser = "root";
+          sshOpts = [
+            "-p"
+            "25033"
+          ];
+        };
+        deploy.nodes.pi1 = {
+          hostname = "10.0.0.227";
+          sshUser = "avy";
+        };
+      }
 
       (inputs.flake-utils.lib.eachDefaultSystem (
         system:
@@ -248,6 +247,7 @@
               pkgs.nil
               pkgs.cachix
               pkgs.nix-output-monitor
+              inputs.deploy-rs.packages.${system}.default
               # inputs.alejandra.defaultPackage.${system}
             ];
           };
