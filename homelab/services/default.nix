@@ -76,9 +76,10 @@
   imports = [
     ./miniflux
     ./auth
+    ./glance
+    ./uptime-kuma
     # ./ntfy
     # ./healthchecks
-    # ./glance
     # ./scrutiny
     # ./restic
   ];

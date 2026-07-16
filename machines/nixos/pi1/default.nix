@@ -56,6 +56,10 @@
       networks."samosa".psk = "maplec29";
     };
     firewall.allowedUDPPorts = [ config.services.tailscale.port ];
+    # Comcast blocks inbound IPv4 port forwarding, so *.avyay.in is served
+    # directly over pi1's public IPv6 address instead. Disable privacy
+    # extensions so that address stays stable for DNS instead of rotating.
+    tempAddresses = "disabled";
   };
 
   services.avahi = {

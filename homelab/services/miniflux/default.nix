@@ -31,6 +31,14 @@ in
       description = "File with admin credentials";
       type = lib.types.path;
     };
+    oauthClientIdFile = lib.mkOption {
+      description = "File containing the indiko OAuth2 client ID";
+      type = lib.types.path;
+    };
+    oauthClientSecretFile = lib.mkOption {
+      description = "File containing the indiko OAuth2 client secret";
+      type = lib.types.path;
+    };
     role = lib.mkOption {
       type = lib.types.enum [
         "client"
@@ -53,11 +61,12 @@ in
           CREATE_ADMIN = true;
           LISTEN_ADDR = "${addr}:${toString port}";
           OAUTH2_PROVIDER = "oidc";
-          OAUTH2_CLIENT_ID = "miniflux";
+          OAUTH2_CLIENT_ID_FILE = cfg.oauthClientIdFile;
+          OAUTH2_CLIENT_SECRET_FILE = cfg.oauthClientSecretFile;
           OAUTH2_REDIRECT_URL = "https://${cfg.url}/oauth2/oidc/callback";
-          OAUTH2_OIDC_DISCOVERY_ENDPOINT = "https://${hl.services.indiko.domain}/.well-known/openid-configuration";
+          OAUTH2_OIDC_DISCOVERY_ENDPOINT = "https://${hl.services.indiko.domain}";
           OAUTH2_USER_CREATION = "1";
-          DISABLE_LOCAL_AUTH = "true";
+          DISABLE_LOCAL_AUTH = "false";
         };
       };
       services.caddy.virtualHosts."${cfg.url}" = {

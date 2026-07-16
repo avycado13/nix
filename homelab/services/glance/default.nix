@@ -4,37 +4,23 @@
   ...
 }:
 let
-  cfg = config.homelab.services.glance;
+  service = "glance";
   hl = config.homelab;
+  cfg = hl.services.${service};
   port = 8085;
 in
 {
-  options.homelab.services.glance = {
-    enable = lib.mkEnableOption "Glance homelab dashboard";
-    domain = lib.mkOption {
+  options.homelab.services.${service} = {
+    enable = lib.mkEnableOption "Enable ${service}";
+    url = lib.mkOption {
       type = lib.types.str;
+      default = "glance.${hl.baseDomainName}";
       description = "Domain to serve Glance on";
-    };
-    # Add widgets to the main (full-width) column.
-    # See https://github.com/glanceapp/glance/blob/main/docs/configuration.md
-    extraWidgets = lib.mkOption {
-      type = lib.types.listOf lib.types.attrs;
-      default = [ ];
-      description = "Additional widgets for the main column";
-      example = lib.literalExpression ''
-        [
-          {
-            type = "rss";
-            title = "News";
-            feeds = [ { url = "https://lobste.rs/rss"; } ];
-          }
-        ]
-      '';
     };
   };
 
   config = lib.mkIf cfg.enable {
-    services.glance = {
+    services.${service} = {
       enable = true;
       settings = {
         server.port = port;
@@ -46,12 +32,257 @@ in
                 size = "small";
                 widgets = [
                   { type = "clock"; }
-                  { type = "resources"; }
+                  {
+                    type = "weather";
+                    hour-format = "24h";
+                    location = "San Carlos, California";
+                  }
+                  {
+                    type = "bookmarks";
+                    groups = [
+                      {
+                        title = "Homelab";
+                        links = [
+                          {
+                            title = "Auth";
+                            url = "https://auth.avyay.in";
+                          }
+                          {
+                            title = "News";
+                            url = "https://news.avyay.in";
+                          }
+                          {
+                            title = "Uptime";
+                            url = "https://uptime.avyay.in";
+                          }
+                        ];
+                      }
+                    ];
+                  }
                 ];
               }
               {
                 size = "full";
-                widgets = cfg.extraWidgets;
+                widgets = [
+                  { type = "search"; }
+                  {
+                    type = "monitor";
+                    title = "Services";
+                    sites = [
+                      {
+                        title = "Auth";
+                        url = "https://auth.avyay.in";
+                      }
+                      {
+                        title = "News";
+                        url = "https://news.avyay.in";
+                      }
+                      {
+                        title = "Uptime Kuma";
+                        url = "https://uptime.avyay.in";
+                      }
+                      {
+                        title = "Glance";
+                        url = "https://glance.avyay.in";
+                      }
+                    ];
+                  }
+                  {
+                    type = "group";
+                    widgets = [
+                      { type = "hacker-news"; }
+                      { type = "lobsters"; }
+                      {
+                        type = "reddit";
+                        subreddit = "selfhosted";
+                      }
+                      {
+                        type = "reddit";
+                        subreddit = "homelab";
+                      }
+                    ];
+                  }
+                  {
+                    type = "releases";
+                    repositories = [ "avycado13/nix" ];
+                  }
+                  {
+                    type = "repository";
+                    repository = "avycado13/nix";
+                  }
+                ];
+              }
+            ];
+          }
+          {
+            name = "Markets";
+
+            columns = [
+              {
+                size = "small";
+
+                widgets = [
+                  {
+                    type = "markets";
+                    title = "Indices";
+
+                    markets = [
+                      {
+                        symbol = "SPY";
+                        name = "S&P 500";
+                      }
+                      {
+                        symbol = "DX-Y.NYB";
+                        name = "Dollar Index";
+                      }
+                    ];
+                  }
+
+                  {
+                    type = "markets";
+                    title = "Crypto";
+
+                    markets = [
+                      {
+                        symbol = "BTC-USD";
+                        name = "Bitcoin";
+                      }
+                      {
+                        symbol = "ETH-USD";
+                        name = "Ethereum";
+                      }
+                    ];
+                  }
+
+                  {
+                    type = "markets";
+                    title = "Stocks";
+                    sort-by = "absolute-change";
+
+                    markets = [
+                      {
+                        symbol = "NVDA";
+                        name = "NVIDIA";
+                      }
+                      {
+                        symbol = "AAPL";
+                        name = "Apple";
+                      }
+                      {
+                        symbol = "MSFT";
+                        name = "Microsoft";
+                      }
+                      {
+                        symbol = "GOOGL";
+                        name = "Google";
+                      }
+                      {
+                        symbol = "AMD";
+                        name = "AMD";
+                      }
+                      {
+                        symbol = "RDDT";
+                        name = "Reddit";
+                      }
+                      {
+                        symbol = "AMZN";
+                        name = "Amazon";
+                      }
+                      {
+                        symbol = "TSLA";
+                        name = "Tesla";
+                      }
+                      {
+                        symbol = "INTC";
+                        name = "Intel";
+                      }
+                      {
+                        symbol = "META";
+                        name = "Meta";
+                      }
+                    ];
+                  }
+                ];
+              }
+
+              {
+                size = "full";
+
+                widgets = [
+                  {
+                    type = "rss";
+                    title = "News";
+                    style = "horizontal-cards";
+
+                    feeds = [
+                      {
+                        url = "https://feeds.bloomberg.com/markets/news.rss";
+                        title = "Bloomberg";
+                      }
+                      {
+                        url = "https://moxie.foxbusiness.com/google-publisher/markets.xml";
+                        title = "Fox Business";
+                      }
+                      {
+                        url = "https://moxie.foxbusiness.com/google-publisher/technology.xml";
+                        title = "Fox Business";
+                      }
+                    ];
+                  }
+
+                  {
+                    type = "group";
+
+                    widgets = [
+                      {
+                        type = "reddit";
+                        show-thumbnails = true;
+                        subreddit = "technology";
+                      }
+                      {
+                        type = "reddit";
+                        show-thumbnails = true;
+                        subreddit = "wallstreetbets";
+                      }
+                    ];
+                  }
+
+                  {
+                    type = "videos";
+                    style = "grid-cards";
+                    collapse-after-rows = 3;
+
+                    channels = [
+                      "UCvSXMi2LebwJEM1s4bz5IBA" # New Money
+                      "UCV6KDgJskWaEckne5aPA0aQ" # Graham Stephan
+                      "UCAzhpt9DmG6PnHXjmJTvRGQ" # Federal Reserve
+                    ];
+                  }
+                ];
+              }
+
+              {
+                size = "small";
+
+                widgets = [
+                  {
+                    type = "rss";
+                    title = "News";
+                    limit = 30;
+                    collapse-after = 13;
+
+                    feeds = [
+                      {
+                        url = "https://www.ft.com/technology?format=rss";
+                        title = "Financial Times";
+                      }
+                      {
+                        url = "https://feeds.a.dj.com/rss/RSSMarketsMain.xml";
+                        title = "Wall Street Journal";
+                      }
+                    ];
+                  }
+                ];
               }
             ];
           }
@@ -59,14 +290,14 @@ in
       };
     };
 
-    services.caddy.virtualHosts."${cfg.domain}" = {
+    services.caddy.virtualHosts."${cfg.url}" = {
       useACMEHost = hl.baseDomainName;
       extraConfig = ''
         reverse_proxy http://127.0.0.1:${toString port}
       '';
     };
 
-    systemd.services.glance.serviceConfig.OnFailure = lib.mkIf (
+    systemd.services.${service}.serviceConfig.OnFailure = lib.mkIf (
       hl.notifications.ntfySecretsFile != null
     ) "notify-failure@%n.service";
   };

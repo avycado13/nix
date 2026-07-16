@@ -107,5 +107,8 @@ in
   };
   config = lib.mkIf config.homelab.motd.enable {
     environment.systemPackages = [ motd ];
+    environment.interactiveShellInit = ''
+      ${motd}/bin/motd
+    '';
   };
 }

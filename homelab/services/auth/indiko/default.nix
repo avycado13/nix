@@ -97,12 +97,17 @@ in
         Type = "exec";
         User = service;
         Group = service;
-        WorkingDirectory = "${cfg.dataDir}/app";
+        WorkingDirectory = cfg.dataDir;
         Restart = "on-failure";
         RestartSec = "10s";
         TimeoutStartSec = "120s";
         EnvironmentFile = lib.mkIf (cfg.secretsFile != null) cfg.secretsFile;
-        Environment = [ "PORT=${toString cfg.port}" ];
+        Environment = [
+          "PORT=${toString cfg.port}"
+          "ORIGIN=https://${cfg.domain}"
+          "RP_ID=${cfg.domain}"
+          "NODE_ENV=production"
+        ];
 
         NoNewPrivileges = true;
         ProtectSystem = "strict";
@@ -122,7 +127,6 @@ in
         Referrer-Policy "strict-origin-when-cross-origin"
         Permissions-Policy "geolocation=(), microphone=(), camera=()"
         Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-        Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
         }
       '';
     };
