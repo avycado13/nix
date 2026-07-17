@@ -35,7 +35,6 @@ in
         "https://virby-nix-darwin.cachix.org"
         "https://numtide.cachix.org"
         "https://nix-community.cachix.org"
-        "https://cache.garnix.io"
         "https://fenix.cachix.org"
         "https://avycado13.cachix.org"
       ];
@@ -47,7 +46,6 @@ in
         "virby-nix-darwin.cachix.org-1:z9GiEZeBU5bEeoDQjyfHPMGPBaIQJOOvYOOjGMKIlLo="
         "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-        "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
         "fenix.cachix.org-1:ecJhr+RdYEdcVgUkjruiYhjbBloIEGov7bos90cZi0Q="
         "avycado13.cachix.org-1:omae3JdfM9Oeri1fAPbWwqLhRbXmbs1tcI//1Hi48qs="
       ];

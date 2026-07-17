@@ -30,6 +30,7 @@
     speedtest-tracker-app-key = {
       sopsFile = ../../../secrets/services.yaml;
       key = "speedtest-tracker/app_key";
+      owner = "speedtest-tracker";
     };
 
   };
@@ -51,6 +52,16 @@
 
     motd.enable = true;
     notifications.ntfySecretsFile = config.sops.secrets.ntfy_topic.path;
+
+    vhosts = {
+      enable = true;
+      hosts = {
+        auth.port = 3000; # indiko
+        miniflux.port = 8067;
+        glance.port = 8085;
+        uptime-kuma.port = 3001;
+      };
+    };
 
     services = {
       enable = true;
