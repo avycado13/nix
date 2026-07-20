@@ -51,6 +51,16 @@ in
       default = null;
       description = "EnvironmentFile with indiko secrets";
     };
+
+    glance.name = lib.mkOption {
+      type = lib.types.str;
+      default = "Auth";
+    };
+    glance.url = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = "https://${cfg.domain}";
+      description = "URL to show for this service in the Glance homelab bookmarks";
+    };
   };
 
   config = lib.mkIf cfg.enable {

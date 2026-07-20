@@ -183,7 +183,6 @@
 
       initContent = ''
                 # zmodload zsh/zprof
-                    export LEDGER_FILE=~/finance/main.journal
 
                     mkdir -p "$HOME/Library/pnpm"
                     export PNPM_HOME="$HOME/Library/pnpm"

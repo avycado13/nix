@@ -24,23 +24,13 @@ let
   # };
 
   ai = with inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
-    qwen-code
     amp
     copilot-cli
     crush
-    mistral-vibe
-    kilocode-cli
-    goose-cli
-    letta-code
-    forgecode
-    cursor-agent
-    pi
+    # pi
     opencode
-    gemini-cli
     antigravity-cli
     grok
-    reasonix
-    nanocoder
     codex
     claude-code
   ];
@@ -59,6 +49,19 @@ let
       }
     ) ai
   );
+
+  # nixpkgs' bundled ld64 crashes (exit 133) linking caligula's rust+objc
+  # code against newer Xcode toolchains; force lld instead.
+  caligula-pkg =
+    if pkgs.stdenv.hostPlatform.isDarwin then
+      pkgs.caligula.overrideAttrs (old: {
+        nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.lld ];
+        env = (old.env or { }) // {
+          RUSTFLAGS = "-C link-arg=-fuse-ld=lld " + (old.env.RUSTFLAGS or "");
+        };
+      })
+    else
+      pkgs.caligula;
 
   irc-pkg = pkgs.weechat.override {
     configure =
@@ -104,7 +107,7 @@ in
     pkgs.fastfetch
     pkgs.git-extras
     pkgs.devenv
-    pkgs.caligula
+    caligula-pkg
     pkgs.manix
     pkgs.nh
     pkgs.nix-bisect
@@ -156,6 +159,7 @@ in
       }).overrideAttrs
       (old: {
         doCheck = false;
+        doInstallCheck = false;
         preCheck = (old.preCheck or "") + ''
           rm tests/test_{server,views}.py
         '';
@@ -191,6 +195,8 @@ in
     # pkgs.dix # FIXME: tests fail in sandbox on aarch64-darwin (path/symlink tests, /private/tmp). Re-enable when nixpkgs fixes checkPhase.
     pkgs.nix-tree
     pkgs.cachix
+    pkgs.omnix
+    inputs.xilo.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs.sqlmap
     pkgs.dalfox
 

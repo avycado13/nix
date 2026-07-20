@@ -23,7 +23,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Optional: Declarative tap management
     homebrew-core = {
       url = "github:homebrew/homebrew-core";
       flake = false;
@@ -113,7 +112,12 @@
     zjstatus = {
       url = "github:dj95/zjstatus";
     };
-
+    xilo.url = "github:stubbedev/xilo";
+    nix-cache-beacon.url = "github:adisbladis/nix-cache-beacon";
+    devour-flake = {
+      url = "github:srid/devour-flake";
+      flake = false;
+    };
   };
 
   outputs =
@@ -219,12 +223,18 @@
           sshUser = "avy";
         };
       }
+      {
+        overlays.default = _final: prev: {
+          devour-flake = prev.callPackage inputs.devour-flake { };
+        };
+      }
 
       (inputs.flake-utils.lib.eachDefaultSystem (
         system:
         let
           pkgs = import inputs.nixpkgs {
             inherit system;
+            overlays = [ inputs.self.overlays.default ];
           };
           treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs {
             projectRootFile = "flake.nix";
@@ -248,11 +258,35 @@
               pkgs.cachix
               pkgs.nix-output-monitor
               inputs.deploy-rs.packages.${system}.default
+              inputs.xilo.packages.${system}.default
               # inputs.alejandra.defaultPackage.${system}
+              pkgs.devour-flake
+              (pkgs.writeShellApplication {
+                name = "nix-build-all";
+                runtimeInputs = [
+                  pkgs.nix
+                  pkgs.devour-flake
+                ];
+                text = ''
+                  # Make sure that flake.lock is sync
+                  nix flake lock --no-update-lock-file
+
+                  # Do a full nix build (all outputs)
+                  # This uses https://github.com/srid/devour-flake
+                  devour-flake . "$@"
+                '';
+              })
             ];
           };
         }
       ))
+      {
+        nixConfig = {
+          extra-substituters = [ "https://cache.avyay.in/c/default/main" ];
+          extra-trusted-public-keys = [ "main:dQ6VTlBqbChv4jdFSjf2g9pmylkXFkQEaFXLHuzWfMM=" ];
+        };
+
+      }
       {
         checks = builtins.mapAttrs (
           _system: deployLib: deployLib.deployChecks inputs.self.deploy

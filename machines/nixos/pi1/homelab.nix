@@ -32,6 +32,18 @@
       key = "speedtest-tracker/app_key";
       owner = "speedtest-tracker";
     };
+    xilo-env = {
+      sopsFile = ../../../secrets/services.yaml;
+      key = "xilo/env";
+    };
+    xilo-gcs-access-key = {
+      sopsFile = ../../../secrets/services.yaml;
+      key = "xilo/gcs_access_key";
+    };
+    xilo-gcs-secret-key = {
+      sopsFile = ../../../secrets/services.yaml;
+      key = "xilo/gcs_secret_key";
+    };
 
   };
 
@@ -52,16 +64,6 @@
 
     motd.enable = true;
     notifications.ntfySecretsFile = config.sops.secrets.ntfy_topic.path;
-
-    vhosts = {
-      enable = true;
-      hosts = {
-        auth.port = 3000; # indiko
-        miniflux.port = 8067;
-        glance.port = 8085;
-        uptime-kuma.port = 3001;
-      };
-    };
 
     services = {
       enable = true;
@@ -97,6 +99,23 @@
         enable = true;
         url = "speedtest.avyay.in";
         appKeyFile = config.sops.secrets.speedtest-tracker-app-key.path;
+      };
+
+      xilo = {
+        enable = true;
+        url = "cache.avyay.in";
+        environmentFile = config.sops.secrets.xilo-env.path;
+        s3 = {
+          enable = true;
+          endpoint = "9de2baa272a57af74da84d8e6bd95a77.r2.cloudflarestorage.com";
+          bucket = "nixcache";
+        };
+        storages.gcs = {
+          endpoint = "storage.googleapis.com";
+          bucket = "avycado13-nix-cache";
+          accessKey = config.sops.placeholder.xilo-gcs-access-key;
+          secretKey = config.sops.placeholder.xilo-gcs-secret-key;
+        };
       };
     };
   };

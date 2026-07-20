@@ -35,8 +35,10 @@ in
         "https://virby-nix-darwin.cachix.org"
         "https://numtide.cachix.org"
         "https://nix-community.cachix.org"
+        "https://helix.cachix.org"
         "https://fenix.cachix.org"
         "https://avycado13.cachix.org"
+        "https://cache.avyay.in/c/default/main"
       ];
       extra-trusted-public-keys = [
         "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
@@ -46,8 +48,10 @@ in
         "virby-nix-darwin.cachix.org-1:z9GiEZeBU5bEeoDQjyfHPMGPBaIQJOOvYOOjGMKIlLo="
         "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        "helix.cachix.org-1:ejp9KQpR1FBI2onstMQ34yogDm4OgU2ru6lIwPvuCVs="
         "fenix.cachix.org-1:ecJhr+RdYEdcVgUkjruiYhjbBloIEGov7bos90cZi0Q="
         "avycado13.cachix.org-1:omae3JdfM9Oeri1fAPbWwqLhRbXmbs1tcI//1Hi48qs="
+        "main:dQ6VTlBqbChv4jdFSjf2g9pmylkXFkQEaFXLHuzWfMM="
       ];
 
       connect-timeout = lib.mkDefault 5;
@@ -57,12 +61,21 @@ in
       netrc-file = "/etc/nix/netrc";
       narinfo-cache-positive-ttl = 3600;
       # Runs as the nix-daemon (root), which has no ~/.config/cachix.
-      # Point HOME at avy's home so cachix finds the auth token, and make
-      # the push best-effort so a transient cachix/network failure can't
+      # Point HOME at avy's home so xilo finds the auth token, and make
+      # the push best-effort so a transient xilo/network failure can't
       # fail an otherwise-successful rebuild.
-      post-build-hook = pkgs.writeShellScript "cachix-push" ''
+      post-build-hook = pkgs.writeShellScript "cache-push" ''
+        set -eu
+
         export HOME=${config.users.users.avy.home}
-        ${pkgs.cachix}/bin/cachix push avycado13 || true
+
+        [ -n "''${OUT_PATHS:-}" ] || exit 0
+
+        printf '%s\n' "''${OUT_PATHS}" \
+          | ${
+            lib.getExe inputs.xilo.packages.${pkgs.stdenv.hostPlatform.system}.default
+          } push default/main - --quiet \
+          || true
       '';
     };
     nixPath = [

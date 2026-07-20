@@ -79,7 +79,7 @@
     ./glance
     ./uptime-kuma
     ./speedtest-tracker
-    ./vhosts
+    ./xilo
     # ./ntfy
     # ./healthchecks
     # ./scrutiny

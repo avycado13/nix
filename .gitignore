@@ -4,3 +4,5 @@ modules/.DS_Store
 .direnv
 old.json
 result
+result/
+data/

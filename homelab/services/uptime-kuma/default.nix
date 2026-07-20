@@ -15,6 +15,15 @@ in
       type = lib.types.str;
       default = "uptime.${hl.baseDomainName}";
     };
+    glance.name = lib.mkOption {
+      type = lib.types.str;
+      default = "Uptime Kuma";
+    };
+    glance.url = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = "https://${cfg.url}";
+      description = "URL to show for this service in the Glance homelab bookmarks";
+    };
   };
 
   config = lib.mkIf cfg.enable {

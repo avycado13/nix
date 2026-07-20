@@ -151,6 +151,8 @@ in
         { programs.nix-index-database.comma.enable = true; }
         inputs.catppuccin.nixosModules.catppuccin
         inputs.srvos.nixosModules.mixins-terminfo
+        inputs.xilo.nixosModules.default
+        inputs.nix-cache-beacon.nixosModules.default
         {
           # home-manager.users.avy.home.stateVersion = "25.05";
         }

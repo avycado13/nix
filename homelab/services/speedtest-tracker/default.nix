@@ -23,6 +23,15 @@ in
         echo "base64:$(head -c 32 /dev/urandom | base64)" > /path/to/key-file
       '';
     };
+    glance.name = lib.mkOption {
+      type = lib.types.str;
+      default = "Speedtest Tracker";
+    };
+    glance.url = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = "https://${cfg.url}";
+      description = "URL to show for this service in the Glance homelab bookmarks";
+    };
   };
 
   config = lib.mkIf cfg.enable {

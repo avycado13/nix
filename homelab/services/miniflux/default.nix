@@ -27,6 +27,11 @@ in
       type = lib.types.str;
       default = "Minimalist and opinionated feed reader";
     };
+    glance.url = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = "https://${cfg.url}";
+      description = "URL to show for this service in the Glance homelab bookmarks";
+    };
     adminCredentialsFile = lib.mkOption {
       description = "File with admin credentials";
       type = lib.types.path;

@@ -22,6 +22,7 @@
   ];
 
   boot = {
+    kernelPackages = pkgs.linuxPackages_rpi3;
     tmp.cleanOnBoot = true;
     swraid.enable = lib.mkForce false;
     supportedFilesystems.zfs = lib.mkForce false;
@@ -92,6 +93,25 @@
   nixpkgs.hostPlatform = "aarch64-linux";
 
   sdImage.compressImage = true;
+
+  # SD card storage is the tightest resource on this device, so garbage
+  # collect and dedup aggressively rather than the repo-wide weekly/7d
+  # defaults in modules/nix.
+  nix = {
+    settings = {
+      min-free = lib.mkForce (128 * 1024 * 1024);
+      max-free = lib.mkForce (1024 * 1024 * 1024);
+    };
+    gc = {
+      automatic = lib.mkForce true;
+      dates = lib.mkForce "daily";
+      options = lib.mkForce "-d --delete-older-than 3d";
+    };
+    optimise = {
+      automatic = lib.mkForce true;
+      dates = lib.mkForce [ "daily" ];
+    };
+  };
 
   zramSwap = {
     enable = true;

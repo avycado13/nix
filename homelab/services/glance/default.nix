@@ -8,6 +8,19 @@ let
   hl = config.homelab;
   cfg = hl.services.${service};
   port = 8085;
+
+  homelabBookmarks = lib.pipe hl.services [
+    (lib.filterAttrs (
+      _: v: lib.isAttrs v && (v.enable or false) && (v ? glance) && v.glance.url != null
+    ))
+    (lib.mapAttrsToList (
+      _: v: {
+        title = v.glance.name;
+        url = v.glance.url;
+      }
+    ))
+    (lib.sort (a: b: a.title < b.title))
+  ];
 in
 {
   options.homelab.services.${service} = {
@@ -16,6 +29,15 @@ in
       type = lib.types.str;
       default = "glance.${hl.baseDomainName}";
       description = "Domain to serve Glance on";
+    };
+    glance.name = lib.mkOption {
+      type = lib.types.str;
+      default = "Glance";
+    };
+    glance.url = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = "https://${cfg.url}";
+      description = "URL to show for this service in the Glance homelab bookmarks";
     };
   };
 
@@ -42,20 +64,7 @@ in
                     groups = [
                       {
                         title = "Homelab";
-                        links = [
-                          {
-                            title = "Auth";
-                            url = "https://auth.avyay.in";
-                          }
-                          {
-                            title = "News";
-                            url = "https://news.avyay.in";
-                          }
-                          {
-                            title = "Uptime";
-                            url = "https://uptime.avyay.in";
-                          }
-                        ];
+                        links = homelabBookmarks;
                       }
                     ];
                   }
