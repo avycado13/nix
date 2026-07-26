@@ -6,32 +6,44 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   checks:
     runs-on: ${{ matrix.runner }}
+
     permissions:
       contents: read
       id-token: write
+
     strategy:
+      fail-fast: false
       matrix:
         include:
           - runner: ubuntu-latest
             system: x86_64-linux
           - runner: macos-latest
             system: aarch64-darwin
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
-      - name: Tailscale
+        uses: DeterminateSystems/nix-installer-action@v19
+
+      - name: Connect to Tailscale
         uses: tailscale/github-action@v4
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           audience: ${{ secrets.TS_AUDIENCE }}
           tags: tag:ci
           ping: 100.117.24.61
-      - name: setup xilo for caching
+
+      - name: Configure xilo cache
         uses: stubbedev/xilo@v0
         with:
           url: https://cache.avyay.in
@@ -39,15 +51,23 @@ jobs:
           token: ${{ secrets.XILO_TOKEN }}
 
       - name: Build devshell
-        run: nix build --no-link .#devShells.${{ matrix.system }}.default
-      - name: Push devshell to Cache
-        run: xilo push default/main ./result
+        run: |
+          nix build --print-out-paths .#devShells.${{ matrix.system }}.default > devshell-path
+
+      - name: Push devshell to cache
+        run: |
+          xilo push default/main "$(cat devshell-path)"
 
       - name: Run om ci
         run: |
-          nix develop --command om ci run \
-            --extra-access-tokens ${{ secrets.GITHUB_TOKEN }} \
-            --systems "${{ matrix.system }}" \
-            -- --accept-flake-config
-      - name: Push to Cache
-        run: xilo push default/main ./result
+          nix develop "$(cat devshell-path)" --command \
+            om ci run \
+              --extra-access-tokens ${{ secrets.GITHUB_TOKEN }} \
+              --systems "${{ matrix.system }}" \
+              -- --accept-flake-config
+
+      # Replace this with a more targeted command if xilo has one.
+      - name: Push realized outputs to cache
+        if: success()
+        run: |
+          nix-store --gc --print-live | xilo push default/main -
