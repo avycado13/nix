@@ -111,6 +111,8 @@
     pkgs.qmk
     pkgs.xcodegen
     # pkgs.eas-cli
+    pkgs.sccache
+    pkgs.ccache
   ];
   programs.zsh.initContent = ''
     export CONTEXT7_API_KEY="$(cat ${config.sops.secrets.context7_api_key.path})"

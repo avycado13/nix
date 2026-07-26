@@ -4,108 +4,130 @@
   pkgs,
   ...
 }:
+
 let
   enabledNixosServices = lib.attrsets.mapAttrsToList (name: _value: name) (
     lib.attrsets.filterAttrs (
       name: value: value != "enable" && name != "backup" && value ? enable && value.enable
     ) config.homelab.services
   );
+
   monitoredServices = lib.lists.flatten (
     lib.lists.forEach enabledNixosServices (
       x:
       let
         svc = config.homelab.services.${x};
       in
-      if (svc ? monitoredServices) then svc.monitoredServices else [ x ]
+      if svc ? monitoredServices then svc.monitoredServices else [ x ]
     )
   );
 
+  networkInterfaceLines = lib.concatStrings (
+    lib.forEach config.homelab.motd.networkInterfaces (iface: ''
+      ${
+        if iface == "" then
+          ''
+            NETDEV=$(ip -o route get 1.1.1.1 | awk '{print $5; exit}')
+          ''
+        else
+          ''
+            NETDEV=${iface}
+          ''
+      }
+      printf "$BOLD  * %-20s$ENDCOLOR %s\n" "IPv4 $NETDEV" "$(ip -4 addr show "$NETDEV" | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | head -n1)"
+    '')
+  );
+
+  serviceStatusLines = lib.concatStrings (
+    lib.forEach monitoredServices (svc: ''
+      get_service_status "${svc}"
+    '')
+  );
+
   motd = pkgs.writeShellScriptBin "motd" ''
-    #! /usr/bin/env bash
-    source /etc/os-release
-    RED="\e[31m"
-    GREEN="\e[32m"
-    YELLOW="\e[33m"
-    BOLD="\e[1m"
-    ENDCOLOR="\e[0m"
-    LOAD1=`cat /proc/loadavg | awk {'print $1'}`
-    LOAD5=`cat /proc/loadavg | awk {'print $2'}`
-    LOAD15=`cat /proc/loadavg | awk {'print $3'}`
+        #! ${pkgs.bash}/bin/bash
+        set -u
+        set -o pipefail
 
-    MEMORY=`free -m | awk 'NR==2{printf "%s/%sMB (%.2f%%)\n", $3,$2,$3*100 / $2 }'`
+        source /etc/os-release
 
-    # time of day
-    HOUR=$(date +"%H")
-    if [ $HOUR -lt 12  -a $HOUR -ge 0 ]
-    then    TIME="morning"
-    elif [ $HOUR -lt 17 -a $HOUR -ge 12 ]
-    then    TIME="afternoon"
-    else
-        TIME="evening"
-    fi
+        RED="\e[31m"
+        GREEN="\e[32m"
+        YELLOW="\e[33m"
+        BOLD="\e[1m"
+        ENDCOLOR="\e[0m"
 
+        LOAD1="$(awk '{print $1}' /proc/loadavg)"
+        LOAD5="$(awk '{print $2}' /proc/loadavg)"
+        LOAD15="$(awk '{print $3}' /proc/loadavg)"
 
-    uptime=`cat /proc/uptime | cut -f1 -d.`
-    upDays=$((uptime/60/60/24))
-    upHours=$((uptime/60/60%24))
-    upMins=$((uptime/60%60))
-    upSecs=$((uptime%60))
+        MEMORY="$(free -m | awk 'NR==2{printf "%s/%sMB (%.2f%%)\n", $3,$2,$3*100 / $2 }')"
 
-    printf "$BOLD Welcome to $(hostname)!$ENDCOLOR\n"
-    printf "\n"
-    ${lib.strings.concatMapStrings (x: "${x}\n") (
-      lib.lists.forEach config.homelab.motd.networkInterfaces (
-        x:
-        lib.strings.concatMapStrings (x: "${x}\n") [
-          (
-            if x == "" then
-              ''
-                NETDEV=$(ip -o route get 1.1.1.1 | cut -f 5 -d " ")
-              ''
-            else
-              ''
-                NETDEV=${x}
-              ''
-          )
-          ''
-            printf "$BOLD  * %-20s$ENDCOLOR %s\n" "IPv4 $NETDEV" "$(ip -4 addr show $NETDEV | grep -oP '(?<=inet\s)\d+(\.\d+){3}')"
-          ''
-        ]
-      )
-    )}
-    printf "$BOLD  * %-20s$ENDCOLOR %s\n" "Release" "$PRETTY_NAME"
-    printf "$BOLD  * %-20s$ENDCOLOR %s\n" "Kernel" "$(uname -rs)"
-    printf "\n"
-    printf "$BOLD  * %-20s$ENDCOLOR %s\n" "CPU usage" "$LOAD1, $LOAD5, $LOAD15 (1, 5, 15 min)"
-    printf "$BOLD  * %-20s$ENDCOLOR %s\n" "Memory" "$MEMORY"
-    printf "$BOLD  * %-20s$ENDCOLOR %s\n" "System uptime" "$upDays days $upHours hours $upMins minutes $upSecs seconds"
+        HOUR="$(date +"%H")"
+        if [ "$HOUR" -lt 12 ] && [ "$HOUR" -ge 0 ]; then
+          TIME="morning"
+        elif [ "$HOUR" -lt 17 ] && [ "$HOUR" -ge 12 ]; then
+          TIME="afternoon"
+        else
+          TIME="evening"
+        fi
 
-    printf "\n"
-    printf "$BOLD Service status$ENDCOLOR\n"
+        uptime_seconds="$(cut -f1 -d. /proc/uptime)"
+        upDays=$((uptime_seconds / 60 / 60 / 24))
+        upHours=$((uptime_seconds / 60 / 60 % 24))
+        upMins=$((uptime_seconds / 60 % 60))
+        upSecs=$((uptime_seconds % 60))
 
-    function get_service_status() {
-      if systemctl is-failed "$1" | grep -q 'failed'; then
-        printf "$RED• $ENDCOLOR%-50s $RED[failed]$ENDCOLOR\n" "$1"
-      elif systemctl is-failed "$1" | grep -q 'active'; then
-        printf "$GREEN• $ENDCOLOR%-50s $GREEN[active]$ENDCOLOR\n" "$1"
-      else
-        printf "$YELLOW• $ENDCOLOR%-50s $YELLOW[unknown]$ENDCOLOR\n" "$1"
-      fi
-    }
-    ${lib.strings.concatStrings (lib.lists.forEach monitoredServices (x: "get_service_status ${x}\n"))}
+        get_service_status() {
+          local service="$1"
+          local status
+
+          status="$(systemctl is-active "$service" 2>/dev/null || true)"
+          if [ "$status" = "active" ]; then
+            printf "$GREEN• $ENDCOLOR%-50s $GREEN[active]$ENDCOLOR\n" "$service"
+          elif [ "$status" = "failed" ]; then
+            printf "$RED• $ENDCOLOR%-50s $RED[failed]$ENDCOLOR\n" "$service"
+          else
+            printf "$YELLOW• $ENDCOLOR%-50s $YELLOW[unknown]$ENDCOLOR\n" "$service"
+          fi
+        }
+
+        printf "$BOLD Welcome to $(hostname)!$ENDCOLOR\n"
+        printf "\n"
+    ${networkInterfaceLines}
+        printf "$BOLD  * %-20s$ENDCOLOR %s\n" "Release" "$PRETTY_NAME"
+        printf "$BOLD  * %-20s$ENDCOLOR %s\n" "Kernel" "$(uname -rs)"
+        printf "\n"
+        printf "$BOLD  * %-20s$ENDCOLOR %s\n" "CPU usage" "$LOAD1, $LOAD5, $LOAD15 (1, 5, 15 min)"
+        printf "$BOLD  * %-20s$ENDCOLOR %s\n" "Memory" "$MEMORY"
+        printf "$BOLD  * %-20s$ENDCOLOR %s\n" "System uptime" "$upDays days $upHours hours $upMins minutes $upSecs seconds"
+
+        printf "\n"
+        printf "$BOLD Service status$ENDCOLOR\n"
+    ${serviceStatusLines}
+
+        if command -v ${lib.getExe pkgs.zmx} &> /dev/null && [[ -z "''${ZMX_SESSION:-}" ]]; then
+          count="$(zmx ls --short 2>/dev/null | wc -l)"
+          if [[ "$count" -gt 0 ]]; then
+            echo "${lib.getExe pkgs.zmx}: $count session(s) active — \`zmx-select\` to attach" >&2
+          fi
+        fi
   '';
 in
 {
   options.homelab.motd = {
     enable = lib.mkEnableOption "motd Greeting";
+
     networkInterfaces = lib.mkOption {
       description = "Network interfaces to monitor";
       type = lib.types.listOf lib.types.str;
       default = [ "" ];
     };
   };
+
   config = lib.mkIf config.homelab.motd.enable {
     environment.systemPackages = [ motd ];
+
     environment.interactiveShellInit = ''
       ${motd}/bin/motd
     '';

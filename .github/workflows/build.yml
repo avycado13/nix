@@ -23,7 +23,13 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
-        
+      - name: Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:ci
+          ping: 100.117.24.61
       - name: setup xilo for caching
         uses: stubbedev/xilo@v0
         with:
@@ -31,12 +37,14 @@ jobs:
           cache: default/main
           token: ${{ secrets.XILO_TOKEN }}
 
-      - name: Install omnix
-        run: nix profile install nixpkgs#omnix
+      - name: Build devshell
+        run: nix build --no-link .#devShells.$(nix eval --raw --expr 'builtins.currentSystem').default
+      - name: Push devshell to Cache
+        run: xilo push default/main ./result
 
       - name: Run om ci
         run: |
-          om ci run \
+          nix develop --command om ci run \
             --extra-access-tokens ${{ secrets.GITHUB_TOKEN }} \
             --systems "${{ matrix.system }}" \
             -- --accept-flake-config

@@ -79,9 +79,13 @@ in
   documentation.nixos.enable = false;
 
   environment.systemPackages = with pkgs; [
-    vim
+    helix
+    rclone
+    magic-wormhole
     htop
     curl
     git
+    zmx
+    inputs.xilo.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }

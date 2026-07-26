@@ -12,17 +12,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
-    nixos-shell.url = "github:Mic92/nixos-shell";
-
     nix-index-database = {
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    alejandra = {
-      url = "github:kamadorueda/alejandra/4.0.0";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     homebrew-core = {
       url = "github:homebrew/homebrew-core";
       flake = false;
@@ -65,9 +58,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     colmena.url = "github:zhaofengli/colmena";
-    ghostty = {
-      url = "github:ghostty-org/ghostty";
-    };
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
     weechat-scripts = {
       url = "github:weechat/scripts";
@@ -79,12 +69,8 @@
     };
     wakatime-ls.url = "github:mrnossiom/wakatime-ls";
     wakatime-ls.inputs.nixpkgs.follows = "nixpkgs";
-    zmx.url = "github:neurosnap/zmx";
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
     virby.url = "github:quinneden/virby-nix-darwin/be170bd7ef21ce9773e7daa646d43f5405a1bdb2";
-    nixos-pi-zero-2 = {
-      url = "github:plmercereau/nixos-pi-zero-2";
-    };
     srvos.url = "github:nix-community/srvos";
     gws-cli.url = "github:googleworkspace/cli";
     unf = {
@@ -109,14 +95,17 @@
       url = "github:slp/homebrew-krun";
       flake = false;
     };
-    zjstatus = {
-      url = "github:dj95/zjstatus";
-    };
     xilo.url = "github:stubbedev/xilo";
     nix-cache-beacon.url = "github:adisbladis/nix-cache-beacon";
     devour-flake = {
       url = "github:srid/devour-flake";
       flake = false;
+    };
+    # Don't follow root nixpkgs: retrom's package.nix pins fetchPnpmDeps
+    # fetcherVersion = 3, which newer nixpkgs has dropped support for.
+    # Let it build against its own (older) locked nixpkgs instead.
+    retrom = {
+      url = "github:JMBeresford/retrom/latest";
     };
   };
 
@@ -259,7 +248,6 @@
               pkgs.nix-output-monitor
               inputs.deploy-rs.packages.${system}.default
               inputs.xilo.packages.${system}.default
-              # inputs.alejandra.defaultPackage.${system}
               pkgs.devour-flake
               (pkgs.writeShellApplication {
                 name = "nix-build-all";

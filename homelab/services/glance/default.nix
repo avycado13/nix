@@ -9,18 +9,23 @@ let
   cfg = hl.services.${service};
   port = 8085;
 
-  homelabBookmarks = lib.pipe hl.services [
-    (lib.filterAttrs (
-      _: v: lib.isAttrs v && (v.enable or false) && (v ? glance) && v.glance.url != null
-    ))
-    (lib.mapAttrsToList (
-      _: v: {
-        title = v.glance.name;
-        url = v.glance.url;
-      }
-    ))
-    (lib.sort (a: b: a.title < b.title))
-  ];
+  toBookmark = _: v: {
+    title = v.glance.name;
+    url = v.glance.url;
+  };
+
+  homelabBookmarks = lib.sort (a: b: a.title < b.title) (
+    (lib.pipe hl.services [
+      (lib.filterAttrs (
+        _: v: lib.isAttrs v && (v.enable or false) && (v ? glance) && v.glance.url != null
+      ))
+      (lib.mapAttrsToList toBookmark)
+    ])
+    ++ (lib.pipe hl.services.cloudrun.services [
+      (lib.filterAttrs (_: v: v.glance.url != null))
+      (lib.mapAttrsToList toBookmark)
+    ])
+  );
 in
 {
   options.homelab.services.${service} = {
@@ -77,24 +82,7 @@ in
                   {
                     type = "monitor";
                     title = "Services";
-                    sites = [
-                      {
-                        title = "Auth";
-                        url = "https://auth.avyay.in";
-                      }
-                      {
-                        title = "News";
-                        url = "https://news.avyay.in";
-                      }
-                      {
-                        title = "Uptime Kuma";
-                        url = "https://uptime.avyay.in";
-                      }
-                      {
-                        title = "Glance";
-                        url = "https://glance.avyay.in";
-                      }
-                    ];
+                    sites = homelabBookmarks;
                   }
                   {
                     type = "group";

@@ -59,8 +59,8 @@
           };
         };
         "oracle" = {
-          User = "root";
-          HostName = "192.9.130.175";
+          User = "ubuntu";
+          HostName = "192.9.245.222";
         };
         "eclipse" = {
           User = "root";

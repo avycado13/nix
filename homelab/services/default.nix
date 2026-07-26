@@ -80,6 +80,8 @@
     ./uptime-kuma
     ./speedtest-tracker
     ./xilo
+    ./retrom
+    ./cloudrun
     # ./ntfy
     # ./healthchecks
     # ./scrutiny

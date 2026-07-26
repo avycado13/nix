@@ -15,27 +15,6 @@ let
       inputs.nur.overlays.default
       inputs.nix-vscode-extensions.overlays.default
       inputs.fenix.overlays.default
-      # ollama 0.30.x auto-enables the MLX Metal backend on aarch64-darwin,
-      # which fails in the Nix sandbox (no xcrun/metal toolchain). Disable it
-      # by passing -DOLLAMA_MLX_BACKENDS="" to cmake. This mirrors the upstream
-      # nixpkgs fix (commit b195b40) until nixos-unstable advances past it.
-      # The llama.cpp Metal backend is unaffected.
-      (_final: prev: {
-        ollama = prev.ollama.overrideAttrs (old: {
-          preBuild =
-            builtins.replaceStrings
-              [ ''-DFETCHCONTENT_SOURCE_DIR_LLAMA_CPP="$TMPDIR/llama-cpp-src" \'' ]
-              [
-                ''
-                  -DFETCHCONTENT_SOURCE_DIR_LLAMA_CPP="$TMPDIR/llama-cpp-src" \
-                      -DOLLAMA_MLX_BACKENDS="" \''
-              ]
-              old.preBuild;
-        });
-      })
-      (_final: prev: {
-        zjstatus = inputs.zjstatus.packages.${prev.system}.default;
-      })
     ];
     config = {
       allowUnfree = true;
@@ -153,6 +132,7 @@ in
         inputs.srvos.nixosModules.mixins-terminfo
         inputs.xilo.nixosModules.default
         inputs.nix-cache-beacon.nixosModules.default
+        inputs.retrom.nixosModules.retrom
         {
           # home-manager.users.avy.home.stateVersion = "25.05";
         }

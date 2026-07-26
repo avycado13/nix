@@ -9,13 +9,6 @@
     "$HOME/finance/bin"
     "$HOME/.local/bin"
   ];
-  home.packages = with pkgs; [
-    grc
-    scooter
-    dua
-    procs
-    scc
-  ];
   programs = {
     nix-index-database.comma.enable = true;
     starship = {
@@ -126,7 +119,6 @@
           "ohmyzsh/ohmyzsh path:plugins/colored-man-pages"
           "ohmyzsh/ohmyzsh path:plugins/uv"
           "zsh-users/zsh-completions"
-          "unixorn/warhol.plugin.zsh"
           # "MichaelAquilina/zsh-you-should-use"
           # "Aloxaf/fzf-tab"
           "unixorn/git-extra-commands kind:clone branch:main"
@@ -137,6 +129,7 @@
         {
           name = pkgs.zsh-fzf-tab.pname;
           src = pkgs.zsh-fzf-tab.src;
+          file = "fzf-tab.plugin.zsh";
         }
         {
           name = pkgs.zsh-you-should-use.pname;
@@ -152,19 +145,19 @@
       autosuggestion.enable = true;
       historySubstringSearch.enable = true;
       shellAliases = {
-        fzmanix = "'manix' | rg '^# ' | sed 's/^# \\(.*\\) (.*/\\1/;s/ (.*//;s/^# //' | fzf --preview=\"manix '{}'\" | xargs manix";
-        cat = "bat";
-        ls = "eza";
+        fzmanix = "'${lib.getExe pkgs.manix}' | rg '^# ' | sed 's/^# \\(.*\\) (.*/\\1/;s/ (.*//;s/^# //' | fzf --preview=\"${lib.getExe pkgs.manix} '{}'\" | xargs manix";
+        cat = "${lib.getExe pkgs.bat}";
+        ls = "${lib.getExe pkgs.eza}";
         df = "df -h";
         du = "du -ch";
-        ipp = "curl ipinfo.io/ip";
-        yh = "yt-dlp --continue --no-check-certificate --format=bestvideo+bestaudio --exec='ffmpeg -i {} -c:a copy -c:v copy {}.mkv && rm {}'";
-        yd = "yt-dlp --continue --no-check-certificate --format=bestvideo+bestaudio --exec='ffmpeg -i {} -c:v prores_ks -profile:v 1 -vf fps=25/1 -pix_fmt yuv422p -c:a pcm_s16le {}.mov && rm {}'";
-        ya = "yt-dlp --continue --no-check-certificate --format=bestaudio -x --audio-format wav";
-        yam = "yt-dlp --embed-metadata --embed-thumbnail -x --audio-format m4a -o '%(title)s.%(ext)s'";
+        ipp = "${lib.getExe pkgs.curl} ipinfo.io/ip";
+        yh = "${lib.getExe pkgs.yt-dlp} --continue --no-check-certificate --format=bestvideo+bestaudio --exec='ffmpeg -i {} -c:a copy -c:v copy {}.mkv && rm {}'";
+        yd = "${lib.getExe pkgs.yt-dlp} --continue --no-check-certificate --format=bestvideo+bestaudio --exec='ffmpeg -i {} -c:v prores_ks -profile:v 1 -vf fps=25/1 -pix_fmt yuv422p -c:a pcm_s16le {}.mov && rm {}'";
+        ya = "${lib.getExe pkgs.yt-dlp} --continue --no-check-certificate --format=bestaudio -x --audio-format wav";
+        yam = "${lib.getExe pkgs.yt-dlp} --embed-metadata --embed-thumbnail -x --audio-format m4a -o '%(title)s.%(ext)s'";
         ols = "ls -la --color=never | awk '{k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/)*2^(8-i));if(k)printf(\" %0o \",k);print}'";
         fzkill = "(date; ps -ef) |
-  fzf --bind='ctrl-r:reload(date; ps -ef)' \
+  ${lib.getExe pkgs.fzf} --bind='ctrl-r:reload(date; ps -ef)' \
       --header=$'Press CTRL-R to reload\n\n' --header-lines=2 \
       --preview='echo {}' --preview-window=down,3,wrap \
       --layout=reverse --height=80% | awk '{print $2}' | xargs kill -9";
@@ -176,9 +169,10 @@
         cfip = ''dig @1.1.1.1 ch txt whoami.cloudflare +short | tr -d '"' '';
         rr = "rm -Rf";
         ghrpc = "${lib.getExe pkgs.gh} repo create -c";
-        goops = "git commit --amend --no-edit && git push --force-with-lease";
+        goops = "${lib.getExe pkgs.git} commit --amend --no-edit && ${lib.getExe pkgs.git} push --force-with-lease";
         jsenv = "${lib.getExe pkgs.ripgrep} -o --no-filename 'process\\.env\\.[A-Z0-9_]+' | sort -u | awk -F. '{print $3\"=\\\"\\\"\"}'";
         b = "${lib.getExe pkgs.buku} --suggest";
+        ash = "${lib.getExe pkgs.autossh} -M 0 -q";
       };
 
       initContent = ''

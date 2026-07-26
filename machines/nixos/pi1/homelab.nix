@@ -45,6 +45,15 @@
       key = "xilo/gcs_secret_key";
     };
 
+    retrom-igdb-client-id = {
+      sopsFile = ../../../secrets/services.yaml;
+      key = "retrom/igdb_client_id";
+    };
+    retrom-igdb-client-secret = {
+      sopsFile = ../../../secrets/services.yaml;
+      key = "retrom/igdb_client_secret";
+    };
+
   };
 
   services.fail2ban-cloudflare = {
@@ -115,6 +124,29 @@
           bucket = "avycado13-nix-cache";
           accessKey = config.sops.placeholder.xilo-gcs-access-key;
           secretKey = config.sops.placeholder.xilo-gcs-secret-key;
+        };
+      };
+
+      cloudrun = {
+        enable = true;
+        services = {
+          searxng.cloudRunHost = "searxng-671676671649.europe-west1.run.app";
+          it-tools.cloudRunHost = "it-tools-671676671649.europe-west1.run.app";
+        };
+      };
+
+      retrom = {
+        enable = false;
+        url = "retrom.avyay.in";
+        contentDirectories = [
+          {
+            path = "/var/lib/retrom/library";
+            storageType = "MultiFileGame";
+          }
+        ];
+        igdb = {
+          clientId = config.sops.placeholder.retrom-igdb-client-id;
+          clientSecret = config.sops.placeholder.retrom-igdb-client-secret;
         };
       };
     };

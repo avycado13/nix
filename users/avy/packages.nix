@@ -98,7 +98,7 @@ in
 {
   home.packages = ai ++ [
     irc-pkg
-    pkgs.nur.repos.avycado13.zmx
+    pkgs.zmx
     # pkgs.nur.repos.avycado13.anylinuxfs-gui
     inputs.wakatime-ls.packages.${pkgs.stdenv.hostPlatform.system}.default
 
@@ -192,6 +192,11 @@ in
     pkgs.nix-diff
     pkgs.captive-browser
     pkgs.oci-cli
+    pkgs.grc
+    pkgs.scooter
+    pkgs.dua
+    pkgs.procs
+    pkgs.scc
     # pkgs.dix # FIXME: tests fail in sandbox on aarch64-darwin (path/symlink tests, /private/tmp). Re-enable when nixpkgs fixes checkPhase.
     pkgs.nix-tree
     pkgs.cachix
@@ -199,6 +204,8 @@ in
     inputs.xilo.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs.sqlmap
     pkgs.dalfox
+    pkgs.autoflake
+    pkgs.autossh
 
     pkgs.pigz
 

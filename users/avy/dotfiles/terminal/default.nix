@@ -1,4 +1,5 @@
 {
+  pkgs,
   ...
 }:
 {
@@ -36,10 +37,9 @@
     # enableBashIntegration = true;
     # };
     ghostty = {
-      enable = false;
-      package = null; # brew
+      enable = true;
+      package = pkgs.ghostty-bin; # macos be funky
       settings = {
-        theme = "nord";
         font-size = 16;
         font-family = "Comic Code Ligatures";
         adjust-cell-height = "50%";

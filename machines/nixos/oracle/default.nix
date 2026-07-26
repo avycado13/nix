@@ -13,7 +13,7 @@
   # Boot configuration for Oracle Cloud (UEFI)
   # The cloud image ESP is mounted at /boot/efi, not /boot.
   boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = false;
+  boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
   boot.initrd.availableKernelModules = [
     "xhci_pci"
