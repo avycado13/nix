@@ -60,7 +60,7 @@ jobs:
 
       - name: Run om ci
         run: |
-          nix develop "$(cat devshell-path)" --command \
+          nix develop .#devShells.${{ matrix.system }}.default --command \
             om ci run \
               --extra-access-tokens ${{ secrets.GITHUB_TOKEN }} \
               --systems "${{ matrix.system }}" \
