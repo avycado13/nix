@@ -11,8 +11,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  checks:
-    runs-on: ${{ matrix.runner }}
+  configure:
+    runs-on: x86_64-linux
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+     - uses: actions/checkout@v4
+     - id: set-matrix
+       run: |
+         set -euxo pipefail
+         MATRIX="$(om ci gh-matrix --systems=x86_64-linux,aarch64-darwin,aarch64-linux | jq -c .)"
+         echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+  build:
+    runs-on: ${{ matrix.system }}
 
     permissions:
       contents: read
@@ -22,11 +33,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - runner: ubuntu-latest
-            system: x86_64-linux
-          - runner: macos-latest
-            system: aarch64-darwin
-
+          ${{ fromJson(needs.configure.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,15 +62,17 @@ jobs:
           nix build --print-out-paths .#devShells.${{ matrix.system }}.default > devshell-path
 
       - name: Push devshell to cache
+        continue-on-error: true
         run: |
           xilo push default/main "$(cat devshell-path)"
 
       - name: Run om ci
         run: |
-          nix develop .#devShells.${{ matrix.system }}.default --command \
+          nix develop . --command \
             om ci run \
-              --extra-access-tokens ${{ secrets.GITHUB_TOKEN }} \
+              --extra-access-tokens "github.com=${{ secrets.GITHUB_TOKEN }}" \
               --systems "${{ matrix.system }}" \
+              ".#default.${{ matrix.subflake }}" \
               -- --accept-flake-config
 
       # Replace this with a more targeted command if xilo has one.
