@@ -11,6 +11,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
+      id-token: write
     strategy:
       matrix:
         include:
