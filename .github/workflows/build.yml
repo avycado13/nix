@@ -39,7 +39,7 @@ jobs:
           token: ${{ secrets.XILO_TOKEN }}
 
       - name: Build devshell
-        run: nix build --no-link .#devShells.$(nix eval --raw --expr 'builtins.currentSystem').default
+        run: nix build --no-link .#devShells.${{ matrix.system }}.default
       - name: Push devshell to Cache
         run: xilo push default/main ./result
 
