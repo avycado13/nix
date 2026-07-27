@@ -249,6 +249,7 @@
               inputs.deploy-rs.packages.${system}.default
               inputs.xilo.packages.${system}.default
               pkgs.devour-flake
+              pkgs.omnix
               (pkgs.writeShellApplication {
                 name = "nix-build-all";
                 runtimeInputs = [
