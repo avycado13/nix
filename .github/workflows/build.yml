@@ -20,6 +20,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v19
+      - name: Add Magic nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
       - id: set-matrix
         run: |
           set -euxo pipefail
@@ -35,7 +37,7 @@ jobs:
                     runner: (
                       if .system == "x86_64-linux" then "ubuntu-latest"
                       elif .system == "aarch64-linux" then "ubuntu-24.04-arm"
-                      elif .system == "aarch64-darwin" then "macos-15"
+                      elif .system == "aarch64-darwin" then "macos-latest"
                       else error("unknown system: \(.system)")
                       end
                     )
@@ -49,6 +51,7 @@ jobs:
   build:
     needs: configure
     runs-on: ${{ matrix.runner }}
+    name: build (${{ matrix.system }})
 
     permissions:
       contents: read
@@ -66,6 +69,8 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v19
+      - name: Add Magic nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Connect to Tailscale
         uses: tailscale/github-action@v4
