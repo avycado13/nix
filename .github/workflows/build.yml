@@ -1,4 +1,3 @@
-
 name: build
 
 on:
@@ -12,46 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  configure:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v19
-      - name: Add Magic nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@main
-      - id: set-matrix
-        run: |
-          set -euxo pipefail
-
-          MATRIX="$(
-            nix develop . \
-              --accept-flake-config \
-              --command om ci gh-matrix \
-                --systems=x86_64-linux,aarch64-darwin,aarch64-linux \
-            | jq -c '
-                .include |= map(
-                  . + {
-                    runner: (
-                      if .system == "x86_64-linux" then "ubuntu-latest"
-                      elif .system == "aarch64-linux" then "ubuntu-24.04-arm"
-                      elif .system == "aarch64-darwin" then "macos-latest"
-                      else error("unknown system: \(.system)")
-                      end
-                    )
-                  }
-                )
-              '
-          )"
-
-          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
-
-  build:
-    needs: configure
+  checks:
     runs-on: ${{ matrix.runner }}
-    name: build (${{ matrix.system }})
 
     permissions:
       contents: read
@@ -60,7 +21,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJson(needs.configure.outputs.matrix) }}
+        include:
+          - runner: ubuntu-latest
+            system: x86_64-linux
+          - runner: macos-latest
+            system: aarch64-darwin
 
     steps:
       - uses: actions/checkout@v4
@@ -69,8 +34,6 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v19
-      - name: Add Magic nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Connect to Tailscale
         uses: tailscale/github-action@v4
@@ -92,17 +55,15 @@ jobs:
           nix build --print-out-paths .#devShells.${{ matrix.system }}.default > devshell-path
 
       - name: Push devshell to cache
-        continue-on-error: true
         run: |
           xilo push default/main "$(cat devshell-path)"
 
       - name: Run om ci
         run: |
-          nix develop . --command \
+          nix develop .#devShells.${{ matrix.system }}.default --command \
             om ci run \
-              --extra-access-tokens "github.com=${{ secrets.GITHUB_TOKEN }}" \
+              --extra-access-tokens ${{ secrets.GITHUB_TOKEN }} \
               --systems "${{ matrix.system }}" \
-              ".#default.${{ matrix.subflake }}" \
               -- --accept-flake-config
 
       # Replace this with a more targeted command if xilo has one.

@@ -246,7 +246,6 @@
               pkgs.nil
               pkgs.cachix
               pkgs.nix-output-monitor
-              pkgs.omnix
               inputs.deploy-rs.packages.${system}.default
               inputs.xilo.packages.${system}.default
               pkgs.devour-flake

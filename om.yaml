@@ -1,4 +1,0 @@
-ci:
-  default:
-    omnix:
-      dir: .
