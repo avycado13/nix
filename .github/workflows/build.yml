@@ -1,3 +1,4 @@
+
 name: build
 
 on:
@@ -12,18 +13,42 @@ concurrency:
 
 jobs:
   configure:
-    runs-on: x86_64-linux
+    runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-     - uses: actions/checkout@v4
-     - id: set-matrix
-       run: |
-         set -euxo pipefail
-         MATRIX="$(om ci gh-matrix --systems=x86_64-linux,aarch64-darwin,aarch64-linux | jq -c .)"
-         echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v19
+      - id: set-matrix
+        run: |
+          set -euxo pipefail
+
+          MATRIX="$(
+            nix develop . \
+              --accept-flake-config \
+              --command om ci gh-matrix \
+                --systems=x86_64-linux,aarch64-darwin,aarch64-linux \
+            | jq -c '
+                .include |= map(
+                  . + {
+                    runner: (
+                      if .system == "x86_64-linux" then "ubuntu-latest"
+                      elif .system == "aarch64-linux" then "ubuntu-24.04-arm"
+                      elif .system == "aarch64-darwin" then "macos-15"
+                      else error("unknown system: \(.system)")
+                      end
+                    )
+                  }
+                )
+              '
+          )"
+
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+
   build:
-    runs-on: ${{ matrix.system }}
+    needs: configure
+    runs-on: ${{ matrix.runner }}
 
     permissions:
       contents: read
@@ -32,8 +57,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          ${{ fromJson(needs.configure.outputs.matrix) }}
+        include: ${{ fromJson(needs.configure.outputs.matrix) }}
+
     steps:
       - uses: actions/checkout@v4
         with:
