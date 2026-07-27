@@ -34,7 +34,8 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v19
-
+      - name: Add Magic nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Connect to Tailscale
         uses: tailscale/github-action@v4
         with:
@@ -62,8 +63,7 @@ jobs:
         run: |
           nix develop .#devShells.${{ matrix.system }}.default --command \
             om ci run \
-              --extra-access-tokens ${{ secrets.GITHUB_TOKEN }} \
-              --systems "${{ matrix.system }}" \
+              --extra-access-tokens ${{ secrets.GITHUB_TOKEN }} -d \
               -- --accept-flake-config
 
       # Replace this with a more targeted command if xilo has one.
