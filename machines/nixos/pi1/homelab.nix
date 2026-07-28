@@ -105,7 +105,7 @@
       };
 
       speedtest-tracker = {
-        enable = true;
+        enable = false;
         url = "speedtest.avyay.in";
         appKeyFile = config.sops.secrets.speedtest-tracker-app-key.path;
       };

@@ -88,4 +88,5 @@ in
     zmx
     inputs.xilo.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
+  nix.settings.auto-optimise-store = true;
 }

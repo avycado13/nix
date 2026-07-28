@@ -23,6 +23,10 @@
 
   boot = {
     kernelPackages = pkgs.linuxPackages_rpi3;
+    kernel.sysctl = {
+      "net.ipv4.conf.all.forwarding" = true;
+      "net.ipv6.conf.all.forwarding" = true;
+    };
     tmp.cleanOnBoot = true;
     swraid.enable = lib.mkForce false;
     supportedFilesystems.zfs = lib.mkForce false;
@@ -43,7 +47,7 @@
   swapDevices = [
     {
       device = "/var/lib/swapfile";
-      size = 4 * 1024; # size in MiB
+      size = 6 * 1024; # size in MiB
     }
   ];
 
@@ -75,7 +79,10 @@
     };
   };
 
-  services.tailscale.enable = true;
+  services.tailscale = {
+    enable = true;
+    extraSetFlags = [ "--advertise-exit-node" ];
+  };
   services.timesyncd.enable = lib.mkForce true;
   services.getty.autologinUser = "avy";
 

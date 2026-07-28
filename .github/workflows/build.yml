@@ -67,8 +67,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          for attempt in {1..5}; do
-            echo "Cache upload attempt ${attempt}/5"
+          for attempt in {1..10}; do
+            echo "Cache upload attempt ${attempt}/10"
 
             if nix-store --gc --print-live | xilo push default/main -; then
               echo "Cache upload succeeded"

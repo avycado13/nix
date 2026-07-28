@@ -152,12 +152,12 @@
         ]
       )
 
-      (mkNixos "pi0" inputs.nixpkgs "aarch64-linux"
-        [ ]
-        [
-          "${inputs.nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
-        ]
-      )
+      # (mkNixos "pi0" inputs.nixpkgs "aarch64-linux"
+      #   [ ]
+      #   [
+      #     "${inputs.nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
+      #   ]
+      # )
 
       (mkNixos "pi1" inputs.nixpkgs "aarch64-linux"
         [ ]
