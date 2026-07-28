@@ -147,15 +147,6 @@ in
       ]
       ++ extraModules;
     };
-    deploy.nodes.${machineHostname} = {
-      hostname = machineHostname;
-      profiles.system = {
-        user = "root";
-        path =
-          inputs.deploy-rs.lib.${hardware}.activate.nixos
-            inputs.self.nixosConfigurations.${machineHostname};
-      };
-    };
   };
 
   mkMerge = inputs.nixpkgs.lib.lists.foldl' (
@@ -180,21 +171,6 @@ in
       ]
       ++ extraHmModules;
       extraSpecialArgs = { inherit inputs; };
-    };
-  };
-
-  mkColmena = _system: _extraModules: {
-    colmenaHive = inputs.colmena.lib.makeHive {
-      meta = {
-        nixpkgs = import inputs.nixpkgs {
-          system = "aarch64-darwin";
-          overlays = [ ];
-          config = {
-            allowUnfree = true;
-            allowUnfreePredicate = _: true;
-          };
-        };
-      };
     };
   };
 }

@@ -30,7 +30,6 @@
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     mac-app-util.url = "github:hraban/mac-app-util";
-    deploy-rs.url = "github:serokell/deploy-rs";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     nix-mineral = {
@@ -57,7 +56,6 @@
       url = "github:hackclub/terminal-wakatime";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    colmena.url = "github:zhaofengli/colmena";
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
     weechat-scripts = {
       url = "github:weechat/scripts";
@@ -107,6 +105,7 @@
     retrom = {
       url = "github:JMBeresford/retrom/latest";
     };
+    late-sh.url = "github:mpiorowski/late-sh";
   };
 
   outputs =
@@ -190,29 +189,6 @@
       )
 
       {
-        # Per-host SSH connection overrides for deploy-rs — mkNixos defaults
-        # `hostname` to the flake attr name, which isn't a resolvable
-        # address/alias for these hosts. Merged over the deploy.nodes.* set
-        # by mkNixos via mkMerge's recursiveUpdate, so profiles.system.path
-        # (already correct) is left untouched.
-        deploy.nodes.oracle = {
-          hostname = "192.9.130.175";
-          sshUser = "root";
-        };
-        deploy.nodes.eclipse = {
-          hostname = "n1.eclipsesystems.org";
-          sshUser = "root";
-          sshOpts = [
-            "-p"
-            "25033"
-          ];
-        };
-        deploy.nodes.pi1 = {
-          hostname = "10.0.0.227";
-          sshUser = "avy";
-        };
-      }
-      {
         overlays.default = _final: prev: {
           devour-flake = prev.callPackage inputs.devour-flake { };
         };
@@ -246,7 +222,6 @@
               pkgs.nil
               pkgs.cachix
               pkgs.nix-output-monitor
-              inputs.deploy-rs.packages.${system}.default
               inputs.xilo.packages.${system}.default
               pkgs.devour-flake
               pkgs.omnix
@@ -275,11 +250,6 @@
           extra-trusted-public-keys = [ "main:dQ6VTlBqbChv4jdFSjf2g9pmylkXFkQEaFXLHuzWfMM=" ];
         };
 
-      }
-      {
-        checks = builtins.mapAttrs (
-          _system: deployLib: deployLib.deployChecks inputs.self.deploy
-        ) inputs.deploy-rs.lib;
       }
     ];
 }

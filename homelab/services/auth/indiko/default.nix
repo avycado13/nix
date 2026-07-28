@@ -6,7 +6,8 @@
 }:
 let
   service = "indiko";
-  cfg = config.homelab.services.${service};
+  hl = config.homelab;
+  cfg = hl.services.${service};
 in
 {
   options.homelab.services.${service} = {
@@ -14,6 +15,7 @@ in
 
     domain = lib.mkOption {
       type = lib.types.str;
+      default = "auth.${hl.baseDomainName}";
       description = "Domain to serve indiko on";
     };
 
@@ -113,10 +115,12 @@ in
         TimeoutStartSec = "120s";
         EnvironmentFile = lib.mkIf (cfg.secretsFile != null) cfg.secretsFile;
         Environment = [
-          "PORT=${toString cfg.port}"
           "ORIGIN=https://${cfg.domain}"
           "RP_ID=${cfg.domain}"
+          "PORT=${toString cfg.port}"
           "NODE_ENV=production"
+          "DATABASE_URL=data/indiko.db"
+          "COOKIE_DOMAIN=.${hl.baseDomainName}"
         ];
 
         NoNewPrivileges = true;

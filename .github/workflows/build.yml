@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  checks:
+  builds:
     runs-on: ${{ matrix.runner }}
 
     permissions:
@@ -26,6 +26,8 @@ jobs:
             system: x86_64-linux
           - runner: macos-latest
             system: aarch64-darwin
+          - runner: ubuntu-24.04-arm
+            system: aarch64-linux
 
     steps:
       - uses: actions/checkout@v4
@@ -50,24 +52,16 @@ jobs:
           url: https://cache.avyay.in
           cache: default/main
           token: ${{ secrets.XILO_TOKEN }}
-
-      - name: Build devshell
+      - name: "Install omnix"
         run: |
-          nix build --print-out-paths .#devShells.${{ matrix.system }}.default > devshell-path
-
-      - name: Push devshell to cache
-        run: |
-          xilo push default/main "$(cat devshell-path)"
-
+           nix profile install nixpkgs#omnix
       - name: Run om ci
         run: |
-          nix develop .#devShells.${{ matrix.system }}.default --command \
             om ci run \
               --extra-access-tokens ${{ secrets.GITHUB_TOKEN }} -d \
               -- --accept-flake-config
 
       # Replace this with a more targeted command if xilo has one.
       - name: Push realized outputs to cache
-        if: success()
         run: |
           nix-store --gc --print-live | xilo push default/main -

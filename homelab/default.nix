@@ -25,7 +25,7 @@
       default = "";
       type = lib.types.str;
       description = ''
-        Base domain name to be used to access the homelab services via Traefik reverse proxy
+        Base domain name to be used to access the homelab services via Caddy reverse proxy
       '';
     };
     cloudflare.dnsCredentialsFile = lib.mkOption {

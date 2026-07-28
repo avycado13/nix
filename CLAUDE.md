@@ -31,7 +31,7 @@ just update                      # nix flake update
 
 ```
 flake.nix               # Entry point; calls mkDarwin/mkNixos per host (Avys-Mac, pi0, pi1, oracle, eclipse, gce)
-flakeHelpers.nix         # mkDarwin, mkNixos, mkHome, mkColmena, mkMerge, nixpkgsCfg — read first for new machines
+flakeHelpers.nix         # mkDarwin, mkNixos, mkHome, mkMerge, nixpkgsCfg — read first for new machines
 machines/
   darwin/
     default.nix          # shared settings for all Darwin machines
@@ -59,7 +59,7 @@ secrets/                  # sops-encrypted secrets.yaml (default) and services.y
 
 ## Architecture
 
-**`flakeHelpers.nix`** is the core abstraction. Defines `mkDarwin`, `mkNixos`, `mkHome`, `mkColmena`, `mkMerge`, and `nixpkgsCfg`. All system configs in `flake.nix` go through these builders (`flake.nix` currently only calls `mkDarwin` and `mkNixos`; `mkHome`/`mkColmena` exist as unused-but-available helpers). Read this file first when adding a new machine or understanding how inputs wire together.
+**`flakeHelpers.nix`** is the core abstraction. Defines `mkDarwin`, `mkNixos`, `mkHome`, `mkMerge`, and `nixpkgsCfg`. All system configs in `flake.nix` go through these builders (`flake.nix` currently only calls `mkDarwin` and `mkNixos`; `mkHome` exists as an unused-but-available helper). Read this file first when adding a new machine or understanding how inputs wire together.
 
 **Layered machine configs:**
 - `machines/<type>/default.nix` — shared settings for all machines of that type (nix settings, binary caches, ssh/sudo defaults)
@@ -136,7 +136,7 @@ Then:
 
 - **Secrets**: `sops-nix`, not agenix. Encrypted files in `secrets/secrets.yaml` (default) and `secrets/services.yaml`; recipients defined in `.sops.yaml` (age keys `avy`/`pi1`, a GPG key, and an AWS KMS key). Age key file at `~/.config/sops/age/keys.txt` plus host SSH host keys are used to decrypt (`modules/secrets/default.nix`). Never commit plaintext secrets.
 - **nixpkgs config**: `allowUnfree = true`, overlays for nix-topology, lazygit, NUR, nix-vscode-extensions, fenix, an ollama MLX-backend-disable patch — applied uniformly via `nixpkgsCfg` in `flakeHelpers.nix`.
-- **Binary caches / substituters**: numtide, colmena, catppuccin, virby, nix-community, garnix, fenix, avycado13 — configured in `modules/nix/default.nix`, shared by all NixOS hosts.
+- **Binary caches / substituters**: numtide, catppuccin, virby, nix-community, garnix, fenix, avycado13 — configured in `modules/nix/default.nix`, shared by all NixOS hosts.
 - **state version**: `"25.05"` across all systems.
 
 ## Formatting

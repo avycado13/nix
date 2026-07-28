@@ -210,6 +210,7 @@ in
     pkgs.pigz
 
     inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.late-sh.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # Scripts
     (pkgs.writeShellScriptBin "aipick" ''
