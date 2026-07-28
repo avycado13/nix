@@ -63,5 +63,24 @@ jobs:
 
       # Replace this with a more targeted command if xilo has one.
       - name: Push realized outputs to cache
+        shell: bash
         run: |
-          nix-store --gc --print-live | xilo push default/main -
+          set -euo pipefail
+
+          for attempt in {1..5}; do
+            echo "Cache upload attempt ${attempt}/5"
+
+            if nix-store --gc --print-live | xilo push default/main -; then
+              echo "Cache upload succeeded"
+              exit 0
+            fi
+
+            if [ "$attempt" -lt 5 ]; then
+              sleep_time=$((2 ** attempt))
+              echo "Upload failed, retrying in ${sleep_time}s..."
+              sleep "$sleep_time"
+            fi
+          done
+
+          echo "Cache upload failed after 5 attempts"
+          exit 1
