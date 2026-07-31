@@ -5,7 +5,6 @@
 }:
 let
   cfg = config.homelab.services.restic;
-  hl = config.homelab;
 in
 {
   options.homelab.services.restic = {
@@ -32,7 +31,6 @@ in
       description = "Paths to back up";
       default = [
         "/var/lib"
-        hl.mounts.config
       ];
     };
     schedule = lib.mkOption {
@@ -64,7 +62,7 @@ in
     };
 
     systemd.services."restic-backups-homelab".serviceConfig.OnFailure = lib.mkIf (
-      hl.notifications.ntfySecretsFile != null
+      config.homelab.notifications.ntfySecretsFile != null
     ) "notify-failure@%n.service";
   };
 }

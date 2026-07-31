@@ -25,9 +25,8 @@ let
   homeManagerCfg =
     {
       userPackages,
-      system ? "aarch64-darwin",
       extraImports ? [ ],
-      lib,
+      pkgs,
     }:
     {
       home-manager.useGlobalPkgs = false;
@@ -45,7 +44,7 @@ let
         ./users/avy/sops.nix
       ]
       ++ (
-        if (lib.hasSuffix "-darwin" system) then
+        if (pkgs.stdenv.isDarwin) then
           [
             inputs.mac-app-util.homeManagerModules.default
           ]
@@ -101,9 +100,8 @@ in
         }
         (homeManagerCfg {
           userPackages = true;
-          system = system;
           extraImports = extraHmModules;
-          lib = inputs.nixpkgs.lib;
+          pkgs = inputs.nixpkgs.legacyPackages.${system};
         })
       ]
       ++ extraModules;

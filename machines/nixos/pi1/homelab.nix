@@ -27,11 +27,11 @@
       sopsFile = ../../../secrets/secrets.yaml;
       key = "ntfy_topic";
     };
-    speedtest-tracker-app-key = {
-      sopsFile = ../../../secrets/services.yaml;
-      key = "speedtest-tracker/app_key";
-      owner = "speedtest-tracker";
-    };
+    # speedtest-tracker-app-key = {
+    #   sopsFile = ../../../secrets/services.yaml;
+    #   key = "speedtest-tracker/app_key";
+    #   owner = "speedtest-tracker";
+    # };
     xilo-env = {
       sopsFile = ../../../secrets/services.yaml;
       key = "xilo/env";
@@ -43,6 +43,15 @@
     xilo-gcs-secret-key = {
       sopsFile = ../../../secrets/services.yaml;
       key = "xilo/gcs_secret_key";
+    };
+
+    restic-repository-password = {
+      sopsFile = ../../../secrets/services.yaml;
+      key = "restic/repository_password";
+    };
+    restic-b2-credentials = {
+      sopsFile = ../../../secrets/services.yaml;
+      key = "restic/b2_credentials";
     };
 
     retrom-igdb-client-id = {
@@ -104,11 +113,11 @@
         url = "uptime.avyay.in";
       };
 
-      speedtest-tracker = {
-        enable = false;
-        url = "speedtest.avyay.in";
-        appKeyFile = config.sops.secrets.speedtest-tracker-app-key.path;
-      };
+      # speedtest-tracker = {
+      #   enable = false;
+      #   url = "speedtest.avyay.in";
+      #   appKeyFile = config.sops.secrets.speedtest-tracker-app-key.path;
+      # };
 
       xilo = {
         enable = true;
@@ -148,6 +157,13 @@
           clientId = config.sops.placeholder.retrom-igdb-client-id;
           clientSecret = config.sops.placeholder.retrom-igdb-client-secret;
         };
+      };
+
+      restic = {
+        enable = true;
+        repository = "b2:avyrestic:pi1";
+        passwordFile = config.sops.secrets.restic-repository-password.path;
+        environmentFile = config.sops.secrets.restic-b2-credentials.path;
       };
     };
   };

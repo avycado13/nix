@@ -27,6 +27,7 @@ in
     ./dotfiles/devenv/default.nix
     ./dotfiles/theme/default.nix
     ./dotfiles/syncthing/default.nix
+    ./dotfiles/restic/default.nix
     # ./dotfiles/email/default.nix
   ];
 

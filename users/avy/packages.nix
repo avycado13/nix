@@ -50,19 +50,6 @@ let
     ) ai
   );
 
-  # nixpkgs' bundled ld64 crashes (exit 133) linking caligula's rust+objc
-  # code against newer Xcode toolchains; force lld instead.
-  caligula-pkg =
-    if pkgs.stdenv.hostPlatform.isDarwin then
-      pkgs.caligula.overrideAttrs (old: {
-        nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.lld ];
-        env = (old.env or { }) // {
-          RUSTFLAGS = "-C link-arg=-fuse-ld=lld " + (old.env.RUSTFLAGS or "");
-        };
-      })
-    else
-      pkgs.caligula;
-
   irc-pkg = pkgs.weechat.override {
     configure =
       { availablePlugins, ... }:
@@ -107,7 +94,7 @@ in
     pkgs.fastfetch
     pkgs.git-extras
     pkgs.devenv
-    caligula-pkg
+    pkgs.caligula
     pkgs.manix
     pkgs.nh
     pkgs.nix-bisect
@@ -142,6 +129,7 @@ in
     pkgs.cmake
     pkgs.wakatime-cli
     pkgs.cmus
+    pkgs.restic
     pkgs.gum
     pkgs.jq
     pkgs.ts

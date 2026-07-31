@@ -19,6 +19,7 @@
   environment.systemPackages = with pkgs; [
     libraspberrypi
     raspberrypi-eeprom
+    iw
   ];
 
   boot = {
@@ -40,6 +41,10 @@
       "usbhid"
       "usb_storage"
     ];
+    kernelParams = [ "dwc_otg.fiq_fsm_mask=0x3" ];
+    extraModprobeConfig = ''
+      options brcmfmac roamoff=1 pm_config=1
+    '';
   };
 
   services.openssh.settings.PermitRootLogin = lib.mkForce "yes";
@@ -47,7 +52,7 @@
   swapDevices = [
     {
       device = "/var/lib/swapfile";
-      size = 6 * 1024; # size in MiB
+      size = 4 * 1024; # size in MiB
     }
   ];
 
@@ -132,4 +137,14 @@
   };
 
   system.stateVersion = "25.05";
+  systemd.services.wifi-powersave-off = {
+    description = "Disable WiFi power saving";
+    after = [ "sys-subsystem-net-devices-wlan0.device" ];
+    bindsTo = [ "sys-subsystem-net-devices-wlan0.device" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.iw}/bin/iw dev wlan0 set power_save off";
+    };
+  };
 }

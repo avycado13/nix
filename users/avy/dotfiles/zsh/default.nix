@@ -4,65 +4,92 @@
   lib,
   ...
 }:
+
 {
   home.sessionPath = [
     "$HOME/finance/bin"
     "$HOME/.local/bin"
   ];
+
   programs = {
-    nix-index-database.comma.enable = true;
-    starship = {
+    atuin = {
       enable = true;
+      enableZshIntegration = true;
 
       settings = {
-        add_newline = false;
-        #   format = "$env_var.zmx$all";
-
-        # env_var = {
-        #   zmx = {
-        #     variable = "ZMX_SESSION";
-        #     format = "[$env_value] ";
-        #   };
-        # };
-        gcloud = {
-          detect_env_vars = [ "GOOGLE_CLOUD" ];
-        };
-        aws = {
-          disabled = true;
-        };
+        auto_sync = true;
+        sync_frequency = "5m";
+        sync_address = "https://api.atuin.sh";
+        search_mode = "fuzzy";
+        session_path = config.sops.secrets.atuin-session.path;
+        key_path = config.sops.secrets.atuin-key.path;
       };
     };
+
+    bat.enable = true;
+
+    direnv = {
+      enable = true;
+      enableZshIntegration = true;
+      nix-direnv.enable = true;
+    };
+
+    eza = {
+      enable = true;
+      enableZshIntegration = true;
+      git = true;
+      colors = "auto";
+      icons = "auto";
+    };
+
+    fd.enable = true;
+
+    fzf = {
+      enable = true;
+      enableZshIntegration = true;
+
+      historyWidget.command = "";
+
+      colors = {
+        # fg = "#D8DEE9";
+        # bg = "#2E3440";
+        # hl = "#A3BE8C";
+        # "fg+" = "#D8DEE9";
+        # "bg+" = "#434C5E";
+        # "hl+" = "#A3BE8C";
+        # pointer = "#BF616A";
+        # info = "#4C566A";
+        # spinner = "#4C566A";
+        # header = "#4C566A";
+        # prompt = "#81A1C1";
+        # marker = "#EBCB8B";
+      };
+    };
+
+    lazydocker.enable = true;
+
     navi = {
       enable = true;
+
       # Loaded via zsh-defer in initContent instead (only binds a widget, so it
       # doesn't need to block the first prompt).
       enableZshIntegration = false;
-      settings = {
-        cheats = {
-          paths = [
-            "~/cheats/"
-          ];
-        };
-      };
+
+      settings.cheats.paths = [
+        "~/cheats/"
+      ];
     };
-    rclone.enable = true;
-    bat = {
-      enable = true;
-    };
+
     nix-index = {
       enable = true;
       enableZshIntegration = true;
     };
-    zoxide = {
-      enable = true;
-      enableZshIntegration = true;
-      options = [ "--cmd cd" ];
-    };
-    fd.enable = true;
-    pandoc.enable = true;
+
+    nix-index-database.comma.enable = true;
 
     nix-search-tv = {
       enable = true;
+
       settings = {
         indexes = [
           "nixpkgs"
@@ -72,6 +99,7 @@
           "noogle"
           "darwin"
         ];
+
         experimental.options_file = {
           # sops-nix-home = mkOpts pkgs.stdenv.hostPlatform.system inputs.sops-nix.homeModules.default;
           # sops-nix-darwin = mkOpts pkgs.stdenv.hostPlatform.system inputs.sops-nix.darwinModules.default;
@@ -79,30 +107,68 @@
           # catppuccin-home = mkOpts pkgs.stdenv.hostPlatform.system inputs.catppuccin.homeModules.default;
           # catppuccin-nixos = mkOpts pkgs.stdenv.hostPlatform.system inputs.catppuccin.nixosModules.default;
         };
-        render_docs_indexes = {
-          home-manager = "https://nix-community.github.io/home-manager/options.xhtml";
-        };
+
+        render_docs_indexes.home-manager = "https://nix-community.github.io/home-manager/options.xhtml";
       };
     };
+
+    pandoc.enable = true;
+
+    rclone.enable = true;
+
+    ripgrep.enable = true;
+
+    starship = {
+      enable = true;
+
+      settings = {
+        add_newline = false;
+
+        # format = "$env_var.zmx$all";
+        #
+        # env_var = {
+        #   zmx = {
+        #     variable = "ZMX_SESSION";
+        #     format = "[$env_value] ";
+        #   };
+        # };
+
+        aws.disabled = true;
+
+        gcloud.detect_env_vars = [
+          "GOOGLE_CLOUD"
+        ];
+      };
+    };
+
+    yazi = {
+      enable = true;
+      enableZshIntegration = true;
+      shellWrapperName = "y";
+    };
+
     yt-dlp = {
       enable = true;
+
       extraConfig = ''
         --ffmpeg-location ${lib.getExe pkgs.ffmpeg}
       '';
     };
-    direnv = {
+
+    zoxide = {
       enable = true;
       enableZshIntegration = true;
-      nix-direnv.enable = true;
+      options = [ "--cmd cd" ];
     };
-    ripgrep = {
-      enable = true;
-    };
+
     zsh = {
       enable = true;
       enableCompletion = true;
+
       antidote = {
         enable = true;
+        useFriendlyNames = true;
+
         plugins = [
           # Deferred loading: lets us push non-essential init off the critical
           # path so the prompt renders immediately. Must load first.
@@ -123,8 +189,8 @@
           # "Aloxaf/fzf-tab"
           "unixorn/git-extra-commands kind:clone branch:main"
         ];
-        useFriendlyNames = true;
       };
+
       plugins = [
         {
           name = pkgs.zsh-fzf-tab.pname;
@@ -141,150 +207,137 @@
           file = "fzf-zsh-plugin.zsh";
         }
       ];
+
       syntaxHighlighting.enable = true;
       autosuggestion.enable = true;
       historySubstringSearch.enable = true;
+
       shellAliases = {
-        fzmanix = "'${lib.getExe pkgs.manix}' | rg '^# ' | sed 's/^# \\(.*\\) (.*/\\1/;s/ (.*//;s/^# //' | fzf --preview=\"${lib.getExe pkgs.manix} '{}'\" | xargs manix";
+        ash = "${lib.getExe pkgs.autossh} -M 0 -q";
+        aspm = "sudo lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM )'";
+        b = "${lib.getExe pkgs.buku} --suggest";
         cat = "${lib.getExe pkgs.bat}";
-        ls = "${lib.getExe pkgs.eza}";
+        cfip = ''dig @1.1.1.1 ch txt whoami.cloudflare +short | tr -d '"' '';
+        cp = "cp -iv";
         df = "df -h";
         du = "du -ch";
-        ipp = "${lib.getExe pkgs.curl} ipinfo.io/ip";
-        yh = "${lib.getExe pkgs.yt-dlp} --continue --no-check-certificate --format=bestvideo+bestaudio --exec='ffmpeg -i {} -c:a copy -c:v copy {}.mkv && rm {}'";
-        yd = "${lib.getExe pkgs.yt-dlp} --continue --no-check-certificate --format=bestvideo+bestaudio --exec='ffmpeg -i {} -c:v prores_ks -profile:v 1 -vf fps=25/1 -pix_fmt yuv422p -c:a pcm_s16le {}.mov && rm {}'";
-        ya = "${lib.getExe pkgs.yt-dlp} --continue --no-check-certificate --format=bestaudio -x --audio-format wav";
-        yam = "${lib.getExe pkgs.yt-dlp} --embed-metadata --embed-thumbnail -x --audio-format m4a -o '%(title)s.%(ext)s'";
-        ols = "ls -la --color=never | awk '{k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/)*2^(8-i));if(k)printf(\" %0o \",k);print}'";
-        fzkill = "(date; ps -ef) |
-  ${lib.getExe pkgs.fzf} --bind='ctrl-r:reload(date; ps -ef)' \
-      --header=$'Press CTRL-R to reload\n\n' --header-lines=2 \
-      --preview='echo {}' --preview-window=down,3,wrap \
-      --layout=reverse --height=80% | awk '{print $2}' | xargs kill -9";
-        aspm = "sudo lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM )'";
-        mkdir = "mkdir -p";
-        rm = "rm -iv";
-        cp = "cp -iv";
-        mv = "mv -iv";
-        cfip = ''dig @1.1.1.1 ch txt whoami.cloudflare +short | tr -d '"' '';
-        rr = "rm -Rf";
+        fzmanix = "'${lib.getExe pkgs.manix}' | rg '^# ' | sed 's/^# \\(.*\\) (.*/\\1/;s/ (.*//;s/^# //' | fzf --preview=\"${lib.getExe pkgs.manix} '{}'\" | xargs manix";
+
+        fzkill = ''
+          (date; ps -ef) |
+            ${lib.getExe pkgs.fzf} --bind='ctrl-r:reload(date; ps -ef)' \
+              --header=$'Press CTRL-R to reload\n\n' --header-lines=2 \
+              --preview='echo {}' --preview-window=down,3,wrap \
+              --layout=reverse --height=80% |
+            awk '{print $2}' | xargs kill -9
+        '';
+
         ghrpc = "${lib.getExe pkgs.gh} repo create -c";
         goops = "${lib.getExe pkgs.git} commit --amend --no-edit && ${lib.getExe pkgs.git} push --force-with-lease";
+        ipp = "${lib.getExe pkgs.curl} ipinfo.io/ip";
         jsenv = "${lib.getExe pkgs.ripgrep} -o --no-filename 'process\\.env\\.[A-Z0-9_]+' | sort -u | awk -F. '{print $3\"=\\\"\\\"\"}'";
-        b = "${lib.getExe pkgs.buku} --suggest";
-        ash = "${lib.getExe pkgs.autossh} -M 0 -q";
+        ls = "${lib.getExe pkgs.eza}";
+        mkdir = "mkdir -p";
+        mv = "mv -iv";
+        ols = "ls -la --color=never | awk '{k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/)*2^(8-i));if(k)printf(\" %0o \",k);print}'";
+        rm = "rm -iv";
+        rr = "rm -Rf";
+        ya = "${lib.getExe pkgs.yt-dlp} --continue --no-check-certificate --format=bestaudio -x --audio-format wav";
+        yam = "${lib.getExe pkgs.yt-dlp} --embed-metadata --embed-thumbnail -x --audio-format m4a -o '%(title)s.%(ext)s'";
+        yd = "${lib.getExe pkgs.yt-dlp} --continue --no-check-certificate --format=bestvideo+bestaudio --exec='ffmpeg -i {} -c:v prores_ks -profile:v 1 -vf fps=25/1 -pix_fmt yuv422p -c:a pcm_s16le {}.mov && rm {}'";
+        yh = "${lib.getExe pkgs.yt-dlp} --continue --no-check-certificate --format=bestvideo+bestaudio --exec='ffmpeg -i {} -c:a copy -c:v copy {}.mkv && rm {}'";
       };
 
       initContent = ''
-                # zmodload zsh/zprof
+        # zmodload zsh/zprof
 
-                    mkdir -p "$HOME/Library/pnpm"
-                    export PNPM_HOME="$HOME/Library/pnpm"
-                    export PATH="$PNPM_HOME:$PATH"
-                    export ANDROID_HOME="$HOME/Library/Android/sdk"
-                    export ANDROID_SDK_ROOT="$ANDROID_HOME"
-                    export PATH="$PATH:$ANDROID_HOME/platform-tools"
-                    export PATH="$HOME/.cargo/bin:$PATH"
-                    export PATH="$HOME/.bun/bin:$PATH"
-                    fancy-ctrl-z() {
-                  if [[ -z $BUFFER ]]; then
-                    BUFFER="fg"
-                    zle accept-line
-                  else
-                    zle push-input
-                    zle clear-screen
-                  fi
-                }
-                zle -N fancy-ctrl-z
-                bindkey '^Z' fancy-ctrl-z
+        ${lib.optionalString pkgs.stdenv.isDarwin ''
+          mkdir -p "$HOME/Library/pnpm"
+          export PNPM_HOME="$HOME/Library/pnpm"
+          export PATH="$PNPM_HOME:$PATH"
 
-                    
-                    bindkey '^B' autosuggest-toggle
-                    # Make Ctrl+W remove one path segment instead of the whole path
-                    WORDCHARS=''${WORDCHARS/\/}
+          export ANDROID_HOME="$HOME/Library/Android/sdk"
+          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+          export PATH="$PATH:$ANDROID_HOME/platform-tools"
 
-                    # Highlight the selected suggestion
-                    zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
-                    zstyle ':completion:*' menu yes=long select
+          export PATH="$HOME/.cargo/bin:$PATH"
+          export PATH="$HOME/.bun/bin:$PATH"
+        ''}
+        ${lib.optionalString pkgs.stdenv.isDarwin ''
+          # Use Apple's toolchain for native builds. nix's cc/clang
+          # don't wire in the macOS SDK, so cgo/cargo/cmake links fail
+          # with "library not found" (e.g. -lresolv). Apple's cc
+          # handles SDK, frameworks, and code signing natively.
+          # Respected by cgo ($CC), cargo, cmake, etc.
+          export CC=/usr/bin/cc
+          export CXX=/usr/bin/c++
+        ''}
 
-                      if [ $(uname) = "Darwin" ]; then
-                        path=("$HOME/.nix-profile/bin" "/run/wrappers/bin" "/etc/profiles/per-user/$USER/bin" "/nix/var/nix/profiles/default/bin" "/run/current-system/sw/bin" "/opt/homebrew/bin" $path)
-                        export DOCKER_HOST="unix://$HOME/.colima/default/docker.sock"
-                        alias flush-dns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
-                        alias lsblk="diskutil list"
-                        builtin ulimit -n 2048
-                      fi
-                      export LANG=en_US.UTF-8
-                      export LC_CTYPE=en_US.UTF-8
-                      export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+        fancy-ctrl-z() {
+          if [[ -z $BUFFER ]]; then
+            BUFFER="fg"
+            zle accept-line
+          else
+            zle push-input
+            zle clear-screen
+          fi
+        }
 
+        zle -N fancy-ctrl-z
+        bindkey '^Z' fancy-ctrl-z
 
+        bindkey '^B' autosuggest-toggle
 
-                      if command -v motd &> /dev/null
-                      then
-                        motd
-                      fi
-                      bindkey -e
+        # Make Ctrl+W remove one path segment instead of the whole path
+        WORDCHARS=''${WORDCHARS/\/}
 
-                      # Defer non-prompt-critical integrations so the first prompt
-                      # renders immediately; these finish loading right after it appears.
-                      # The single-quoted inner string ensures the subprocess only runs
-                      # when zsh-defer fires (not at startup).
-                      zsh-defer eval 'eval "$(terminal-wakatime init)"'
-                      zsh-defer eval 'eval "$(navi widget zsh)"'
-                      bindkey '^[n' _navi_widget
-                      bindkey -r '^G' # remove ^G mapping for navi
+        # Highlight the selected suggestion
+        zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
+        zstyle ':completion:*' menu yes=long select
 
-                      mdc() { mkdir -p "$1" && cd "$1"; }
+        ${lib.optionalString pkgs.stdenv.isDarwin ''
+          path=(
+            "$HOME/.nix-profile/bin"
+            "/run/wrappers/bin"
+            "/etc/profiles/per-user/$USER/bin"
+            "/nix/var/nix/profiles/default/bin"
+            "/run/current-system/sw/bin"
+            "/opt/homebrew/bin"
+            $path
+          )
+
+          export DOCKER_HOST="unix://$HOME/.colima/default/docker.sock"
+
+          alias flush-dns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
+          alias lsblk="diskutil list"
+
+          builtin ulimit -n 2048
+        ''}
+
+        export LANG=en_US.UTF-8
+        export LC_CTYPE=en_US.UTF-8
+        export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+
+        if command -v motd &> /dev/null; then
+          motd
+        fi
+
+        bindkey -e
+
+        # Defer non-prompt-critical integrations so the first prompt
+        # renders immediately; these finish loading right after it appears.
+        eval "$(terminal-wakatime init)"
+        zsh-defer eval 'eval "$(navi widget zsh)"'
+
+        bindkey '^[n' _navi_widget
+        bindkey -r '^G'
+
+        mdc() {
+          mkdir -p "$1" && cd "$1"
+        }
+
         # zprof
       '';
     };
-    eza = {
-      enable = true;
-      enableZshIntegration = true;
-      git = true;
-      colors = "auto";
-      icons = "auto";
-    };
-    fzf = {
-      enable = true;
-      enableZshIntegration = true;
-      historyWidget.command = "";
-      colors = {
-        # fg = "#D8DEE9";
-        # bg = "#2E3440";
-        # hl = "#A3BE8C";
-        # "fg+" = "#D8DEE9";
-        # "bg+" = "#434C5E";
-        # "hl+" = "#A3BE8C";
-        # pointer = "#BF616A";
-        # info = "#4C566A";
-        # spinner = "#4C566A";
-        # header = "#4C566A";
-        # prompt = "#81A1C1";
-        # marker = "#EBCB8B";
-      };
-    };
-    lazydocker = {
-      enable = true;
-    };
-    yazi = {
-      enable = true;
-      enableZshIntegration = true;
-      shellWrapperName = "y";
-    };
-    atuin = {
-      enable = true;
-      enableZshIntegration = true;
-      settings = {
-        auto_sync = true;
-        sync_frequency = "5m";
-        sync_address = "https://api.atuin.sh";
-        search_mode = "fuzzy";
-        session_path = config.sops.secrets.atuin-session.path;
-        key_path = config.sops.secrets.atuin-key.path;
-      };
-    };
   };
-
 }

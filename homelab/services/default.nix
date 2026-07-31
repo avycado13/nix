@@ -85,6 +85,6 @@
     # ./ntfy
     # ./healthchecks
     # ./scrutiny
-    # ./restic
+    ./restic
   ];
 }
