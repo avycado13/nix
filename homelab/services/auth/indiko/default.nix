@@ -76,6 +76,7 @@ in
 
     systemd.tmpfiles.rules = [
       "d ${cfg.dataDir} 0755 ${service} ${service} -"
+      "d ${cfg.dataDir}/data 0755 ${service} ${service} -"
     ];
 
     systemd.services.${service} = {
@@ -89,6 +90,14 @@ in
 
       preStart = ''
         set -e
+        for f in indiko.db indiko.db-wal indiko.db-shm; do
+          if [ -e ${cfg.dataDir}/app/data/$f ] && [ ! -e ${cfg.dataDir}/data/$f ]; then
+            mv ${cfg.dataDir}/app/data/$f ${cfg.dataDir}/data/$f
+          fi
+        done
+        if [ -d ${cfg.dataDir}/app/.git ] && [ "$(${pkgs.git}/bin/git -C ${cfg.dataDir}/app remote get-url origin)" != "${cfg.repository}" ]; then
+          rm -rf ${cfg.dataDir}/app
+        fi
         if [ ! -d ${cfg.dataDir}/app/.git ]; then
           ${pkgs.git}/bin/git clone -b ${cfg.branch} ${cfg.repository} ${cfg.dataDir}/app
         fi
@@ -119,7 +128,7 @@ in
           "RP_ID=${cfg.domain}"
           "PORT=${toString cfg.port}"
           "NODE_ENV=production"
-          "DATABASE_URL=data/indiko.db"
+          "DATABASE_URL=${cfg.dataDir}/data/indiko.db"
           "COOKIE_DOMAIN=.${hl.baseDomainName}"
         ];
 

@@ -24,6 +24,15 @@ in
       description = "Shoutrrr notification URLs for disk failure alerts";
       example = [ "ntfy://ntfy.example.com/disk-alerts" ];
     };
+    glance.name = lib.mkOption {
+      type = lib.types.str;
+      default = "Scrutiny";
+    };
+    glance.url = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = "https://${cfg.domain}";
+      description = "URL to show for this service in the Glance homelab bookmarks";
+    };
   };
 
   config = lib.mkIf cfg.enable {

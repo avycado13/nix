@@ -89,8 +89,8 @@
       auth.enable = true;
       indiko = {
         domain = "auth.avyay.in";
-        # repository = "https://tangled.org/dunkirk.sh/indiko";
-        repository = "https://tangled.org/avycado13.tngl.sh/indiko";
+        repository = "https://tangled.org/dunkirk.sh/indiko";
+        # repository = "https://tangled.org/avycado13.tngl.sh/indiko";
         branch = "main";
         autoUpdate = true;
       };
@@ -107,17 +107,6 @@
         enable = true;
         url = "glance.avyay.in";
       };
-
-      uptime-kuma = {
-        enable = true;
-        url = "uptime.avyay.in";
-      };
-
-      # speedtest-tracker = {
-      #   enable = false;
-      #   url = "speedtest.avyay.in";
-      #   appKeyFile = config.sops.secrets.speedtest-tracker-app-key.path;
-      # };
 
       xilo = {
         enable = true;
@@ -164,6 +153,11 @@
         repository = "b2:avyrestic:pi1";
         passwordFile = config.sops.secrets.restic-repository-password.path;
         environmentFile = config.sops.secrets.restic-b2-credentials.path;
+      };
+
+      scrutiny = {
+        enable = true;
+        domain = "scrutiny.avyay.in";
       };
     };
   };

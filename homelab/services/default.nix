@@ -6,7 +6,7 @@
 }:
 {
   options.homelab.services = {
-    enable = lib.mkEnableOption "Containerized services for the homelab";
+    enable = lib.mkEnableOption "Services for the homelab";
   };
 
   config = lib.mkIf config.homelab.services.enable {
@@ -77,14 +77,10 @@
     ./miniflux
     ./auth
     ./glance
-    ./uptime-kuma
-    ./speedtest-tracker
     ./xilo
     ./retrom
     ./cloudrun
-    # ./ntfy
-    # ./healthchecks
-    # ./scrutiny
+    ./scrutiny
     ./restic
   ];
 }
