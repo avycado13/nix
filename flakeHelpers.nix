@@ -151,8 +151,8 @@ in
     a: b: inputs.nixpkgs.lib.attrsets.recursiveUpdate a b
   ) { };
 
-  mkHome = _hostname: username: homePath: nixpkgsVersion: extraHmModules: {
-    homeConfigurations.${username} = inputs.home-manager.lib.homeManagerConfiguration {
+  mkHome = name: username: homePath: nixpkgsVersion: extraHmModules: {
+    homeConfigurations.${name} = inputs.home-manager.lib.homeManagerConfiguration {
       pkgs = import nixpkgsVersion { system = builtins.currentSystem or "x86_64-linux"; };
       modules = [
         inputs.sops-nix.homeManagerModules.sops

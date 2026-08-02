@@ -99,7 +99,6 @@
       pkgs.fenix.targets.x86_64-unknown-linux-musl.latest.rust-std
       pkgs.fenix.targets.armv7-unknown-linux-gnueabihf.latest.rust-std
     ])
-    inputs.gws-cli.packages.${pkgs.stdenv.hostPlatform.system}.gws
     # ruby
     pkgs.ruby
     # pkgs.bundler
