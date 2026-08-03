@@ -28,7 +28,6 @@ in
     ./dotfiles/theme/default.nix
     ./dotfiles/syncthing/default.nix
     ./dotfiles/restic/default.nix
-    # ./dotfiles/email/default.nix
   ];
 
   programs.home-manager.enable = true;
