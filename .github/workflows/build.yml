@@ -13,6 +13,7 @@ concurrency:
 jobs:
   builds:
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
 
     permissions:
       contents: read
