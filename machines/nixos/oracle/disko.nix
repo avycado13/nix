@@ -9,16 +9,16 @@
   # fileSystems."/" and fileSystems."/boot" at normal priority, assuming a
   # by-label layout that doesn't match this disk.
   fileSystems."/" = lib.mkForce {
-    device = "/dev/disk/by-uuid/e589f498-db66-4f31-b742-997eddb4ee7d";
+    device = "/dev/disk/by-uuid/cdf7e9dc-84a2-415d-983d-9d6afc5e84d5";
     fsType = "ext4";
   };
 
   fileSystems."/boot/efi" = {
-    device = "/dev/disk/by-uuid/B8AD-01FE";
+    device = "/dev/disk/by-uuid/892C-AA6D";
     fsType = "vfat";
     options = [
-      "fmask=0022"
-      "dmask=0022"
+      "fmask=0077"
+      "dmask=0077"
     ];
   };
 }

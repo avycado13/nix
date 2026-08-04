@@ -16,11 +16,14 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
   boot.initrd.availableKernelModules = [
+    "ata_piix"
+    "uhci_hcd"
     "xhci_pci"
     "virtio_scsi"
     "virtio_pci"
     "virtio_net"
   ];
+  boot.kernelModules = [ "kvm-amd" ];
   # Oracle Cloud ESP is not writable during nixos-rebuild; skip bootloader installation
   system.build.installBootLoader = lib.mkForce (pkgs.writeShellScript "no-bootloader" "exit 0");
   boot.tmp.cleanOnBoot = true;

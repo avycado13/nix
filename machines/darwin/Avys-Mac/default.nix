@@ -8,6 +8,7 @@
   imports = [
     ./ricing.nix
     ./system.nix
+    ./home.nix
   ];
   homebrew = {
     enable = true;

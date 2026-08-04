@@ -16,8 +16,7 @@ in
   home = home;
 
   imports = [
-    ./dotfiles/zsh/default.nix
-    ./dotfiles/zellij/default.nix
+    ./dotfiles/shell/default.nix
     ./dotfiles/editor/default.nix
     ./dotfiles/ssh/default.nix
     ./packages.nix
@@ -28,6 +27,8 @@ in
     ./dotfiles/theme/default.nix
     ./dotfiles/syncthing/default.nix
     ./dotfiles/restic/default.nix
+    ./dotfiles/irc/default.nix
+    ./dotfiles/media/default.nix
   ];
 
   programs.home-manager.enable = true;
