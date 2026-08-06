@@ -184,8 +184,8 @@ in
           setEnv.SECRET = "USQSiYZJlqmgqgzNsqfkdKtq";
         };
         "oracle" = {
-          user = "ubuntu";
-          hostname = "192.9.245.222";
+          user = "root";
+          hostname = "167.234.216.241";
         };
         "eclipse" = {
           user = "root";
@@ -210,10 +210,12 @@ in
         "pi1" = {
           user = "avy";
           hostname = "10.0.0.227";
+          identityFile = identity;
         };
         "p.*" = {
           hostname = "10.0.0.227";
           zmx = true;
+          identityFile = identity;
         };
       };
       description = "SSH host configurations";
@@ -326,6 +328,26 @@ in
         defaultBlock // hostSettings // zmxPatternSettings;
 
       extraConfig = cfg.extraConfig;
+    };
+    programs.zsh.shellAliases = mkIf cfg.zmx.enable {
+      zmls = "${lib.getExe pkgs.zmx} list";
+      zmk = "${lib.getExe pkgs.zmx} kill";
+      zma = "${lib.getExe pkgs.zmx} attach";
+      ash = "${lib.getExe pkgs.autossh} -M 0 -q";
+    };
+
+    programs.bash.shellAliases = mkIf cfg.zmx.enable {
+      zmls = "${lib.getExe pkgs.zmx} list";
+      zmk = "${lib.getExe pkgs.zmx} kill";
+      zma = "${lib.getExe pkgs.zmx} attach";
+      ash = "${lib.getExe pkgs.autossh} -M 0 -q";
+    };
+
+    programs.fish.shellAliases = mkIf cfg.zmx.enable {
+      zmls = "${lib.getExe pkgs.zmx} list";
+      zmk = "${lib.getExe pkgs.zmx} kill";
+      zma = "${lib.getExe pkgs.zmx} attach";
+      ash = "${lib.getExe pkgs.autossh} -M 0 -q";
     };
   };
 }

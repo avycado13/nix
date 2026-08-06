@@ -40,6 +40,7 @@ in
     ];
   };
 
+  programs.nix-index-database.comma.enable = true;
   security.sudo = {
     enable = true;
     extraRules = [

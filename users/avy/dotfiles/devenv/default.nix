@@ -19,7 +19,7 @@ let
       amp
       copilot-cli
       crush
-      # pi
+      pi
       opencode
       antigravity-cli
       grok

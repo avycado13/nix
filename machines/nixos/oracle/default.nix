@@ -1,20 +1,16 @@
 {
-  pkgs,
-  lib,
   modulesPath,
   ...
 }:
 {
   imports = [
     (modulesPath + "/profiles/qemu-guest.nix")
-    ./disko.nix
+    # ./disko.nix
   ];
 
   # Boot configuration for Oracle Cloud (UEFI)
   # The cloud image ESP is mounted at /boot/efi, not /boot.
   boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/boot/efi";
   boot.initrd.availableKernelModules = [
     "ata_piix"
     "uhci_hcd"
@@ -25,20 +21,19 @@
   ];
   boot.kernelModules = [ "kvm-amd" ];
   # Oracle Cloud ESP is not writable during nixos-rebuild; skip bootloader installation
-  system.build.installBootLoader = lib.mkForce (pkgs.writeShellScript "no-bootloader" "exit 0");
   boot.tmp.cleanOnBoot = true;
 
-  networking = {
-    hostName = "oracle";
-    hostId = "b3316d41";
-    useDHCP = false;
-    interfaces.ens3.useDHCP = true;
-  };
-
+  networking.useDHCP = true;
   users.users.avy.extraGroups = [
     "wheel"
     "docker"
   ];
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 8192;
+    }
+  ];
 
-  system.stateVersion = "25.05";
+  system.stateVersion = "26.05";
 }

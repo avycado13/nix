@@ -63,6 +63,11 @@
       key = "retrom/igdb_client_secret";
     };
 
+    isponsorblocktv-living-room-tv-screen-id = {
+      sopsFile = ../../../secrets/services.yaml;
+      key = "isponsorblocktv/living_room_tv_screen_id";
+    };
+
   };
 
   services.fail2ban-cloudflare = {
@@ -158,6 +163,18 @@
       scrutiny = {
         enable = true;
         domain = "scrutiny.avyay.in";
+      };
+
+      isponsorblocktv = {
+        enable = true;
+        devices = [
+          {
+            screenId = config.sops.placeholder.isponsorblocktv-living-room-tv-screen-id;
+            name = "[LG] webOS TV OLED55C8PUA";
+          }
+        ];
+        muteAds = true;
+        skipAds = true;
       };
     };
   };

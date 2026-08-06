@@ -118,38 +118,7 @@
         ;
     in
     mkMerge [
-      (mkDarwin "Avys-Mac" inputs.nixpkgs "aarch64-darwin"
-        [ ]
-        [
-          # {
-          #   nix.distributedBuilds = true;
-          #   nix.buildMachines = [
-          #     {
-          #       hostName = "localhost";
-          #       sshUser = "builder";
-          #       sshKey = "/etc/nix/builder_ed25519";
-          #       system = linuxSystem;
-          #       maxJobs = 4;
-          #       supportedFeatures = [
-          #         "kvm"
-          #         "benchmark"
-          #         "big-parallel"
-          #       ];
-          #     }
-          #   ];
-
-          #   launchd.daemons.darwin-builder = {
-          #     command = "${darwin-builder.config.system.build.macos-builder-installer}/bin/create-builder";
-          #     serviceConfig = {
-          #       KeepAlive = true;
-          #       RunAtLoad = true;
-          #       StandardOutPath = "/var/log/darwin-builder.log";
-          #       StandardErrorPath = "/var/log/darwin-builder.log";
-          #     };
-          #   };
-          # }
-        ]
-      )
+      (mkDarwin "Avys-Mac" inputs.nixpkgs "aarch64-darwin" [ ] [ ])
 
       # (mkNixos "pi0" inputs.nixpkgs "aarch64-linux"
       #   [ ]
@@ -158,13 +127,7 @@
       #   ]
       # )
 
-      (mkNixos "pi1" inputs.nixpkgs "aarch64-linux"
-        [ ]
-        [
-          "${inputs.nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
-          inputs.nixos-hardware.nixosModules.raspberry-pi-3
-        ]
-      )
+      (mkNixos "pi1" inputs.nixpkgs "aarch64-linux" [ ] [ ])
 
       (mkNixos "oracle" inputs.nixpkgs "x86_64-linux"
         [ ]

@@ -82,5 +82,6 @@
     ./cloudrun
     ./scrutiny
     ./restic
+    ./isponsorblocktv
   ];
 }

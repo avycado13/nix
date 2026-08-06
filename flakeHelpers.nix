@@ -71,7 +71,6 @@ in
         inputs.mac-app-util.darwinModules.default
         inputs.home-manager.darwinModules.home-manager
         inputs.nix-index-database.darwinModules.nix-index
-        inputs.virby.darwinModules.default
         inputs.nix-homebrew.darwinModules.nix-homebrew
         {
           home-manager.users.avy.home.homeDirectory = inputs.nixpkgs.lib.mkForce "/Users/avy";
@@ -125,7 +124,6 @@ in
         inputs.nix-index-database.nixosModules.nix-index
         inputs.nix-minecraft.nixosModules.minecraft-servers
         inputs.home-manager.nixosModules.home-manager
-        { programs.nix-index-database.comma.enable = true; }
         inputs.catppuccin.nixosModules.catppuccin
         inputs.srvos.nixosModules.mixins-terminfo
         inputs.xilo.nixosModules.default
@@ -151,24 +149,4 @@ in
     a: b: inputs.nixpkgs.lib.attrsets.recursiveUpdate a b
   ) { };
 
-  mkHome = name: username: homePath: nixpkgsVersion: extraHmModules: {
-    homeConfigurations.${name} = inputs.home-manager.lib.homeManagerConfiguration {
-      pkgs = import nixpkgsVersion { system = builtins.currentSystem or "x86_64-linux"; };
-      modules = [
-        inputs.sops-nix.homeManagerModules.sops
-        ./modules/secrets/home.nix
-        ./users/avy/sops.nix
-        ./users/avy/dots.nix
-        {
-          home = {
-            username = username;
-            homeDirectory = homePath;
-            stateVersion = "25.05";
-          };
-        }
-      ]
-      ++ extraHmModules;
-      extraSpecialArgs = { inherit inputs; };
-    };
-  };
 }

@@ -58,8 +58,8 @@
     inputs.nix-auth.packages.aarch64-darwin.default
   ];
 
-  services.virby.enable = false;
-  services.virby.onDemand.enable = false;
+  # services.virby.enable = false;
+  # services.virby.onDemand.enable = false;
   # services.virby.onDemand.ttl = 10;
   security.pam.services.sudo_local.touchIdAuth = true;
   security.pam.services.sudo_local.reattach = true;

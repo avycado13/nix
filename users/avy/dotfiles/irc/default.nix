@@ -5,7 +5,7 @@
   ...
 }:
 let
-  irc-pkg = pkgs.weechat.override {
+  weechat-pkg = pkgs.weechat.override {
     configure =
       { availablePlugins, ... }:
       {
@@ -39,7 +39,7 @@ in
 
   config = lib.mkIf config.dots.irc.enable {
     home.packages = [
-      irc-pkg
+      weechat-pkg
     ];
   };
 }
