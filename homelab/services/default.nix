@@ -83,5 +83,6 @@
     ./scrutiny
     ./restic
     ./isponsorblocktv
+    ./lard
   ];
 }

@@ -93,6 +93,7 @@
       flake = false;
     };
     xilo.url = "github:stubbedev/xilo";
+    lard.url = "github:taciturnaxolotl/lard";
     nix-cache-beacon.url = "github:adisbladis/nix-cache-beacon";
     devour-flake = {
       url = "github:srid/devour-flake";
@@ -142,13 +143,7 @@
           inputs.srvos.nixosModules.server
         ]
       )
-      (mkNixos "gce" inputs.nixpkgs "x86_64-linux"
-        [ ]
-        [
-          inputs.srvos.nixosModules.server
-          "${inputs.nixpkgs}/nixos/modules/virtualisation/google-compute-image.nix"
-        ]
-      )
+      (mkNixos "gce" inputs.nixpkgs "x86_64-linux" [ ] [ ])
 
       {
         overlays.default = _final: prev: {

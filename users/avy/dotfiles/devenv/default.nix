@@ -23,7 +23,19 @@ let
       opencode
       antigravity-cli
       grok
-      claude-code
+      (pkgs.buildGoModule {
+        pname = "lard-client";
+        version = "0.2.0";
+        src = inputs.lard;
+        vendorHash = "sha256-8n+5kNTK1ZUzRBEli3T/l7WACvOZ2eKBTk0XuE1o7+E=";
+        subPackages = [ "cmd/lard-client" ];
+        meta = with lib; {
+          description = "Client for lard, a memory layer for homelab LLM sessions";
+          homepage = "https://lard.avyay.in";
+          license = licenses.mit;
+          platforms = platforms.unix;
+        };
+      })
     ]
     ++ lib.optional config.dots.devenv.ai.codex.enable codex;
 
@@ -112,9 +124,19 @@ in
         enable = true;
       };
       java.enable = config.dots.devenv.java.enable;
+      claude-code = {
+        enable = config.dots.devenv.ai.enable;
+        package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
+        enableMcpIntegration = true;
+      };
       mcp = {
-        enable = true;
+        enable = config.dots.devenv.ai.enable;
         servers = {
+          lard = {
+            type = "http";
+            url = "https://lard.avyay.in/mcp";
+            oauth = true;
+          };
           context7 = {
             url = "https://mcp.context7.com/mcp";
             headers = {

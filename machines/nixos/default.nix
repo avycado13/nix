@@ -12,7 +12,7 @@ in
   imports = [ ../../modules/nix/default.nix ];
 
   nix-mineral = {
-    enable = true;
+    enable = lib.mkDefault true;
     preset = "compatibility";
   };
 

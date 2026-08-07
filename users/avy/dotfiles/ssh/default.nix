@@ -187,6 +187,10 @@ in
           user = "root";
           hostname = "167.234.216.241";
         };
+        "gce" = {
+          user = "avy";
+          hostname = "34.10.89.155";
+        };
         "eclipse" = {
           user = "root";
           hostname = "n1.eclipsesystems.org";

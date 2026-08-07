@@ -6,55 +6,77 @@ This document helps AI agents work effectively in this NixOS/Nix-Darwin configur
 
 This is a Nix flake-based configuration for managing multiple systems:
 
-- NixOS systems (e.g., Raspberry Pi)
-- macOS (Darwin) systems (e.g., Avy's MacBook)
-- Uses home-manager for user configurations
-- Includes homelab services and modules
+- **Avys-Mac** — Apple Silicon macOS (nix-darwin + home-manager + nix-homebrew)
+- **pi0** — Raspberry Pi Zero 2W (NixOS, aarch64-linux, SD card image; currently commented out in flake.nix)
+- **pi1** — Raspberry Pi 3 (NixOS, aarch64-linux, SD card image, runs the homelab)
+- **oracle** — Oracle Cloud VM (NixOS, x86_64-linux, OCI image)
+- **eclipse** — NixOS, x86_64-linux (srvos server profile, disko for partitioning)
+- **gce** — Google Compute Engine VM (NixOS, x86_64-linux, GCE image)
+- Uses sops-nix for secrets management
+- Includes homelab services and reusable NixOS modules
 
 ## Essential Commands
 
-### Flake Management
-
-- `nix flake update`: Update all flake inputs to their latest versions
-- `nix flake check`: Validate flake configuration and check for errors
-
-### Building and Deploying
-
-- `just deploy <host>`: Deploy configuration to a NixOS host (copies files via rsync, then switches)
-- `just dry-run <host>`: Test deployment without applying changes
-- `sudo darwin-rebuild switch --flake .`: Apply Darwin configuration on macOS
-- `just darwin-deploy`: Shorthand for Darwin rebuild (from Justfile)
-
-### Development Shell
-
-Enter the dev shell for tools:
-
 ```bash
-nix develop
-```
+nix develop          # Enter dev shell (provides: just, nh, nixos-rebuild-ng, treefmt, sops, ssh-to-age, nil, cachix, nix-output-monitor, xilo, devour-flake, omnix)
+treefmt              # Format all files (nixfmt + deadnix + shellcheck)
+nix flake check      # Validate flake
 
-Available tools: just, nh, nixos-rebuild-ng, agenix-rekey
+just darwin-deploy               # Apply Darwin config on this Mac (nh darwin switch)
+just dry-run <host>              # Test NixOS deploy without applying
+just deploy <host>               # rsync + nixos-rebuild switch to NixOS host
+just copy <host>                 # rsync only (no rebuild)
+just home-deploy <host>          # rsync + home-manager switch on a remote host
+just home-dry-run <host>         # rsync + home-manager switch --dry-run on a remote host
+just update                      # nix flake update
+just check                       # nix flake check
+just choose                      # Interactive recipe picker with fzf
+just build-iso <host>            # Build a NixOS installer ISO for a host
+```
 
 ## Code Organization
 
 ### Directory Structure
 
-- `flake.nix`: Main flake definition with inputs and outputs
-- `flakeHelpers.nix`: Helper functions for creating system configurations
-- `machines/`: System-specific configurations
-  - `darwin/`: macOS configurations
-  - `nixos/`: NixOS configurations
-- `homelab/`: Homelab services (services/, modules/, motd/)
-- `users/avy/`: User configuration (packages, dotfiles, etc.)
-- `modules/`: Reusable NixOS modules (email, ddns, etc.)
-- `secrets/`: Age-encrypted secrets (managed with agenix)
+```
+flake.nix               # Entry point; calls mkDarwin/mkNixos per host (Avys-Mac, pi0, pi1, oracle, eclipse, gce)
+flakeHelpers.nix         # mkDarwin, mkNixos, mkHome, mkMerge, nixpkgsCfg — read first for new machines
+machines/
+  darwin/
+    default.nix          # shared settings for all Darwin machines (nixpkgs config, sops age keys)
+    Avys-Mac/             # host-specific config + ricing.nix, system.nix, home.nix
+  nixos/
+    default.nix           # shared settings for all NixOS machines (imports modules/nix, binary caches, ssh/sudo defaults, tailscale, firewall)
+    <hostname>/default.nix # host-specific config; extras like disko.nix, facter.json, hardware-configuration.nix live alongside
+    pi1/homelab.nix        # host opting into the homelab (sets homelab.enable + homelab.services.*)
+modules/                  # reusable NixOS modules: ddns, email, binaryCache, remoteBuild, nix, secrets
+homelab/                  # imported into every NixOS system via mkNixos, inert unless homelab.enable is set
+  default.nix              # top-level homelab.* options (group, timeZone, baseDomainName, cloudflare creds, email, notifications)
+  services/
+    default.nix            # homelab.services.enable, shared Caddy/ACME wiring, notify-failure@ template unit, imports every service dir
+    <service>/default.nix  # one service per directory (see "Adding a Homelab Service" below)
+  fail2ban-cloudflare/     # bans offenders at the Cloudflare edge
+  motd/                    # login MOTD listing enabled/monitored services
+users/avy/
+  default.nix              # NixOS user declaration (uid, groups, shell, ssh key)
+  packages.nix             # all user packages (utilities, scripts, late-sh)
+  dots.nix                 # imports dotfile modules from dotfiles/<feature>/
+  sops.nix                 # per-user sops secret declarations
+  dotfiles/<feature>/      # browser, devenv, editor, git, gpg, irc, media, restic, shell, ssh, syncthing, terminal, theme
+secrets/                  # sops-encrypted secrets.yaml (default) and services.yaml — never commit plaintext
+dns.toml                  # Helix editor config (keybindings, language formatters)
+toml.nix                  # Reads dns.toml into Nix attrset via builtins.fromTOML
+upload-oci.sh             # Helper script for uploading QCOW2 images to Oracle Cloud
+fileofbrew                # Reference file listing previous Homebrew packages (before nix-homebrew migration)
+```
 
 ### Configuration Patterns
 
 - Configurations use standard NixOS/Darwin module format
-- Home-manager is integrated for user-specific settings
-- Flake helpers (`mkDarwin`, `mkNixos`) standardize configuration creation
-- Secrets are managed via agenix (`.age` files in `secrets/`)
+- Home-manager is integrated for user-specific settings on Darwin; on NixOS, home-manager is imported but the user block in mkNixos is currently commented out
+- Flake helpers (`mkDarwin`, `mkNixos`, `mkMerge`) standardize configuration creation
+- Secrets are managed via sops-nix (encrypted YAML files in `secrets/`)
+- `unf` (from the `unf` input) is used for JSON module option generation via `mkOpts`
 
 ## Development Workflow
 
@@ -63,31 +85,42 @@ Available tools: just, nh, nixos-rebuild-ng, agenix-rekey
 3. Format code: `treefmt` (automatically configured)
 4. Commit and deploy with `just deploy <host>`
 
+## CI/CD
+
+GitHub Actions workflows in `.github/workflows/`:
+
+- **build.yml**: Runs on push to main and PRs. Builds across 3 platforms (x86_64-linux, aarch64-darwin, aarch64-linux) using `om ci run`. Connects to Tailscale for cache access, pushes to xilo cache with retries.
+- **update-flake-lock.yml**: Runs weekly (Monday 06:47 UTC) and on dispatch. Updates flake.lock, commits, pushes, and pushes realized outputs to xilo cache.
+
 ## Formatting and Linting
 
-- **Formatter**: `nixfmt` (configured in flake.nix)
+- **Formatter**: `nixfmt` (configured in flake.nix via treefmt-nix)
 - **Linting**: `deadnix` (detects unused code), `shellcheck` (shell scripts)
 - **Auto-format**: Run `treefmt` to format all files
 - Exclusions: `*.lock`, `.gitignore`, `secrets/*`
 
 ## Gotchas
 
-- **State Version**: Always set `system.stateVersion` appropriately (currently "25.05")
-- **Agenix**: Secrets are in `secrets/` directory, managed with `agenix` tool
-- **Home Directory**: Darwin configs set `homeDirectory = "/Users/avy"`
-- **Mutable Users**: Some configs disable mutable users for security
+- **State Version**: Varies by host — `"25.05"` (pi1, eclipse), `"25.11"` (pi0), `"26.05"` (oracle, gce), `5` (Avys-Mac Darwin)
+- **Sops**: Secrets are in `secrets/` directory (YAML files), managed with `sops` tool. Recipients defined in `.sops.yaml` (age keys `avy`/`pi1`, a GPG key, and an AWS KMS key)
+- **Home Directory**: Darwin configs set `homeDirectory = "/Users/avy"`; NixOS uses `/home/avy`
+- **Mutable Users**: pi1 disables mutable users for security
 - **Imports**: Configurations import from parent directories (e.g., `./homelab`, `./users/avy`)
 - **Hardware Modules**: NixOS configs may include hardware-specific modules (e.g., `nixos-hardware.nixosModules.raspberry-pi-3`)
+- **pi0**: Currently commented out in `flake.nix` outputs
+- **mkService**: Some homelab services (postgres, lldap) use a `mkService.nix` factory from a `lib/` directory, but this file does not currently exist in the repo — these services reference it via `import ../../lib/mkService.nix`
 
 ## Secrets Management
 
-- Uses `agenix` for encrypted secrets
-- Secret files: `.age` files in `secrets/`
-- Public keys: Managed in `users/avy/age.nix`
-- Rekey tool: `agenix-rekey` available in dev shell
+- Uses `sops-nix` for encrypted secrets
+- Secret files: `secrets/secrets.yaml` (default) and `secrets/services.yaml`
+- Recipients defined in `.sops.yaml` (age keys for `avy` and `pi1`, a GPG key, and an AWS KMS key)
+- Age key file at `~/.config/sops/age/keys.txt` plus host SSH host keys are used to decrypt
+- Modules: `modules/secrets/default.nix` (NixOS), `modules/secrets/home.nix` (home-manager)
+- Never commit plaintext secrets
 
 ## Testing
 
 - No automated unit tests currently
 - Manual testing via `dry-run` commands
-- `test.sh`: Script for updating Bun package hashes (not related to config testing)
+- CI runs `om ci run` across all platforms via GitHub Actions

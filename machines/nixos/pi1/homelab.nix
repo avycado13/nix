@@ -68,6 +68,11 @@
       key = "isponsorblocktv/living_room_tv_screen_id";
     };
 
+    lard-env = {
+      sopsFile = ../../../secrets/services.yaml;
+      key = "lard/env";
+    };
+
   };
 
   services.fail2ban-cloudflare = {
@@ -175,6 +180,13 @@
         ];
         muteAds = true;
         skipAds = true;
+      };
+
+      lard = {
+        enable = true;
+        url = "lard.avyay.in";
+        environmentFile = config.sops.secrets.lard-env.path;
+        allowedUsers = [ "https://auth.avyay.in/u/avy" ];
       };
     };
   };
