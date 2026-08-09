@@ -1,243 +1,14 @@
-{ pkgs, ... }:
-
-let
-  clockScript = pkgs.writeShellScript "clock.sh" ''
-    sketchybar --set "$NAME" label="$(date '+%a %d %b  %I:%M %p')"
-  '';
-
-  wifiScript = pkgs.writeShellScript "wifi.sh" ''
-    INFO=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I)
-
-    SSID=$(echo "$INFO" | awk -F': ' '/ SSID/{print $2}')
-    RSSI=$(echo "$INFO" | awk -F': ' '/agrCtlRSSI/{print $2}')
-
-    if [ -z "$SSID" ]; then
-      ICON="󰤭"
-      LABEL="Disconnected"
-    elif [ "$RSSI" -gt -50 ]; then
-      ICON="󰤨"
-      LABEL="$SSID"
-    elif [ "$RSSI" -gt -70 ]; then
-      ICON="󰤥"
-      LABEL="$SSID"
-    else
-      ICON="󰤟"
-      LABEL="$SSID"
-    fi
-
-    sketchybar --set "$NAME" icon="$ICON" label="$LABEL"
-  '';
-
-  volumeScript = pkgs.writeShellScript "volume.sh" ''
-    VOL=$(osascript -e 'output volume of (get volume settings)')
-    MUTED=$(osascript -e 'output muted of (get volume settings)')
-
-    if [ "$MUTED" = "true" ]; then
-      ICON="󰖁"
-    elif [ "$VOL" -gt 66 ]; then
-      ICON="󰕾"
-    elif [ "$VOL" -gt 33 ]; then
-      ICON="󰖀"
-    elif [ "$VOL" -gt 0 ]; then
-      ICON="󰕿"
-    else
-      ICON="󰖁"
-    fi
-
-    sketchybar --set "$NAME" icon="$ICON" label="$VOL%"
-  '';
-
-  heliumScript = pkgs.writeShellScript "helium.sh" ''
-    if pgrep -x "Helium" >/dev/null; then
-      sketchybar --set "$NAME" icon.color=0xff89b4fa label="On"
-    else
-      sketchybar --set "$NAME" icon.color=0xff6c7086 label="Off"
-    fi
-  '';
-
-  # FIX: workspaceIndicatorScript is now actually wired up and used below
-  workspaceIndicatorScript = pkgs.writeShellScript "workspace_indicator.sh" ''
-    WINDOWS=$(aerospace list-windows --workspace "$1" | wc -l | tr -d ' ')
-
-    if [ "$WINDOWS" -gt 0 ]; then
-      sketchybar --set "$NAME" icon="●"
-    else
-      sketchybar --set "$NAME" icon="○"
-    fi
-  '';
-
-  cpuScript = pkgs.writeShellScript "cpu.sh" ''
-    CPU=$(top -l 1 | awk '/CPU usage/ {print int($3 + $5)}')
-    sketchybar --set "$NAME" label="$CPU%"
-  '';
-
-  batteryScript = pkgs.writeShellScript "battery.sh" ''
-    INFO=$(pmset -g batt)
-    PERCENT=$(echo "$INFO" | grep -Eo "[0-9]+%" | head -1 | tr -d %)
-
-    if [ "$PERCENT" -gt 80 ]; then
-      ICON="󰁹"
-    elif [ "$PERCENT" -gt 60 ]; then
-      ICON="󰂀"
-    elif [ "$PERCENT" -gt 40 ]; then
-      ICON="󰁿"
-    elif [ "$PERCENT" -gt 20 ]; then
-      ICON="󰁾"
-    else
-      ICON="󰁺"
-    fi
-
-    sketchybar --set "$NAME" icon="$ICON" label="$PERCENT%"
-  '';
-
-  # FIX: Corrected Nix escape syntax: ''${VAR} instead of \${VAR}
-  # FIX: Fixed icon to use a network speed icon instead of wifi icon
-  wifiSpeedScript = pkgs.writeShellScript "wifi_speed.sh" ''
-    IFACE=$(route get default | awk '/interface/ {print $2}')
-
-    RX1=$(netstat -ibn | awk -v iface="$IFACE" '$1 == iface {print $7; exit}')
-    TX1=$(netstat -ibn | awk -v iface="$IFACE" '$1 == iface {print $10; exit}')
-
-    sleep 1
-
-    RX2=$(netstat -ibn | awk -v iface="$IFACE" '$1 == iface {print $7; exit}')
-    TX2=$(netstat -ibn | awk -v iface="$IFACE" '$1 == iface {print $10; exit}')
-
-    RX=$((RX2 - RX1))
-    TX=$((TX2 - TX1))
-
-    RXKB=$((RX / 1024))
-    TXKB=$((TX / 1024))
-
-    sketchybar --set "$NAME" label="↓''${RXKB}K ↑''${TXKB}K"
-  '';
-
-  workspaceScript = pkgs.writeShellScript "workspace.sh" ''
-    FOCUSED=$(aerospace list-workspaces --focused)
-
-    if [ "$1" = "$FOCUSED" ]; then
-      sketchybar --set "$NAME" \
-        background.drawing=on \
-        label.color=0xff282828 \
-        icon.color=0xff282828
-    else
-      sketchybar --set "$NAME" \
-        background.drawing=off \
-        label.color=0xff80a8fc \
-        icon.color=0xff80a8fc
-    fi
-  '';
-
-in
+{ ... }:
 {
-  services.sketchybar = {
-    enable = false;
-
-    config = ''
-      ACCENT=0xff80a8fc
-      BG=0xff282828
-      TRANSPARENT=0x00000000
-
-      sketchybar --bar \
-        position=top \
-        height=37 \
-        margin=16 \
-        y_offset=10 \
-        blur_radius=30 \
-        color=0x40000000 \
-        corner_radius=8
-
-      default=(
-        icon.font="OpenDyslexic Nerd Font:Bold:17.0"
-        label.font="OpenDyslexic Nerd Font:Bold:14.0"
-        icon.color=0xffffffff
-        label.color=0xffffffff
-        padding_left=10
-        padding_right=10
-      )
-
-      sketchybar --default "''${default[@]}"
-
-      sketchybar --add event aerospace_workspace_change
-
-      ##### WORKSPACES #####
-
-      for sid in $(aerospace list-workspaces --all); do
-        sketchybar --add item space.$sid left \
-          --subscribe space.$sid aerospace_workspace_change \
-          --set space.$sid \
-            icon="$sid" \
-            label.drawing=off \
-            background.color="$ACCENT" \
-            background.corner_radius=5 \
-            click_script="aerospace workspace $sid" \
-            script="${workspaceScript} $sid"
-
-        # FIX: Wire up the workspace indicator script so dots update
-        sketchybar --subscribe space.$sid aerospace_workspace_change \
-          --set space.$sid script="${workspaceIndicatorScript} $sid"
-      done
-
-      ##### LEFT ITEMS #####
-
-      sketchybar --add item helium left \
-        --set helium \
-          icon="󰖟" \
-          update_freq=60 \
-          script="${heliumScript}"
-
-      ##### RIGHT ITEMS #####
-
-      sketchybar --add item clock right \
-        --set clock \
-          update_freq=30 \
-          icon=􀧞 \
-          script="${clockScript}"
-
-      sketchybar --add item volume right \
-        --set volume \
-          script="${volumeScript}" \
-        --subscribe volume volume_change
-
-      # FIX: Use distinct network speed icon (not wifi icon)
-      sketchybar --add item wifi_speed right \
-        --set wifi_speed \
-          update_freq=5 \
-          icon="󰓅" \
-          script="${wifiSpeedScript}"
-
-      sketchybar --add item wifi right \
-        --set wifi \
-          update_freq=30 \
-          icon="󰤨" \
-          script="${wifiScript}"
-
-      sketchybar --add item battery right \
-        --set battery \
-          update_freq=60 \
-          script="${batteryScript}"
-
-      sketchybar --add item cpu right \
-        --set cpu \
-          icon="󰻠" \
-          update_freq=5 \
-          script="${cpuScript}"
-
-      sketchybar --update
-    '';
-  };
 
   services.aerospace = {
     enable = true;
 
     settings = {
+      # config-version = 2;
       accordion-padding = 30;
 
-      exec-on-workspace-change = [
-        "${pkgs.bash}/bin/bash"
-        "-c"
-        "sketchybar --trigger aerospace_workspace_change"
-      ];
+      exec-on-workspace-change = [ ];
 
       automatically-unhide-macos-hidden-apps = false;
 
@@ -391,14 +162,17 @@ in
 
       on-window-detected = [
         {
+          # "if" = "test %{app-bundle-id} = com.microsoft.VSCode";
           "if".app-id = "com.microsoft.VSCode";
           run = "move-node-to-workspace C";
         }
         {
+          # "if" = "test %{app-bundle-id} = com.tinyspeck.slackmacgap";
           "if".app-id = "com.tinyspeck.slackmacgap";
           run = "move-node-to-workspace M";
         }
         {
+          # "if" = "test %{app-bundle-id} = com.apple.MobileSMS";
           "if".app-id = "com.apple.MobileSMS";
           run = "move-node-to-workspace M";
         }

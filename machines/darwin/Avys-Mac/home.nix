@@ -6,7 +6,10 @@
       enable = true;
       zmx.enable = true;
     };
-    git.enable = true;
+    git = {
+      enable = true;
+      wut.enable = true;
+    };
     terminal.enable = true;
     gpg.enable = true;
     devenv.enable = true;

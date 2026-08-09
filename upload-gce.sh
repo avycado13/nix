@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 set -euo pipefail
 
 BUCKET_NAME="${BUCKET_NAME:-avy-cloud-images}"

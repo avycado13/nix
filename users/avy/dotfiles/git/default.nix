@@ -5,6 +5,10 @@
   ...
 }:
 {
+  imports = [
+    ./wut/default.nix
+  ];
+
   options.dots.git.enable = lib.mkOption {
     type = lib.types.bool;
     default = false;

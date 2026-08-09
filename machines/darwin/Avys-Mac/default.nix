@@ -36,6 +36,7 @@
       "linearmouse"
       "cloudflare-warp"
       # "sikarugir"
+      "vorssaint"
     ];
 
     masApps = {
