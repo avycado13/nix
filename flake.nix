@@ -106,6 +106,7 @@
       url = "github:JMBeresford/retrom/latest";
     };
     late-sh.url = "github:mpiorowski/late-sh";
+    copyparty.url = "github:9001/copyparty";
   };
 
   outputs =

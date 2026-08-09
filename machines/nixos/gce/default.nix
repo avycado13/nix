@@ -10,6 +10,7 @@
   i18n.supportedLocales = [ "en_US.UTF-8/UTF-8" ];
 
   documentation.man.enable = false;
+  services.cloud-init.enable = true;
 
   # google-compute-image.nix only creates a /boot partition when EFI
   # booting is enabled (it isn't here), so /boot lives on the root

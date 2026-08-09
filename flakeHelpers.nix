@@ -15,6 +15,7 @@ let
       inputs.nur.overlays.default
       inputs.nix-vscode-extensions.overlays.default
       inputs.fenix.overlays.default
+      inputs.copyparty.overlays.default
     ];
     config = {
       allowUnfree = true;
