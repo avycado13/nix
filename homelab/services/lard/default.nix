@@ -117,9 +117,11 @@ in
         ProtectHome = true;
         ReadWritePaths = [ cfg.dataDir ];
         PrivateTmp = true;
-
-        OnFailure = lib.mkIf (hl.notifications.ntfySecretsFile != null) "notify-failure@%n.service";
       };
+
+      unitConfig.OnFailure = lib.mkIf (
+        hl.notifications.ntfySecretsFile != null
+      ) "notify-failure@%n.service";
     };
 
     services.caddy.virtualHosts.${cfg.url} = {

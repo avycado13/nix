@@ -159,8 +159,9 @@ in
         ExecStart = "${lib.getExe pkgs.isponsorblocktv} --data %d start";
         Restart = "on-failure";
         RestartSec = 10;
-      }
-      // lib.optionalAttrs (hl.notifications.ntfySecretsFile != null) {
+      };
+
+      unitConfig = lib.optionalAttrs (hl.notifications.ntfySecretsFile != null) {
         OnFailure = "notify-failure@%n.service";
       };
     };

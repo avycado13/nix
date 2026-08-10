@@ -154,16 +154,17 @@ in
       content = builtins.toJSON baseSettings;
     };
 
-    systemd.services.${service}.serviceConfig =
-      lib.optionalAttrs usesTemplate {
+    systemd.services.${service} = {
+      serviceConfig = lib.optionalAttrs usesTemplate {
         LoadCredential = [
           "config.yaml:${config.sops.templates."xilo-config.yaml".path}"
         ];
         ExecStart = lib.mkForce "${lib.getExe config.services.xilo.package} serve --config %d/config.yaml";
-      }
-      // lib.optionalAttrs (hl.notifications.ntfySecretsFile != null) {
-        OnFailure = "notify-failure@%n.service";
       };
+      unitConfig.OnFailure = lib.mkIf (
+        hl.notifications.ntfySecretsFile != null
+      ) "notify-failure@%n.service";
+    };
 
     services.caddy.virtualHosts."${cfg.url}" = {
       useACMEHost = hl.baseDomainName;

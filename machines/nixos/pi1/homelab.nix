@@ -188,6 +188,11 @@
         environmentFile = config.sops.secrets.lard-env.path;
         allowedUsers = [ "https://auth.avyay.in/u/avy" ];
       };
+
+      calibre-web = {
+        enable = true;
+        url = "books.avyay.in";
+      };
     };
   };
 }

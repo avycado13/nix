@@ -84,5 +84,6 @@
     ./restic
     ./isponsorblocktv
     ./lard
+    ./calibre-web
   ];
 }

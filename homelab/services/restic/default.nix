@@ -80,7 +80,7 @@ in
       environmentFile = cfg.environmentFile;
     };
 
-    systemd.services."restic-backups-homelab".serviceConfig.OnFailure = lib.mkIf (
+    systemd.services."restic-backups-homelab".unitConfig.OnFailure = lib.mkIf (
       config.homelab.notifications.ntfySecretsFile != null
     ) "notify-failure@%n.service";
   };

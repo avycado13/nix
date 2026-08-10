@@ -294,7 +294,7 @@ in
       '';
     };
 
-    systemd.services.${service}.serviceConfig.OnFailure = lib.mkIf (
+    systemd.services.${service}.unitConfig.OnFailure = lib.mkIf (
       hl.notifications.ntfySecretsFile != null
     ) "notify-failure@%n.service";
   };
