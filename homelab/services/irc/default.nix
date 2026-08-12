@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   service = "irc";
   hl = config.homelab;
@@ -16,6 +21,11 @@ in
     port = lib.mkOption {
       type = lib.types.port;
       default = 6697;
+      description = "Port soju listens on for gamja and websocket connections";
+    };
+    ircsPort = lib.mkOption {
+      type = lib.types.port;
+      default = 6697;
       description = "Port soju listens on for IRC-over-TLS connections";
     };
     glance.name = lib.mkOption {
@@ -24,8 +34,8 @@ in
     };
     glance.url = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
-      default = null;
-      description = "No web UI bookmark by default (raw IRC bouncer)";
+      default = cfg.url;
+      description = "Gamja web ui";
     };
   };
 
@@ -33,7 +43,10 @@ in
     services.soju = {
       enable = true;
       hostName = cfg.url;
-      listen = [ "ircs://:${toString cfg.port}" ];
+      listen = [
+        "ircs://:${toString cfg.ircsPort}"
+        "ws+insecure://:${toString cfg.port}"
+      ];
       tlsCertificate = "${certDir}/fullchain.pem";
       tlsCertificateKey = "${certDir}/key.pem";
     };
@@ -55,6 +68,16 @@ in
     security.acme.certs.${hl.baseDomainName}.reloadServices = [ "soju.service" ];
 
     networking.firewall.allowedTCPPorts = [ cfg.port ];
+    services.caddy.virtualHosts."${cfg.url}" = {
+      useACMEHost = hl.baseDomainName;
+      extraConfig = ''
+        root * ${pkgs.compressDrvWeb pkgs.gamja { }}
+        file_server browse {
+            precompressed br gzip
+        }
+        reverse_proxy /socker http://127.0.0.1:${toString cfg.port}
+      '';
+    };
 
     systemd.services.soju.serviceConfig.OnFailure = lib.mkIf (
       hl.notifications.ntfySecretsFile != null

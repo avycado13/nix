@@ -16,6 +16,7 @@
     gh_mcp_token = { };
     chroma_mcp_token = { };
     icloud_email_password = { };
+    soju_password = { };
     syncthing-guipass = {
       sopsFile = ../../secrets/services.yaml;
       key = "syncthing/guipass";

@@ -41,6 +41,16 @@ in
     home.packages = [
       weechat-pkg
     ];
-    # programs.senpai.enable = true;
+    programs.senpai = {
+      enable = true;
+      config = {
+        address = "irc.avyay.in";
+        nickname = "avy";
+        password-cmd = [
+          "cat"
+          config.sops.secrets.soju_password.path
+        ];
+      };
+    };
   };
 }
