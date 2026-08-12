@@ -10,7 +10,6 @@ let
   cfg = hl.services.${service};
 
   ciscoProvDir = "/var/lib/asterisk/cisco-provisioning";
-  asteriskEtcDir = "/etc/asterisk";
 
   atftpPkg = pkgs.atftp;
 in
@@ -51,18 +50,18 @@ in
               type = lib.types.str;
               description = "MAC address of the Cisco phone (no separators, e.g. 001122334455)";
             };
-            line1SecretFile = lib.mkOption {
-              type = lib.types.path;
-              description = "sops secret file containing the SIP password for line 1";
+            line1Secret = lib.mkOption {
+              type = lib.types.str;
+              description = "SIP password for line 1, e.g. config.sops.placeholder.asterisk-cisco7945-password";
             };
             line1DisplayName = lib.mkOption {
               type = lib.types.str;
               default = "Line 1";
             };
-            line2SecretFile = lib.mkOption {
-              type = lib.types.nullOr lib.types.path;
+            line2Secret = lib.mkOption {
+              type = lib.types.nullOr lib.types.str;
               default = null;
-              description = "sops secret file containing the SIP password for line 2";
+              description = "SIP password for line 2, e.g. config.sops.placeholder.<name>";
             };
             line2DisplayName = lib.mkOption {
               type = lib.types.str;
@@ -103,7 +102,7 @@ in
         in
         {
           name = "SEP${macUpper}";
-          inherit (phone) extension callerId line1SecretFile;
+          inherit (phone) extension callerId line1Secret;
           cnfXml = pkgs.writeText "SEP${macUpper}.cnf.xml" ''
             <device>
               <deviceProtocol>SIP</deviceProtocol>
@@ -191,7 +190,7 @@ in
           type=auth
           auth_type=userpass
           username=${phone.name}
-          password=__SECRET_${phone.name}__
+          password=${phone.line1Secret}
 
           [${phone.name}]
           type=aor
@@ -233,34 +232,28 @@ in
         )}
       '';
 
-      secretReplacerScript = pkgs.writeShellScript "asterisk-inject-secrets" (
-        ''
-          # Replace __SECRET_SEPxxx__ placeholders in pjsip.conf with actual secret values
-          SRC="${asteriskEtcDir}/pjsip.conf.template"
-          DST="${asteriskEtcDir}/pjsip.conf"
-          cp "$SRC" "$DST"
-        ''
-        + lib.concatStringsSep "\n" (
-          map (phone: ''
-            SECRET=$(cat "${phone.line1SecretFile}")
-            ${pkgs.gnused}/bin/sed -i "s/__SECRET_${phone.name}__/$SECRET/g" "$DST"
-          '') phoneConfigs
-        )
-      );
-
     in
     {
       services.asterisk = {
         enable = true;
         confFiles = {
-          "pjsip.conf.template" = pjsipConfTemplate;
-          "pjsip.conf" = pjsipConfTemplate;
           "extensions.conf" = extensionsConf;
           "rtp.conf" = rtpConf;
           "voicemail.conf" = voicemailConf;
         }
         // cfg.extraConfFiles;
       };
+
+      sops.templates."asterisk/pjsip.conf" = {
+        owner = "asterisk";
+        group = "asterisk";
+        mode = "0440";
+        content = pjsipConfTemplate;
+      };
+
+      environment.etc."asterisk/pjsip.conf".source =
+        lib.mkForce
+          config.sops.templates."asterisk/pjsip.conf".path;
 
       networking.firewall = {
         allowedUDPPorts = [
@@ -281,7 +274,7 @@ in
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
         serviceConfig = {
-          ExecStart = "${atftpPkg}/bin/atftpd --daemon --nofork --port 69 --user asterisk.asterisk ${ciscoProvDir}";
+          ExecStart = "${atftpPkg}/bin/atftpd --port 69 --user asterisk.asterisk ${ciscoProvDir}";
           Restart = "on-failure";
           RestartSec = "5";
         };
@@ -309,9 +302,8 @@ in
       };
 
       systemd.services.asterisk = {
-        preStart = lib.mkAfter ''
-          ${secretReplacerScript}
-        '';
+        requires = [ "sops-nix.service" ];
+        after = [ "sops-nix.service" ];
         serviceConfig = lib.mkIf (hl.notifications.ntfySecretsFile != null) {
           OnFailure = "notify-failure@%n.service";
         };

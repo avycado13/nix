@@ -185,5 +185,12 @@ in
       # Enable local binary cache using discovered caches on the local network
       cache.enable = true;
     };
+
+    # mDNS may not be ready yet at boot, and nix-cache-beacon panics instead
+    # of retrying internally when it can't resolve *.local; wait for avahi.
+    systemd.services.nix-cache-beacon-cache = {
+      after = [ "avahi-daemon.service" ];
+      wants = [ "avahi-daemon.service" ];
+    };
   };
 }

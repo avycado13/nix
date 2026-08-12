@@ -208,7 +208,7 @@
             mac = "D0C7891479BC";
             extension = "1001";
             callerId = "Avy";
-            line1SecretFile = config.sops.secrets.asterisk-cisco7945-password.path;
+            line1Secret = config.sops.placeholder.asterisk-cisco7945-password;
           }
         ];
       };
