@@ -41,5 +41,6 @@ in
     home.packages = [
       weechat-pkg
     ];
+    # programs.senpai.enable = true;
   };
 }

@@ -86,5 +86,6 @@
     ./lard
     ./calibre-web
     ./asterisk
+    ./irc
   ];
 }
