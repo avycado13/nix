@@ -73,6 +73,11 @@
       key = "lard/env";
     };
 
+    asterisk-cisco7945-password = {
+      sopsFile = ../../../secrets/services.yaml;
+      key = "asterisk/cisco7945_password";
+    };
+
   };
 
   services.fail2ban-cloudflare = {
@@ -192,6 +197,20 @@
       calibre-web = {
         enable = true;
         url = "books.avyay.in";
+      };
+
+      asterisk = {
+        enable = true;
+        url = "pbx.avyay.in";
+        domain = "avyay.in";
+        phones = [
+          {
+            mac = "D0C7891479BC";
+            extension = "1001";
+            callerId = "Avy";
+            line1SecretFile = config.sops.secrets.asterisk-cisco7945-password.path;
+          }
+        ];
       };
     };
   };

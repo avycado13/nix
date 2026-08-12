@@ -85,5 +85,6 @@
     ./isponsorblocktv
     ./lard
     ./calibre-web
+    ./asterisk
   ];
 }
