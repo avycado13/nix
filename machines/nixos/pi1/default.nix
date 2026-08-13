@@ -9,6 +9,7 @@
   imports = [
     ./hardware-configuration.nix
     ./homelab.nix
+    ./home.nix
     inputs.nixos-hardware.nixosModules.raspberry-pi-3
     "${inputs.nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
   ];
@@ -89,7 +90,10 @@
 
   services.tailscale = {
     enable = true;
-    extraSetFlags = [ "--advertise-exit-node" ];
+    extraSetFlags = [
+      "--advertise-exit-node"
+      "--ssh"
+    ];
   };
   services.timesyncd.enable = lib.mkForce true;
   services.getty.autologinUser = "avy";

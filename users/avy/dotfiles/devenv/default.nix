@@ -295,6 +295,8 @@ in
       pkgs.manix
       pkgs.nurl
       pkgs.nix-du
+      pkgs.devenv
+      pkgs.angrr
       pkgs.nix-diff
       pkgs.dix
       pkgs.nix-tree

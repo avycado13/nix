@@ -19,7 +19,6 @@
       # Basic Utilities
       pkgs.onefetch
       pkgs.fastfetch
-      pkgs.devenv
       pkgs.caligula
       pkgs.magic-wormhole
       pkgs.curl
@@ -29,7 +28,6 @@
       pkgs.tree
       pkgs.cowsay
       pkgs.file
-      pkgs.angrr
       pkgs.jnv
       pkgs.clipboard-jh
       pkgs.serie

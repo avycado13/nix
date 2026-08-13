@@ -1,14 +1,16 @@
 {
+  config,
+  pkgs,
   ...
 }:
 {
   sops.secrets = {
     atuin-session = {
-      path = "/Users/avy/.local/share/atuin/session";
+      path = "${config.home.homeDirectory}/.local/share/atuin/session";
       mode = "0444";
     };
     atuin-key = {
-      path = "/Users/avy/.local/share/atuin/key";
+      path = "${config.home.homeDirectory}/.local/share/atuin/key";
       mode = "0444";
     };
     slack_user_id = { };
@@ -20,7 +22,11 @@
     syncthing-guipass = {
       sopsFile = ../../secrets/services.yaml;
       key = "syncthing/guipass";
-      path = "/Users/avy/.config/syncthing/guiPass";
+      path =
+        if pkgs.stdenv.isLinux then
+          "${config.home.homeDirectory}/.local/state/syncthing/guiPass"
+        else
+          "${config.home.homeDirectory}/.config/syncthing/guiPass";
       mode = "0400";
     };
   };
