@@ -20,7 +20,7 @@ in
     };
     port = lib.mkOption {
       type = lib.types.port;
-      default = 6697;
+      default = 3030;
       description = "Port soju listens on for gamja and websocket connections";
     };
     ircsPort = lib.mkOption {
@@ -75,7 +75,12 @@ in
         file_server browse {
             precompressed br gzip
         }
-        reverse_proxy /socker http://127.0.0.1:${toString cfg.port}
+        @soju {
+            path /socket
+            path /uploads
+            path /uploads/*
+        }
+        reverse_proxy @soju http://127.0.0.1:${toString cfg.port}
       '';
     };
 
