@@ -11,6 +11,8 @@ let
 
   usesTemplate = cfg.storages != { };
 
+  backupData = import ../../lib/backupData.nix { inherit lib; };
+
   baseSettings = {
     listen = "127.0.0.1:${toString port}";
     base_url = "https://${cfg.url}";
@@ -45,6 +47,16 @@ in
 {
   options.homelab.services.${service} = {
     enable = lib.mkEnableOption "Enable ${service}, a self-hosted Nix binary cache";
+
+    data = lib.mkOption {
+      type = lib.types.nullOr backupData;
+      default = {
+        # Chunks themselves live in the configured S3 backend(s), not here --
+        # this is xilo's local metadata/admin state (data_dir in settings).
+        files = [ "/var/lib/xilo" ];
+      };
+      description = "What to back up for xilo; see homelab/services/restic";
+    };
     url = lib.mkOption {
       type = lib.types.str;
       default = "cache.${hl.baseDomainName}";

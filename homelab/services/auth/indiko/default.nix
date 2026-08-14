@@ -8,10 +8,19 @@ let
   service = "indiko";
   hl = config.homelab;
   cfg = hl.services.${service};
+  backupData = import ../../../lib/backupData.nix { inherit lib; };
 in
 {
   options.homelab.services.${service} = {
     enable = lib.mkEnableOption "Indiko authentication service";
+
+    data = lib.mkOption {
+      type = lib.types.nullOr backupData;
+      default = {
+        sqlite = "${cfg.dataDir}/data/indiko.db";
+      };
+      description = "What to back up for indiko; see homelab/services/restic";
+    };
 
     domain = lib.mkOption {
       type = lib.types.str;

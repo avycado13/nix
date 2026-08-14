@@ -7,10 +7,19 @@ let
   service = "miniflux";
   hl = config.homelab;
   cfg = hl.services.${service};
+  backupData = import ../../lib/backupData.nix { inherit lib; };
 in
 {
   options.homelab.services.${service} = {
     enable = lib.mkEnableOption "Enable ${service}";
+
+    data = lib.mkOption {
+      type = lib.types.nullOr backupData;
+      default = {
+        postgres = "miniflux";
+      };
+      description = "What to back up for miniflux; see homelab/services/restic";
+    };
     configDir = lib.mkOption {
       type = lib.types.str;
       default = "/var/lib/${service}";

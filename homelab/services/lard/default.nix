@@ -11,10 +11,21 @@ let
   cfg = hl.services.${service};
   port = 7477;
   package = inputs.lard.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  backupData = import ../../lib/backupData.nix { inherit lib; };
 in
 {
   options.homelab.services.${service} = {
     enable = lib.mkEnableOption "lard, a memory layer for homelab LLM sessions";
+
+    data = lib.mkOption {
+      type = lib.types.nullOr backupData;
+      default = {
+        # dirOf sqlite backs up all of dataDir, which also covers the
+        # memory/ and users/ subdirectories.
+        sqlite = "${cfg.dataDir}/lard.db";
+      };
+      description = "What to back up for lard; see homelab/services/restic";
+    };
     url = lib.mkOption {
       type = lib.types.str;
       default = "lard.${hl.baseDomainName}";

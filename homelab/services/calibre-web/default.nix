@@ -7,10 +7,21 @@ let
   cfg = config.homelab.services.calibre-web;
   hl = config.homelab;
   port = 8083;
+  backupData = import ../../lib/backupData.nix { inherit lib; };
 in
 {
   options.homelab.services.calibre-web = {
     enable = lib.mkEnableOption "Calibre-Web ebook library server";
+
+    data = lib.mkOption {
+      type = lib.types.nullOr backupData;
+      default = {
+        # dirOf sqlite backs up all of libraryPath, i.e. metadata.db plus
+        # the book files themselves.
+        sqlite = "${cfg.libraryPath}/metadata.db";
+      };
+      description = "What to back up for calibre-web; see homelab/services/restic";
+    };
     url = lib.mkOption {
       type = lib.types.str;
       default = "books.${hl.baseDomainName}";

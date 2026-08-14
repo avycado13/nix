@@ -9,10 +9,24 @@ let
   hl = config.homelab;
   cfg = hl.services.${service};
   certDir = config.security.acme.certs.${hl.baseDomainName}.directory;
+  backupData = import ../../lib/backupData.nix { inherit lib; };
 in
 {
   options.homelab.services.${service} = {
     enable = lib.mkEnableOption "Enable soju IRC bouncer and eventually gamja";
+
+    data = lib.mkOption {
+      type = lib.types.nullOr backupData;
+      default = {
+        # soju's actual unit is "soju", not "irc" (the homelab.services key).
+        # Stopped rather than sqlite-checkpointed since soju's db layout
+        # isn't guaranteed to be a single top-level sqlite file.
+        files = [ "/var/lib/soju" ];
+        stopUnits = [ "soju" ];
+        stopForBackup = true;
+      };
+      description = "What to back up for irc/soju; see homelab/services/restic";
+    };
     url = lib.mkOption {
       type = lib.types.str;
       default = "irc.${hl.baseDomainName}";

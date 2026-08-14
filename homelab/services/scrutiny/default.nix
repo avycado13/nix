@@ -7,10 +7,21 @@ let
   cfg = config.homelab.services.scrutiny;
   hl = config.homelab;
   port = 8086;
+  backupData = import ../../lib/backupData.nix { inherit lib; };
 in
 {
   options.homelab.services.scrutiny = {
     enable = lib.mkEnableOption "Scrutiny SMART disk health monitoring";
+
+    data = lib.mkOption {
+      type = lib.types.nullOr backupData;
+      default = {
+        # SMART history db; low-value but cheap to keep (state dir per the
+        # upstream scrutiny NixOS module).
+        files = [ "/var/lib/scrutiny" ];
+      };
+      description = "What to back up for scrutiny; see homelab/services/restic";
+    };
     domain = lib.mkOption {
       type = lib.types.str;
       description = "Domain to serve Scrutiny on";
