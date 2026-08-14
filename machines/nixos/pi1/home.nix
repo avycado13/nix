@@ -1,5 +1,7 @@
-{ inputs, ... }:
+{ inputs, pkgs, ... }:
 {
+  programs.zsh.enable = true;
+  users.users.avy.shell = pkgs.zsh;
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;

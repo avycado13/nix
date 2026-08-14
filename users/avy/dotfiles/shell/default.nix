@@ -4,7 +4,28 @@
   lib,
   ...
 }:
+let
+  colBin = if pkgs.stdenv.isDarwin then "/usr/bin/col" else "${pkgs.util-linux}/bin/col";
+  # Pre-generated shell init scripts to avoid eval "$(cmd)" subprocess overhead at startup.
+  zoxide-init = pkgs.runCommand "zoxide-init.zsh" { } ''
+    ${pkgs.zoxide}/bin/zoxide init zsh > $out
+  '';
+  direnv-hook = pkgs.runCommand "direnv-hook.zsh" { } ''
+    ${pkgs.direnv}/bin/direnv hook zsh > $out
+  '';
+  fzf-init = pkgs.runCommand "fzf-init.zsh" { } ''
+    ${pkgs.fzf}/bin/fzf --zsh > $out
+  '';
+  # atuin init is handled by programs.atuin.enableZshIntegration
 
+  # Everything sourced into interactive zsh, in order. Each entry is a store
+  # path holding ready-to-source zsh; nothing is eval'd at startup.
+  shell-init = [
+    zoxide-init
+    fzf-init
+    direnv-hook
+  ];
+in
 {
   options.dots.shell = {
     enable = lib.mkOption {
@@ -12,15 +33,26 @@
       default = false;
       description = "Enable the shell dotfiles module.";
     };
+
+    profiling.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        Profile zsh startup with zprof. Prints a breakdown of time spent in
+        each sourced function/plugin at the end of every interactive shell
+        startup. Meant to be toggled on temporarily to diagnose slow
+        startups, not left enabled.
+      '';
+    };
   };
 
   config = lib.mkIf config.dots.shell.enable {
 
     home.sessionPath = [
-      "$HOME/finance/bin"
       "$HOME/.local/bin"
     ]
     ++ lib.optionals pkgs.stdenv.isDarwin [
+      "$HOME/finance/bin"
       "$HOME/.cargo/bin"
       "$HOME/.bun/bin"
       "$HOME/.nix-profile/bin"
@@ -40,6 +72,11 @@
     home.sessionVariables = {
       LANG = "en_US.UTF-8";
       LC_CTYPE = "en_US.UTF-8";
+      # Colourful man pages: -c stops groff emitting its own escapes, col
+      # strips the overstrike it uses for bold and underline, and bat
+      # highlights what is left with the usual theme.
+      MANROFFOPT = "-c";
+      MANPAGER = "sh -c '${colBin} -bx | ${pkgs.bat}/bin/bat -l man -p --theme=ansi'";
     }
     // lib.optionalAttrs pkgs.stdenv.isDarwin {
       OBJC_DISABLE_INITIALIZE_FORK_SAFETY = "YES";
@@ -96,16 +133,9 @@
             "romkatv/zsh-defer"
             "ohmyzsh/ohmyzsh path:lib"
             "getantidote/use-omz"
-            "ohmyzsh/ohmyzsh path:plugins/direnv"
-            "ohmyzsh/ohmyzsh path:plugins/kitty"
-            "ohmyzsh/ohmyzsh path:plugins/git"
-            "ohmyzsh/ohmyzsh path:plugins/aliases"
-            "ohmyzsh/ohmyzsh path:plugins/alias-finder"
             "ohmyzsh/ohmyzsh path:plugins/python"
-            "ohmyzsh/ohmyzsh path:plugins/sudo"
-            "ohmyzsh/ohmyzsh path:plugins/colored-man-pages"
             "ohmyzsh/ohmyzsh path:plugins/uv"
-            "zsh-users/zsh-completions"
+            # "zsh-users/zsh-completions"
             # "MichaelAquilina/zsh-you-should-use"
             # "Aloxaf/fzf-tab"
             "unixorn/git-extra-commands kind:clone branch:main"
@@ -126,6 +156,11 @@
             name = pkgs.fzf-zsh-plugin.pname;
             src = pkgs.fzf-zsh-plugin.src;
             file = "fzf-zsh-plugin.zsh";
+          }
+          {
+            name = pkgs.zsh-completions.pname;
+            src = pkgs.zsh-completions.src;
+            file = "zsh-completions.plugin.zsh";
           }
         ];
 
@@ -170,50 +205,128 @@
         };
 
         initContent = ''
-          ${lib.optionalString pkgs.stdenv.isDarwin ''
-            builtin ulimit -n 2048
-          ''}
+           ${lib.optionalString config.dots.shell.profiling.enable ''
+             zmodload zsh/zprof
+           ''}
 
-          if command -v motd &> /dev/null; then
-            motd
-          fi
+           ${lib.optionalString pkgs.stdenv.isDarwin ''
+             builtin ulimit -n 2048
+           ''}
 
-          # --- Keybindings & widgets ---
-          bindkey -e
+           if (( $+commands[motd] )); then
+             motd
+           fi
 
-          fancy-ctrl-z() {
-            if [[ -z $BUFFER ]]; then
-              BUFFER="fg"
-              zle accept-line
+           # --- Keybindings & widgets ---
+           bindkey -e
+
+           fancy-ctrl-z() {
+             if [[ -z $BUFFER ]]; then
+               BUFFER="fg"
+               zle accept-line
+             else
+               zle push-input
+               zle clear-screen
+             fi
+           }
+           zle -N fancy-ctrl-z
+           bindkey '^Z' fancy-ctrl-z
+
+           bindkey '^B' autosuggest-toggle
+
+           # Make Ctrl+W remove one path segment instead of the whole path
+           WORDCHARS=''${WORDCHARS/\/}
+
+           # Highlight the selected suggestion
+           zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
+           zstyle ':completion:*' menu no
+           zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+           zstyle ':fzf-tab:complete:__zoxide_cd:*' fzf-preview 'ls --color $realpath'
+
+           ${lib.concatMapStringsSep "\n" (f: "source ${f}") shell-init}\
+
+           bindkey ' ' magic-space
+
+           alias -g NE='2>/dev/null'
+           alias -g NO='>/dev/null'
+           alias -g NUL='>/dev/null 2>&1'
+           alias -g J='| jq'
+
+
+           # Edit command buffer in $EDITOR (Ctrl+X, Ctrl+E)
+           autoload -Uz edit-command-line
+           zle -N edit-command-line
+           bindkey '^X^E' edit-command-line
+
+           # --- Deferred integrations (pushed off the critical path so the
+           # first prompt renders immediately; these finish loading right
+           # after it appears) ---
+           zsh-defer eval 'eval "$(command terminal-wakatime init)"'
+           zsh-defer eval 'eval "$(navi widget zsh)"'
+           bindkey '^[n' _navi_widget
+           bindkey -r '^G'
+
+          # Double-tap escape to prepend sudo (from oh-my-zsh sudo plugin)
+          __sudo-replace-buffer() {
+            local old=$1 new=$2 space=''${2:+ }
+            if [[ $CURSOR -le ''${#old} ]]; then
+              BUFFER="''${new}''${space}''${BUFFER#$old }"
+              CURSOR=''${#new}
             else
-              zle push-input
-              zle clear-screen
+              LBUFFER="''${new}''${space}''${LBUFFER#$old }"
             fi
           }
-          zle -N fancy-ctrl-z
-          bindkey '^Z' fancy-ctrl-z
-
-          bindkey '^B' autosuggest-toggle
-
-          # Make Ctrl+W remove one path segment instead of the whole path
-          WORDCHARS=''${WORDCHARS/\/}
-
-          # Highlight the selected suggestion
-          zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
-          zstyle ':completion:*' menu yes=long select
-
-          # --- Deferred integrations (pushed off the critical path so the
-          # first prompt renders immediately; these finish loading right
-          # after it appears) ---
-          zsh-defer eval 'eval "$(terminal-wakatime init)"'
-          zsh-defer eval 'eval "$(navi widget zsh)"'
-          bindkey '^[n' _navi_widget
-          bindkey -r '^G'
-
-          # --- Functions ---
-          mdc() {
-            mkdir -p "$1" && cd "$1"
+          sudo-command-line() {
+            [[ -z $BUFFER ]] && LBUFFER="$(fc -ln -1)"
+            local WHITESPACE=""
+            if [[ ''${LBUFFER:0:1} = " " ]]; then
+              WHITESPACE=" "
+              LBUFFER="''${LBUFFER:1}"
+            fi
+            {
+              local EDITOR=''${SUDO_EDITOR:-''${VISUAL:-$EDITOR}}
+              if [[ -z "$EDITOR" ]]; then
+                case "$BUFFER" in
+                  sudo\ -e\ *) __sudo-replace-buffer "sudo -e" "" ;;
+                  sudo\ *) __sudo-replace-buffer "sudo" "" ;;
+                  *) LBUFFER="sudo $LBUFFER" ;;
+                esac
+                return
+              fi
+              local cmd="''${''${(Az)BUFFER}[1]}"
+              local realcmd="''${''${(Az)aliases[$cmd]}[1]:-$cmd}"
+              local editorcmd="''${''${(Az)EDITOR}[1]}"
+              if [[ "$realcmd" = (\$EDITOR|$editorcmd|''${editorcmd:c}) \
+                || "''${realcmd:c}" = ($editorcmd|''${editorcmd:c}) ]] \
+                || builtin which -a "$realcmd" | command grep -Fx -q "$editorcmd"; then
+                __sudo-replace-buffer "$cmd" "sudo -e"
+                return
+              fi
+              case "$BUFFER" in
+                $editorcmd\ *) __sudo-replace-buffer "$editorcmd" "sudo -e" ;;
+                \$EDITOR\ *) __sudo-replace-buffer '$EDITOR' "sudo -e" ;;
+                sudo\ -e\ *) __sudo-replace-buffer "sudo -e" "$EDITOR" ;;
+                sudo\ *) __sudo-replace-buffer "sudo" "" ;;
+                *) LBUFFER="sudo $LBUFFER" ;;
+              esac
+            } always {
+              LBUFFER="''${WHITESPACE}''${LBUFFER}"
+              zle && zle redisplay
+            }
           }
+          zle -N sudo-command-line
+          bindkey -M emacs '\e\e' sudo-command-line
+          bindkey -M vicmd '\e\e' sudo-command-line
+          bindkey -M viins '\e\e' sudo-command-line
+
+           # --- Functions ---
+           mdc() {
+             mkdir -p "$1" && cd "$1"
+           }
+
+           ${lib.optionalString config.dots.shell.profiling.enable ''
+             zprof
+           ''}
         '';
       };
       atuin = {
@@ -232,7 +345,7 @@
       bat.enable = true;
       direnv = {
         enable = true;
-        enableZshIntegration = true;
+        enableZshIntegration = false;
         nix-direnv.enable = true;
       };
       eza = {
@@ -245,7 +358,7 @@
       fd.enable = true;
       fzf = {
         enable = true;
-        enableZshIntegration = true;
+        enableZshIntegration = false;
 
         historyWidget.command = "";
       };
@@ -329,17 +442,9 @@
         shellWrapperName = "yy";
       };
 
-      yt-dlp = {
-        enable = true;
-
-        extraConfig = ''
-          --ffmpeg-location ${lib.getExe pkgs.ffmpeg}
-        '';
-      };
-
       zoxide = {
         enable = true;
-        enableZshIntegration = true;
+        enableZshIntegration = false;
         options = [ "--cmd cd" ];
       };
     };
