@@ -16,6 +16,9 @@ let
   fzf-init = pkgs.runCommand "fzf-init.zsh" { } ''
     ${pkgs.fzf}/bin/fzf --zsh > $out
   '';
+  nix-index-init = pkgs.runCommand "nix-index-init.zsh" { } ''
+    cp ${pkgs.nix-index}/etc/profile.d/command-not-found.sh $out
+  '';
   # atuin init is handled by programs.atuin.enableZshIntegration
 
   # Everything sourced into interactive zsh, in order. Each entry is a store
@@ -24,6 +27,7 @@ let
     zoxide-init
     fzf-init
     direnv-hook
+    nix-index-init
   ];
 in
 {
@@ -124,21 +128,16 @@ in
           }
         '';
         antidote = {
-          enable = true;
+          enable = false;
           useFriendlyNames = true;
 
           plugins = [
             # Deferred loading: lets us push non-essential init off the critical
             # path so the prompt renders immediately. Must load first.
-            "romkatv/zsh-defer"
-            "ohmyzsh/ohmyzsh path:lib"
-            "getantidote/use-omz"
-            "ohmyzsh/ohmyzsh path:plugins/python"
-            "ohmyzsh/ohmyzsh path:plugins/uv"
+            # "romkatv/zsh-defer"
             # "zsh-users/zsh-completions"
             # "MichaelAquilina/zsh-you-should-use"
             # "Aloxaf/fzf-tab"
-            "unixorn/git-extra-commands kind:clone branch:main"
           ];
         };
 
@@ -161,6 +160,11 @@ in
             name = pkgs.zsh-completions.pname;
             src = pkgs.zsh-completions.src;
             file = "zsh-completions.plugin.zsh";
+          }
+          {
+            name = pkgs.zsh-defer.pname;
+            src = pkgs.zsh-defer.src;
+            file = "zsh-defer.plugin.zsh";
           }
         ];
 
@@ -198,6 +202,28 @@ in
           ols = "ls -la --color=never | awk '{k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/)*2^(8-i));if(k)printf(\" %0o \",k);print}'";
           rm = "rm -iv";
           rr = "rm -Rf";
+          pyserver = "${lib.getExe pkgs.python3} -m http.server";
+          uva = "${lib.getExe pkgs.uv} add";
+          uvexp = "${lib.getExe pkgs.uv} export --format requirements-txt --no-hashes --output-file requirements.txt --quiet";
+          uvi = "${lib.getExe pkgs.uv} init";
+          uvinw = "${lib.getExe pkgs.uv} init --no-workspace";
+          uvl = "${lib.getExe pkgs.uv} lock";
+          uvlr = "${lib.getExe pkgs.uv} lock --refresh";
+          uvlu = "${lib.getExe pkgs.uv} lock --upgrade";
+          uvp = "${lib.getExe pkgs.uv} pip";
+          uvpi = "${lib.getExe pkgs.uv} python install";
+          uvpl = "${lib.getExe pkgs.uv} python list";
+          uvpp = "${lib.getExe pkgs.uv} python pin";
+          uvpu = "${lib.getExe pkgs.uv} python uninstall";
+          uvpy = "${lib.getExe pkgs.uv} python";
+          uvr = "${lib.getExe pkgs.uv} run";
+          uvrm = "${lib.getExe pkgs.uv} remove";
+          uvs = "${lib.getExe pkgs.uv} sync";
+          uvsr = "${lib.getExe pkgs.uv} sync --refresh";
+          uvsu = "${lib.getExe pkgs.uv} sync --upgrade";
+          uvtr = "${lib.getExe pkgs.uv} tree";
+          uvup = "${lib.getExe pkgs.uv} self update";
+          uvv = "${lib.getExe pkgs.uv} venv";
         }
         // lib.optionalAttrs pkgs.stdenv.isDarwin {
           flush-dns = "sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder";
@@ -213,9 +239,9 @@ in
              builtin ulimit -n 2048
            ''}
 
-           if (( $+commands[motd] )); then
-             motd
-           fi
+           # if (( $+commands[motd] )); then
+           #   motd
+           # fi
 
            # --- Keybindings & widgets ---
            bindkey -e
@@ -350,7 +376,7 @@ in
       };
       eza = {
         enable = true;
-        enableZshIntegration = true;
+        enableZshIntegration = false;
         git = true;
         colors = "auto";
         icons = "auto";
@@ -375,7 +401,7 @@ in
       };
       nix-index = {
         enable = true;
-        enableZshIntegration = true;
+        enableZshIntegration = false;
       };
       nix-index-database.comma.enable = true;
       nix-search-tv = {

@@ -24,7 +24,6 @@ in
   config = lib.mkIf config.dots.media.enable {
     programs.yt-dlp = {
       enable = true;
-
       extraConfig = ''
         --ffmpeg-location ${lib.getExe pkgs.ffmpeg}
       '';

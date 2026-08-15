@@ -1,6 +1,7 @@
 {
   home-manager.users.avy.dots = {
     shell.enable = true;
+    # shell.profiling.enable = true;
     editor.enable = true;
     ssh = {
       enable = true;
