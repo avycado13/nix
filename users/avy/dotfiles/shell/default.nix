@@ -2,6 +2,7 @@
   pkgs,
   config,
   lib,
+  inputs,
   ...
 }:
 let
@@ -127,19 +128,6 @@ in
             fi
           }
         '';
-        antidote = {
-          enable = false;
-          useFriendlyNames = true;
-
-          plugins = [
-            # Deferred loading: lets us push non-essential init off the critical
-            # path so the prompt renders immediately. Must load first.
-            # "romkatv/zsh-defer"
-            # "zsh-users/zsh-completions"
-            # "MichaelAquilina/zsh-you-should-use"
-            # "Aloxaf/fzf-tab"
-          ];
-        };
 
         plugins = [
           {
@@ -168,7 +156,7 @@ in
           }
         ];
 
-        syntaxHighlighting.enable = true;
+        # syntaxHighlighting.enable = true;
         autosuggestion.enable = true;
         historySubstringSearch.enable = true;
 
@@ -287,8 +275,11 @@ in
            # --- Deferred integrations (pushed off the critical path so the
            # first prompt renders immediately; these finish loading right
            # after it appears) ---
-           zsh-defer eval 'eval "$(command terminal-wakatime init)"'
-           zsh-defer eval 'eval "$(navi widget zsh)"'
+           zsh-defer eval 'eval "$(${
+             inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
+           }/bin/terminal-wakatime init)"'
+           zsh-defer eval 'eval "$(${pkgs.navi}/bin/navi widget zsh)"'
+           zsh-defer eval 'eval "$(${pkgs.zsh-patina}/bin/zsh-patina activate)"'
            bindkey '^[n' _navi_widget
            bindkey -r '^G'
 

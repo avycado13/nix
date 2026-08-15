@@ -160,6 +160,7 @@
       grt = ''cd "$(git rev-parse --show-toplevel || echo .)"'';
       ggpur = "ggu";
       g = "git";
+      gst = "git status";
       ga = "git add";
       gaa = "git add --all";
       gapa = "git add --patch";
@@ -321,6 +322,7 @@
       grt = ''cd "$(git rev-parse --show-toplevel || echo .)"'';
       ggpur = "ggu";
       g = "git";
+      gst = "git status";
       ga = "git add";
       gaa = "git add --all";
       gapa = "git add --patch";
