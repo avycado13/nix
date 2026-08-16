@@ -9,26 +9,59 @@ let
   colBin = if pkgs.stdenv.isDarwin then "/usr/bin/col" else "${pkgs.util-linux}/bin/col";
   # Pre-generated shell init scripts to avoid eval "$(cmd)" subprocess overhead at startup.
   zoxide-init = pkgs.runCommand "zoxide-init.zsh" { } ''
-    ${pkgs.zoxide}/bin/zoxide init zsh > $out
+    ${lib.getExe pkgs.zoxide} init zsh > $out
   '';
   direnv-hook = pkgs.runCommand "direnv-hook.zsh" { } ''
-    ${pkgs.direnv}/bin/direnv hook zsh > $out
+    ${lib.getExe pkgs.direnv} hook zsh > $out
   '';
   fzf-init = pkgs.runCommand "fzf-init.zsh" { } ''
-    ${pkgs.fzf}/bin/fzf --zsh > $out
+    ${lib.getExe pkgs.fzf} --zsh > $out
   '';
   nix-index-init = pkgs.runCommand "nix-index-init.zsh" { } ''
     cp ${pkgs.nix-index}/etc/profile.d/command-not-found.sh $out
   '';
-  # atuin init is handled by programs.atuin.enableZshIntegration
-
+  # atuin init is handled by programs.atuin.enableZshIntegration # NOT ANYMORE
+  atuin-init = pkgs.runCommand "atuin-init.zsh" { } ''
+    export HOME=$TMPDIR
+    ${lib.getExe pkgs.atuin} init zsh > $out
+  '';
+  zsh-you-should-use-init = pkgs.runCommand "zsh-you-should-use-init.zsh" { } ''
+    cp ${pkgs.zsh-you-should-use.src}/zsh-you-should-use.plugin.zsh $out
+  '';
+  fzf-zsh-plugin-init = pkgs.runCommand "fzf-zsh-plugin-init.zsh" { } ''
+    cp ${pkgs.fzf-zsh-plugin.src}/fzf-zsh-plugin.plugin.zsh $out
+  '';
+  terminal-wakatime-init = pkgs.runCommand "terminal-wakatime-init.zsh" { } ''
+    ${
+      lib.getExe' inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
+        "terminal-wakatime"
+    } init zsh > $out
+  '';
+  zsh-patina-init = pkgs.runCommand "zsh-patina-init.zsh" { } ''
+    ${lib.getExe pkgs.zsh-patina} activate > $out
+  '';
+  navi-init = pkgs.runCommand "navi-init.zsh" { } ''
+    ${lib.getExe pkgs.navi} widget zsh > $out
+  '';
+  zsh-completions-init = pkgs.runCommand "zsh-completions-init.zsh" { } ''
+    cp ${pkgs.zsh-completions.src}/zsh-completions.plugin.zsh $out
+  '';
   # Everything sourced into interactive zsh, in order. Each entry is a store
   # path holding ready-to-source zsh; nothing is eval'd at startup.
   shell-init = [
     zoxide-init
     fzf-init
     direnv-hook
+  ];
+  defer-init = [
     nix-index-init
+    atuin-init
+    zsh-you-should-use-init
+    fzf-zsh-plugin-init
+    terminal-wakatime-init
+    zsh-patina-init
+    navi-init
+    zsh-completions-init
   ];
 in
 {
@@ -136,29 +169,13 @@ in
             file = "fzf-tab.plugin.zsh";
           }
           {
-            name = pkgs.zsh-you-should-use.pname;
-            src = pkgs.zsh-you-should-use.src;
-          }
-          {
-            name = pkgs.fzf-zsh-plugin.pname;
-            src = pkgs.fzf-zsh-plugin.src;
-            file = "fzf-zsh-plugin.zsh";
-          }
-          {
-            name = pkgs.zsh-completions.pname;
-            src = pkgs.zsh-completions.src;
-            file = "zsh-completions.plugin.zsh";
-          }
-          {
             name = pkgs.zsh-defer.pname;
             src = pkgs.zsh-defer.src;
             file = "zsh-defer.plugin.zsh";
           }
         ];
 
-        # syntaxHighlighting.enable = true;
         autosuggestion.enable = true;
-        historySubstringSearch.enable = true;
 
         shellAliases = {
           ash = "${lib.getExe pkgs.autossh} -M 0 -q";
@@ -275,13 +292,9 @@ in
            # --- Deferred integrations (pushed off the critical path so the
            # first prompt renders immediately; these finish loading right
            # after it appears) ---
-           zsh-defer eval 'eval "$(${
-             inputs.terminal-wakatime.packages.${pkgs.stdenv.hostPlatform.system}.default
-           }/bin/terminal-wakatime init)"'
-           zsh-defer eval 'eval "$(${pkgs.navi}/bin/navi widget zsh)"'
-           zsh-defer eval 'eval "$(${pkgs.zsh-patina}/bin/zsh-patina activate)"'
-           bindkey '^[n' _navi_widget
-           bindkey -r '^G'
+           ${lib.concatMapStringsSep "\n" (f: "zsh-defer source ${f}") defer-init}\
+
+           
 
           # Double-tap escape to prepend sudo (from oh-my-zsh sudo plugin)
           __sudo-replace-buffer() {
@@ -340,15 +353,14 @@ in
            mdc() {
              mkdir -p "$1" && cd "$1"
            }
-
-           ${lib.optionalString config.dots.shell.profiling.enable ''
-             zprof
-           ''}
+          ${lib.optionalString config.dots.shell.profiling.enable ''
+            zprof
+          ''}           
         '';
       };
       atuin = {
         enable = true;
-        enableZshIntegration = true;
+        enableZshIntegration = false; # Look at top; file content generated at build
 
         settings = {
           auto_sync = true;
