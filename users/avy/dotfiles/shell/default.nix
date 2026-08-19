@@ -37,9 +37,6 @@ let
         "terminal-wakatime"
     } init zsh > $out
   '';
-  zsh-patina-init = pkgs.runCommand "zsh-patina-init.zsh" { } ''
-    ${lib.getExe pkgs.zsh-patina} activate > $out
-  '';
   navi-init = pkgs.runCommand "navi-init.zsh" { } ''
     ${lib.getExe pkgs.navi} widget zsh > $out
   '';
@@ -59,7 +56,6 @@ let
     zsh-you-should-use-init
     fzf-zsh-plugin-init
     terminal-wakatime-init
-    zsh-patina-init
     navi-init
     zsh-completions-init
   ];
@@ -203,6 +199,7 @@ in
           jsenv = "${lib.getExe pkgs.ripgrep} -o --no-filename 'process\\.env\\.[A-Z0-9_]+' | sort -u | awk -F. '{print $3\"=\\\"\\\"\"}'";
           ls = "${lib.getExe pkgs.eza}";
           mkdir = "mkdir -p";
+          md = "mkdir";
           mv = "mv -iv";
           ols = "ls -la --color=never | awk '{k=0;for(i=0;i<=8;i++)k+=((substr($1,i+2,1)~/[rwx]/)*2^(8-i));if(k)printf(\" %0o \",k);print}'";
           rm = "rm -iv";
@@ -294,7 +291,13 @@ in
            # after it appears) ---
            ${lib.concatMapStringsSep "\n" (f: "zsh-defer source ${f}") defer-init}\
 
-           
+           # zsh-patina's activate output embeds $TMPDIR (for its daemon
+           # socket path), so it must be eval'd at runtime rather than
+           # pre-baked into a store path at build time.
+           zsh-defer ${lib.getExe pkgs.zsh-patina} start
+           zsh-defer eval 'eval "$(${lib.getExe pkgs.zsh-patina} activate)"'
+
+
 
           # Double-tap escape to prepend sudo (from oh-my-zsh sudo plugin)
           __sudo-replace-buffer() {
@@ -467,7 +470,7 @@ in
       };
       yazi = {
         enable = true;
-        enableZshIntegration = true;
+        enableZshIntegration = false;
         shellWrapperName = "yy";
       };
 

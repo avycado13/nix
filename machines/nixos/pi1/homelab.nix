@@ -77,12 +77,15 @@
       sopsFile = ../../../secrets/services.yaml;
       key = "asterisk/cisco7945_password";
     };
-
+    # cloudflared-credentials = {
+    #   sopsFile = ../../../secrets/services.yaml;
+    #   key = "cloudflared/credentials";
+    # };
   };
 
   services.fail2ban-cloudflare = {
     enable = true;
-    zoneId = "4adc00cf91645d8c4abb10ae11b9c641";
+    zoneId = "1ed193738a5409e5d718135e83605de1";
     apiKeyFile = config.sops.secrets.cloudflare-fail2ban-apikey.path;
     # No jails configured yet -- add entries here once indiko emits a
     # journal line for failed logins (see homelab/fail2ban-cloudflare).
