@@ -15,6 +15,12 @@ in
   options.homelab.services.${service} = {
     enable = lib.mkEnableOption "Enable soju IRC bouncer and eventually gamja";
 
+    host = lib.mkOption {
+      type = lib.types.str;
+      default = "127.0.0.1";
+      description = "Tailscale IP/hostname where soju actually runs, if not this machine";
+    };
+
     data = lib.mkOption {
       type = lib.types.nullOr backupData;
       default = {
@@ -53,53 +59,59 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    services.soju = {
-      enable = true;
-      hostName = cfg.url;
-      listen = [
-        "ircs://:${toString cfg.ircsPort}"
-        "ws+insecure://:${toString cfg.port}"
-      ];
-      tlsCertificate = "${certDir}/fullchain.pem";
-      tlsCertificateKey = "${certDir}/key.pem";
-    };
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      (lib.mkIf (cfg.host == "127.0.0.1") {
+        services.soju = {
+          enable = true;
+          hostName = cfg.url;
+          listen = [
+            "ircs://:${toString cfg.ircsPort}"
+            "ws+insecure://:${toString cfg.port}"
+          ];
+          tlsCertificate = "${certDir}/fullchain.pem";
+          tlsCertificateKey = "${certDir}/key.pem";
+        };
 
-    # soju runs with a static user (not DynamicUser) so it can be added to
-    # the ACME cert group and read the shared wildcard cert/key.
-    users.users.soju = {
-      isSystemUser = true;
-      group = "soju";
-      extraGroups = [ config.services.caddy.group ];
-    };
-    users.groups.soju = { };
-    systemd.services.soju.serviceConfig = {
-      DynamicUser = lib.mkForce false;
-      User = "soju";
-      Group = "soju";
-    };
+        # soju runs with a static user (not DynamicUser) so it can be added to
+        # the ACME cert group and read the shared wildcard cert/key.
+        users.users.soju = {
+          isSystemUser = true;
+          group = "soju";
+          extraGroups = [ config.services.caddy.group ];
+        };
+        users.groups.soju = { };
+        systemd.services.soju.serviceConfig = {
+          DynamicUser = lib.mkForce false;
+          User = "soju";
+          Group = "soju";
+        };
 
-    security.acme.certs.${hl.baseDomainName}.reloadServices = [ "soju.service" ];
+        security.acme.certs.${hl.baseDomainName}.reloadServices = [ "soju.service" ];
 
-    networking.firewall.allowedTCPPorts = [ cfg.port ];
-    services.caddy.virtualHosts."${cfg.url}" = {
-      useACMEHost = hl.baseDomainName;
-      extraConfig = ''
-        root * ${pkgs.compressDrvWeb pkgs.gamja { }}
-        file_server browse {
-            precompressed br gzip
-        }
-        @soju {
-            path /socket
-            path /uploads
-            path /uploads/*
-        }
-        reverse_proxy @soju http://127.0.0.1:${toString cfg.port}
-      '';
-    };
+        networking.firewall.allowedTCPPorts = [ cfg.port ];
 
-    systemd.services.soju.serviceConfig.OnFailure = lib.mkIf (
-      hl.notifications.ntfySecretsFile != null
-    ) "notify-failure@%n.service";
-  };
+        systemd.services.soju.serviceConfig.OnFailure = lib.mkIf (
+          hl.notifications.ntfySecretsFile != null
+        ) "notify-failure@%n.service";
+      })
+      {
+        services.caddy.virtualHosts."${cfg.url}" = {
+          useACMEHost = hl.baseDomainName;
+          extraConfig = ''
+            root * ${pkgs.compressDrvWeb pkgs.gamja { }}
+            file_server browse {
+                precompressed br gzip
+            }
+            @soju {
+                path /socket
+                path /uploads
+                path /uploads/*
+            }
+            reverse_proxy @soju http://${cfg.host}:${toString cfg.port}
+          '';
+        };
+      }
+    ]
+  );
 }

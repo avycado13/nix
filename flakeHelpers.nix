@@ -118,6 +118,7 @@ in
         ./machines/nixos/${machineHostname}
         ./modules/email
         ./modules/ddns
+        ./modules/heTunnel
         inputs.nix-mineral.nixosModules.nix-mineral
         inputs.sops-nix.nixosModules.sops
         ./modules/secrets

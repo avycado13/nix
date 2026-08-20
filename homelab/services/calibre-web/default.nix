@@ -13,6 +13,12 @@ in
   options.homelab.services.calibre-web = {
     enable = lib.mkEnableOption "Calibre-Web ebook library server";
 
+    host = lib.mkOption {
+      type = lib.types.str;
+      default = "127.0.0.1";
+      description = "Tailscale IP/hostname where calibre-web actually runs, if not this machine";
+    };
+
     data = lib.mkOption {
       type = lib.types.nullOr backupData;
       default = {
@@ -51,33 +57,38 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    services.calibre-web = {
-      enable = true;
-      listen = {
-        ip = "127.0.0.1";
-        inherit port;
-      };
-      options = {
-        calibreLibrary = cfg.libraryPath;
-        enableBookUploading = cfg.enableBookUploading;
-        enableBookConversion = true;
-      };
-    };
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      (lib.mkIf (cfg.host == "127.0.0.1") {
+        services.calibre-web = {
+          enable = true;
+          listen = {
+            ip = "127.0.0.1";
+            inherit port;
+          };
+          options = {
+            calibreLibrary = cfg.libraryPath;
+            enableBookUploading = cfg.enableBookUploading;
+            enableBookConversion = true;
+          };
+        };
 
-    systemd.tmpfiles.rules = [
-      "d ${cfg.libraryPath} 0750 calibre-web calibre-web -"
-    ];
+        systemd.tmpfiles.rules = [
+          "d ${cfg.libraryPath} 0750 calibre-web calibre-web -"
+        ];
 
-    services.caddy.virtualHosts."${cfg.url}" = {
-      useACMEHost = hl.baseDomainName;
-      extraConfig = ''
-        reverse_proxy http://127.0.0.1:${toString port}
-      '';
-    };
-
-    systemd.services.calibre-web.unitConfig.OnFailure = lib.mkIf (
-      hl.notifications.ntfySecretsFile != null
-    ) "notify-failure@%n.service";
-  };
+        systemd.services.calibre-web.unitConfig.OnFailure = lib.mkIf (
+          hl.notifications.ntfySecretsFile != null
+        ) "notify-failure@%n.service";
+      })
+      {
+        services.caddy.virtualHosts."${cfg.url}" = {
+          useACMEHost = hl.baseDomainName;
+          extraConfig = ''
+            reverse_proxy http://${cfg.host}:${toString port}
+          '';
+        };
+      }
+    ]
+  );
 }

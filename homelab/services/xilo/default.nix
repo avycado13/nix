@@ -48,6 +48,12 @@ in
   options.homelab.services.${service} = {
     enable = lib.mkEnableOption "Enable ${service}, a self-hosted Nix binary cache";
 
+    host = lib.mkOption {
+      type = lib.types.str;
+      default = "127.0.0.1";
+      description = "Tailscale IP/hostname where xilo actually runs, if not this machine";
+    };
+
     data = lib.mkOption {
       type = lib.types.nullOr backupData;
       default = {
@@ -144,65 +150,71 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    services.xilo = {
-      enable = true;
-      environmentFile = cfg.environmentFile;
-      # When extra storages carry secret placeholders, config is instead
-      # rendered via sops.templates below and loaded through
-      # LoadCredential, so this Nix-store-embedded settings block is
-      # skipped entirely to avoid baking unresolved placeholder text in.
-      settings = lib.mkIf (!usesTemplate) baseSettings;
-    };
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      (lib.mkIf (cfg.host == "127.0.0.1") {
+        services.xilo = {
+          enable = true;
+          environmentFile = cfg.environmentFile;
+          # When extra storages carry secret placeholders, config is instead
+          # rendered via sops.templates below and loaded through
+          # LoadCredential, so this Nix-store-embedded settings block is
+          # skipped entirely to avoid baking unresolved placeholder text in.
+          settings = lib.mkIf (!usesTemplate) baseSettings;
+        };
 
-    # sops-nix placeholders are only substituted inside declared templates,
-    # never inside arbitrary store paths -- so when secrets are involved we
-    # bypass the upstream module's Nix-store-rendered config file and
-    # render our own via sops, then hand it to the (DynamicUser) service
-    # through systemd's LoadCredential, which systemd (as root) copies into
-    # a private, correctly-permissioned directory before dropping to the
-    # service's dynamic user.
-    sops.templates."xilo-config.yaml" = lib.mkIf usesTemplate {
-      content = builtins.toJSON baseSettings;
-    };
+        # sops-nix placeholders are only substituted inside declared templates,
+        # never inside arbitrary store paths -- so when secrets are involved we
+        # bypass the upstream module's Nix-store-rendered config file and
+        # render our own via sops, then hand it to the (DynamicUser) service
+        # through systemd's LoadCredential, which systemd (as root) copies into
+        # a private, correctly-permissioned directory before dropping to the
+        # service's dynamic user.
+        sops.templates."xilo-config.yaml" = lib.mkIf usesTemplate {
+          content = builtins.toJSON baseSettings;
+        };
 
-    systemd.services.${service} = {
-      serviceConfig = lib.optionalAttrs usesTemplate {
-        LoadCredential = [
-          "config.yaml:${config.sops.templates."xilo-config.yaml".path}"
-        ];
-        ExecStart = lib.mkForce "${lib.getExe config.services.xilo.package} serve --config %d/config.yaml";
-      };
-      unitConfig.OnFailure = lib.mkIf (
-        hl.notifications.ntfySecretsFile != null
-      ) "notify-failure@%n.service";
-    };
+        systemd.services.${service} = {
+          serviceConfig = lib.optionalAttrs usesTemplate {
+            LoadCredential = [
+              "config.yaml:${config.sops.templates."xilo-config.yaml".path}"
+            ];
+            ExecStart = lib.mkForce "${lib.getExe config.services.xilo.package} serve --config %d/config.yaml";
+          };
+          unitConfig.OnFailure = lib.mkIf (
+            hl.notifications.ntfySecretsFile != null
+          ) "notify-failure@%n.service";
+        };
 
-    services.caddy.virtualHosts."${cfg.url}" = {
-      useACMEHost = hl.baseDomainName;
-      extraConfig = ''
-        reverse_proxy http://127.0.0.1:${toString port}
-        request_body {
-          max_size 0
-        }
-      '';
-    };
-    services.nix-cache-beacon = {
-      # Announce cache to the local network
-      advert = {
-        enable = true;
-        port = port; # xilo port
-      };
+        services.nix-cache-beacon = {
+          # Announce cache to the local network
+          advert = {
+            enable = true;
+            port = port; # xilo port
+          };
 
-      # Enable local binary cache using discovered caches on the local network
-      cache.enable = true;
-    };
+          # Enable local binary cache using discovered caches on the local network
+          cache.enable = true;
+        };
 
-    # mDNS may not be ready yet at boot, and nix-cache-beacon panics instead
-    # of retrying internally when it can't resolve *.local; wait for avahi.
-    systemd.services.nix-cache-beacon-cache = {
-      after = [ "avahi-daemon.service" ];
-      wants = [ "avahi-daemon.service" ];
-    };
-  };
+        # mDNS may not be ready yet at boot, and nix-cache-beacon panics instead
+        # of retrying internally when it can't resolve *.local; wait for avahi.
+        systemd.services.nix-cache-beacon-cache = {
+          after = [ "avahi-daemon.service" ];
+          wants = [ "avahi-daemon.service" ];
+        };
+      })
+      {
+        services.caddy.virtualHosts."${cfg.url}" = {
+          useACMEHost = hl.baseDomainName;
+          extraConfig = ''
+            reverse_proxy http://${cfg.host}:${toString port}
+            request_body {
+              max_size 0
+            }
+          '';
+        };
+      }
+    ]
+  );
 }

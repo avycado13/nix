@@ -81,6 +81,11 @@
     #   sopsFile = ../../../secrets/services.yaml;
     #   key = "cloudflared/credentials";
     # };
+
+    he-tunnel-update-credentials = {
+      sopsFile = ../../../secrets/services.yaml;
+      key = "he_tunnel/update_credentials";
+    };
   };
 
   services.fail2ban-cloudflare = {
@@ -220,4 +225,12 @@
       };
     };
   };
+  # networking.heTunnel = {
+  #   enable = true;
+  #   tunnelId = "1020159";
+  #   serverIPv4 = "72.52.104.74";
+  #   clientIPv6 = "2001:470:1f04:61e::2";
+  #   routedPrefix = "2001:470:1f05:61e::";
+  #   updateCredentialsFile = config.sops.secrets.he-tunnel-update-credentials.path;
+  # };
 }

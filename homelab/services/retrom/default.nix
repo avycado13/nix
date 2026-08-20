@@ -12,6 +12,11 @@ in
 {
   options.homelab.services.${service} = {
     enable = lib.mkEnableOption "Enable ${service}";
+    host = lib.mkOption {
+      type = lib.types.str;
+      default = "127.0.0.1";
+      description = "Tailscale IP/hostname where retrom actually runs, if not this machine";
+    };
     url = lib.mkOption {
       type = lib.types.str;
       default = "retrom.${hl.baseDomainName}";
@@ -88,43 +93,48 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    # The upstream module only merges in `connection` (port/dbUrl) when it
-    # renders settings itself. Supplying configFile bypasses that, so we
-    # include `connection` here too. Secrets (igdb/steam) go through a
-    # sops-rendered template rather than `settings`, since `settings` is
-    # written to the Nix store in plaintext via pkgs.writeText.
-    sops.templates."retrom-config.json" = {
-      owner = rt.user;
-      group = rt.group;
-      content = builtins.toJSON {
-        connection = {
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      (lib.mkIf (cfg.host == "127.0.0.1") {
+        # The upstream module only merges in `connection` (port/dbUrl) when it
+        # renders settings itself. Supplying configFile bypasses that, so we
+        # include `connection` here too. Secrets (igdb/steam) go through a
+        # sops-rendered template rather than `settings`, since `settings` is
+        # written to the Nix store in plaintext via pkgs.writeText.
+        sops.templates."retrom-config.json" = {
+          owner = rt.user;
+          group = rt.group;
+          content = builtins.toJSON {
+            connection = {
+              port = cfg.port;
+              dbUrl = if cfg.enableDatabase then "postgres:///retrom?host=/var/run/postgresql" else cfg.dbUrl;
+            };
+            contentDirectories = cfg.contentDirectories;
+            igdb = {
+              clientId = cfg.igdb.clientId;
+              clientSecret = cfg.igdb.clientSecret;
+            };
+            steam = {
+              apiKey = cfg.steam.apiKey;
+              userId = cfg.steam.userId;
+            };
+          };
+        };
+        services.${service} = {
+          enable = true;
+          enableDatabase = cfg.enableDatabase;
           port = cfg.port;
-          dbUrl = if cfg.enableDatabase then "postgres:///retrom?host=/var/run/postgresql" else cfg.dbUrl;
+          configFile = config.sops.templates."retrom-config.json".path;
         };
-        contentDirectories = cfg.contentDirectories;
-        igdb = {
-          clientId = cfg.igdb.clientId;
-          clientSecret = cfg.igdb.clientSecret;
+      })
+      {
+        services.caddy.virtualHosts."${cfg.url}" = {
+          useACMEHost = hl.baseDomainName;
+          extraConfig = ''
+            reverse_proxy http://${cfg.host}:${toString cfg.port}
+          '';
         };
-        steam = {
-          apiKey = cfg.steam.apiKey;
-          userId = cfg.steam.userId;
-        };
-      };
-    };
-    services.${service} = {
-      enable = true;
-      enableDatabase = cfg.enableDatabase;
-      port = cfg.port;
-      configFile = config.sops.templates."retrom-config.json".path;
-    };
-
-    services.caddy.virtualHosts."${cfg.url}" = {
-      useACMEHost = hl.baseDomainName;
-      extraConfig = ''
-        reverse_proxy http://127.0.0.1:${toString cfg.port}
-      '';
-    };
-  };
+      }
+    ]
+  );
 }

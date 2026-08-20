@@ -13,6 +13,12 @@ in
   options.homelab.services.${service} = {
     enable = lib.mkEnableOption "Enable ${service}";
 
+    host = lib.mkOption {
+      type = lib.types.str;
+      default = "127.0.0.1";
+      description = "Tailscale IP/hostname where miniflux actually runs, if not this machine";
+    };
+
     data = lib.mkOption {
       type = lib.types.nullOr backupData;
       default = {
@@ -66,28 +72,34 @@ in
       addr = "127.0.0.1";
       port = 8067;
     in
-    lib.mkIf cfg.enable {
-      services.${service} = {
-        enable = true;
-        adminCredentialsFile = cfg.adminCredentialsFile;
-        config = {
-          BASE_URL = "https://${cfg.url}";
-          CREATE_ADMIN = true;
-          LISTEN_ADDR = "${addr}:${toString port}";
-          OAUTH2_PROVIDER = "oidc";
-          OAUTH2_CLIENT_ID_FILE = cfg.oauthClientIdFile;
-          OAUTH2_CLIENT_SECRET_FILE = cfg.oauthClientSecretFile;
-          OAUTH2_REDIRECT_URL = "https://${cfg.url}/oauth2/oidc/callback";
-          OAUTH2_OIDC_DISCOVERY_ENDPOINT = "https://${hl.services.indiko.domain}";
-          OAUTH2_USER_CREATION = "1";
-          DISABLE_LOCAL_AUTH = "false";
-        };
-      };
-      services.caddy.virtualHosts."${cfg.url}" = {
-        useACMEHost = "avyay.in";
-        extraConfig = ''
-          reverse_proxy http://${addr}:${toString port}
-        '';
-      };
-    };
+    lib.mkIf cfg.enable (
+      lib.mkMerge [
+        (lib.mkIf (cfg.host == "127.0.0.1") {
+          services.${service} = {
+            enable = true;
+            adminCredentialsFile = cfg.adminCredentialsFile;
+            config = {
+              BASE_URL = "https://${cfg.url}";
+              CREATE_ADMIN = true;
+              LISTEN_ADDR = "${addr}:${toString port}";
+              OAUTH2_PROVIDER = "oidc";
+              OAUTH2_CLIENT_ID_FILE = cfg.oauthClientIdFile;
+              OAUTH2_CLIENT_SECRET_FILE = cfg.oauthClientSecretFile;
+              OAUTH2_REDIRECT_URL = "https://${cfg.url}/oauth2/oidc/callback";
+              OAUTH2_OIDC_DISCOVERY_ENDPOINT = "https://${hl.services.indiko.domain}";
+              OAUTH2_USER_CREATION = "1";
+              DISABLE_LOCAL_AUTH = "false";
+            };
+          };
+        })
+        {
+          services.caddy.virtualHosts."${cfg.url}" = {
+            useACMEHost = "avyay.in";
+            extraConfig = ''
+              reverse_proxy http://${cfg.host}:${toString port}
+            '';
+          };
+        }
+      ]
+    );
 }

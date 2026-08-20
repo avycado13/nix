@@ -16,6 +16,11 @@ in
 {
   options.homelab.services.${service} = {
     enable = lib.mkEnableOption "Enable ${service}";
+    host = lib.mkOption {
+      type = lib.types.str;
+      default = "127.0.0.1";
+      description = "Tailscale IP/hostname where asterisk actually runs, if not this machine";
+    };
     url = lib.mkOption {
       type = lib.types.str;
       default = "pbx.${hl.baseDomainName}";
@@ -233,88 +238,91 @@ in
       '';
 
     in
-    {
-      services.asterisk = {
-        enable = true;
-        confFiles = {
-          "extensions.conf" = extensionsConf;
-          "rtp.conf" = rtpConf;
-          "voicemail.conf" = voicemailConf;
-        }
-        // cfg.extraConfFiles;
-      };
-
-      sops.templates."asterisk/pjsip.conf" = {
-        owner = "asterisk";
-        group = "asterisk";
-        mode = "0440";
-        content = pjsipConfTemplate;
-      };
-
-      environment.etc."asterisk/pjsip.conf".source =
-        lib.mkForce
-          config.sops.templates."asterisk/pjsip.conf".path;
-
-      networking.firewall = {
-        allowedUDPPorts = [
-          5060
-          69
-        ];
-        allowedTCPPorts = [ 5060 ];
-        allowedUDPPortRanges = [
-          {
-            from = cfg.rtpPortRange.start;
-            to = cfg.rtpPortRange.end;
+    lib.mkMerge [
+      (lib.mkIf (cfg.host == "127.0.0.1") {
+        services.asterisk = {
+          enable = true;
+          confFiles = {
+            "extensions.conf" = extensionsConf;
+            "rtp.conf" = rtpConf;
+            "voicemail.conf" = voicemailConf;
           }
-        ];
-      };
-
-      systemd.services.atftpd = {
-        description = "Advanced TFTP server for Cisco phone provisioning";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
-        serviceConfig = {
-          ExecStart = "${atftpPkg}/bin/atftpd --port 69 --user asterisk.asterisk ${ciscoProvDir}";
-          Restart = "on-failure";
-          RestartSec = "5";
+          // cfg.extraConfFiles;
         };
-      };
 
-      systemd.services.asterisk-cisco-provisioning = {
-        description = "Generate Cisco IP phone provisioning files for Asterisk";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
-        before = [ "atftpd.service" ];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
+        sops.templates."asterisk/pjsip.conf" = {
+          owner = "asterisk";
+          group = "asterisk";
+          mode = "0440";
+          content = pjsipConfTemplate;
         };
-        script = ''
-          mkdir -p ${ciscoProvDir}
-          chown asterisk:asterisk ${ciscoProvDir}
-        ''
-        + lib.concatStringsSep "\n" (
-          map (phone: ''
-            cp ${phone.cnfXml} ${ciscoProvDir}/${phone.name}.cnf.xml
-            chown asterisk:asterisk ${ciscoProvDir}/${phone.name}.cnf.xml
-          '') phoneConfigs
-        );
-      };
 
-      systemd.services.asterisk = {
-        requires = [ "sops-nix.service" ];
-        after = [ "sops-nix.service" ];
-        serviceConfig = lib.mkIf (hl.notifications.ntfySecretsFile != null) {
-          OnFailure = "notify-failure@%n.service";
+        environment.etc."asterisk/pjsip.conf".source =
+          lib.mkForce
+            config.sops.templates."asterisk/pjsip.conf".path;
+
+        networking.firewall = {
+          allowedUDPPorts = [
+            5060
+            69
+          ];
+          allowedTCPPorts = [ 5060 ];
+          allowedUDPPortRanges = [
+            {
+              from = cfg.rtpPortRange.start;
+              to = cfg.rtpPortRange.end;
+            }
+          ];
         };
-      };
 
-      services.caddy.virtualHosts."${cfg.url}" = {
-        useACMEHost = hl.baseDomainName;
-        extraConfig = ''
-          reverse_proxy http://127.0.0.1:8088
-        '';
-      };
-    }
+        systemd.services.atftpd = {
+          description = "Advanced TFTP server for Cisco phone provisioning";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" ];
+          serviceConfig = {
+            ExecStart = "${atftpPkg}/bin/atftpd --port 69 --user asterisk.asterisk ${ciscoProvDir}";
+            Restart = "on-failure";
+            RestartSec = "5";
+          };
+        };
+
+        systemd.services.asterisk-cisco-provisioning = {
+          description = "Generate Cisco IP phone provisioning files for Asterisk";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" ];
+          before = [ "atftpd.service" ];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+          };
+          script = ''
+            mkdir -p ${ciscoProvDir}
+            chown asterisk:asterisk ${ciscoProvDir}
+          ''
+          + lib.concatStringsSep "\n" (
+            map (phone: ''
+              cp ${phone.cnfXml} ${ciscoProvDir}/${phone.name}.cnf.xml
+              chown asterisk:asterisk ${ciscoProvDir}/${phone.name}.cnf.xml
+            '') phoneConfigs
+          );
+        };
+
+        systemd.services.asterisk = {
+          requires = [ "sops-nix.service" ];
+          after = [ "sops-nix.service" ];
+          serviceConfig = lib.mkIf (hl.notifications.ntfySecretsFile != null) {
+            OnFailure = "notify-failure@%n.service";
+          };
+        };
+      })
+      {
+        services.caddy.virtualHosts."${cfg.url}" = {
+          useACMEHost = hl.baseDomainName;
+          extraConfig = ''
+            reverse_proxy http://${cfg.host}:8088
+          '';
+        };
+      }
+    ]
   );
 }

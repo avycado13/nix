@@ -13,6 +13,12 @@ in
   options.homelab.services.scrutiny = {
     enable = lib.mkEnableOption "Scrutiny SMART disk health monitoring";
 
+    host = lib.mkOption {
+      type = lib.types.str;
+      default = "127.0.0.1";
+      description = "Tailscale IP/hostname where scrutiny actually runs, if not this machine";
+    };
+
     data = lib.mkOption {
       type = lib.types.nullOr backupData;
       default = {
@@ -46,22 +52,27 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    services.scrutiny = {
-      enable = true;
-      # Run the collector on this host to gather SMART data
-      collector.enable = true;
-      settings = {
-        web.listen.port = port;
-        notify.urls = cfg.notifyUrls;
-      };
-    };
-
-    services.caddy.virtualHosts."${cfg.domain}" = {
-      useACMEHost = hl.baseDomainName;
-      extraConfig = ''
-        reverse_proxy http://127.0.0.1:${toString port}
-      '';
-    };
-  };
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      (lib.mkIf (cfg.host == "127.0.0.1") {
+        services.scrutiny = {
+          enable = true;
+          # Run the collector on this host to gather SMART data
+          collector.enable = true;
+          settings = {
+            web.listen.port = port;
+            notify.urls = cfg.notifyUrls;
+          };
+        };
+      })
+      {
+        services.caddy.virtualHosts."${cfg.domain}" = {
+          useACMEHost = hl.baseDomainName;
+          extraConfig = ''
+            reverse_proxy http://${cfg.host}:${toString port}
+          '';
+        };
+      }
+    ]
+  );
 }
