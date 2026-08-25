@@ -67,6 +67,14 @@
     }
   ];
 
+  sops.secrets.wifi-password = {
+    sopsFile = ../../../secrets/secrets.yaml;
+    key = "wifi/password";
+  };
+  sops.templates."wireless.conf".content = ''
+    psk_samosa=${config.sops.placeholder.wifi-password}
+  '';
+
   networking = {
     hostName = "pi1";
     useDHCP = false;
@@ -74,7 +82,8 @@
     wireless = {
       enable = true;
       interfaces = [ "wlan0" ];
-      networks."samosa".psk = "maplec29";
+      secretsFile = config.sops.templates."wireless.conf".path;
+      networks."samosa".pskRaw = "ext:psk_samosa";
     };
     firewall.allowedUDPPorts = [ config.services.tailscale.port ];
     # Comcast blocks inbound IPv4 port forwarding, so *.avyay.in is served

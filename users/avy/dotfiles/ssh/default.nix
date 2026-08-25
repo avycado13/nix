@@ -173,16 +173,6 @@ in
           identityFile = identity;
           extraOptions.ServerAliveInterval = 60;
         };
-        "robotimpose" = {
-          user = "root";
-          hostname = "lsd.segfault.net";
-          setEnv.SECRET = "xrxplgOCICqAADhxKWtbhClK";
-        };
-        "loudbind" = {
-          user = "root";
-          hostname = "lsd.segfault.net";
-          setEnv.SECRET = "USQSiYZJlqmgqgzNsqfkdKtq";
-        };
         "oracle" = {
           user = "root";
           hostname = "167.234.216.241";
