@@ -51,6 +51,9 @@ in
     home.packages = [
       pkgs.ffmpeg
       pkgs.imagemagick
+      pkgs.potrace
+      pkgs.mediainfo
+      pkgs.exiftool
       (pkgs.writeShellScriptBin "transcode-video-1080p" ''
         ${pkgs.ffmpeg}/bin/ffmpeg -i "$1" -vf scale=1920:1080 -c:v libx264 -preset fast -crf 23 -c:a copy "''${1%.*}-1080p.mp4"
       '')
