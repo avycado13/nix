@@ -8,7 +8,7 @@
 let
   enabledNixosServices = lib.attrsets.mapAttrsToList (name: _value: name) (
     lib.attrsets.filterAttrs (
-      name: value: value != "enable" && name != "backup" && value ? enable && value.enable
+      name: value: value != "enable" && name != "restic" && value ? enable && value.enable
     ) config.homelab.services
   );
 
@@ -107,7 +107,7 @@ let
     ${serviceStatusLines}
 
         if command -v ${lib.getExe pkgs.zmx} &> /dev/null && [[ -z "''${ZMX_SESSION:-}" ]]; then
-          count="$(zmx ls --short 2>/dev/null | wc -l)"
+          count="$(${lib.getExe pkgs.zmx} ls --short 2>/dev/null | wc -l)"
           if [[ "$count" -gt 0 ]]; then
             echo "${lib.getExe pkgs.zmx}: $count session(s) active — \`zmx-select\` to attach" >&2
           fi

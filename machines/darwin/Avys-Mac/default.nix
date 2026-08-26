@@ -63,7 +63,10 @@
   # services.virby.onDemand.enable = false;
   # services.virby.onDemand.ttl = 10;
   security.pam.services.sudo_local.touchIdAuth = true;
+  security.pam.services.sudo_local.watchIdAuth = true;
   security.pam.services.sudo_local.reattach = true;
+
+  environment.etc."zshrc".enable = false;
 
   networking = {
     computerName = "Avyays MacBook Air";

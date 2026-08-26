@@ -85,9 +85,25 @@
       echo "gpu_mem=16" >> $config
       echo "hdmi_group=2" >> $config
       echo "hdmi_mode=8" >> $config
+      echo "dtoverlay=dwc2,dr_mode=peripheral" >> $config
       chmod u-w $config
     '';
   };
+
+  # USB ethernet gadget over the data micro-USB port, so pi0 is reachable
+  # over a direct USB cable before wifi credentials are available.
+  boot.kernelModules = [
+    "dwc2"
+    "g_ether"
+  ];
+  boot.kernelParams = [ "modules-load=dwc2,g_ether" ];
+
+  networking.interfaces.usb0.ipv4.addresses = [
+    {
+      address = "192.168.7.2";
+      prefixLength = 24;
+    }
+  ];
 
   nixpkgs.overlays = [
     (_final: super: {

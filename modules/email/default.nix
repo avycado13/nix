@@ -49,35 +49,5 @@ in
         passwordeval = "${pkgs.coreutils}/bin/cat ${config.email.smtpPasswordPath}";
       };
     };
-    # services.postfix = {
-    #   enable = true;
-
-    #   relayHost = "[${cfg.smtpServer}]:587";
-
-    #   config = {
-    #     # Only accept mail locally.
-    #     inet_interfaces = "loopback-only";
-    #     inet_protocols = "all";
-
-    #     smtp_sasl_auth_enable = "yes";
-    #     smtp_sasl_password_maps = "hash:/etc/postfix/sasl_passwd";
-
-    #     smtp_sasl_security_options = "noanonymous";
-
-    #     smtp_tls_security_level = "encrypt";
-    #     smtp_tls_CAfile = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
-
-    #     # Don't try to deliver directly to recipient MX servers.
-    #     relayhost = "[${cfg.smtpServer}]:587";
-    #   };
-
-    #   # NixOS generates /etc/postfix/sasl_passwd from this.
-    #   credentials = {
-    #     "${cfg.smtpServer}:587" = {
-    #       username = cfg.smtpUsername;
-    #       passwordFile = cfg.smtpPasswordPath;
-    #     };
-    #   };
-    # };
   };
 }
