@@ -79,21 +79,19 @@ in
         pkgs.jq
       ];
 
-      jails =
-        let
-          incrementalBan = {
-            bantime = "1h";
+      bantime = "1h";
+      bantime-increment = {
+        enable = true;
+        formula = "ban.Time * math.exp(float(ban.Count+1)*banFactor)/math.exp(1*banFactor)";
+        rndtime = "8m";
+        maxtime = "168h";
+        overalljails = true;
+      };
 
-            bantime-increment = {
-              enable = true;
-              formula = "ban.Time * math.exp(float(ban.Count+1)*banFactor)/math.exp(1*banFactor)";
-              maxtime = "168h";
-              overalljails = true;
-            };
-          };
-        in
+      jails =
         (lib.attrsets.mapAttrs (name: value: {
-          settings = incrementalBan // {
+          settings = {
+            bantime = "1h";
             enabled = true;
             findtime = "1h";
             backend = "systemd";
@@ -105,7 +103,8 @@ in
           };
         }) cfg.jails)
         // {
-          sshd.settings = incrementalBan // {
+          sshd.settings = {
+            bantime = "1h";
             enabled = true;
             mode = "normal";
             port = "ssh";
@@ -132,30 +131,56 @@ in
           let
             notes = "Fail2Ban on ${config.networking.hostName}";
             cfapi = "https://api.cloudflare.com/client/v4/zones/${cfg.zoneId}/firewall/access_rules/rules";
+            curl = lib.getExe pkgs.curl;
+            jq = lib.getExe pkgs.jq;
           in
           ''
             [Definition]
+
             actionstart =
             actionstop =
             actioncheck =
 
-            actionunban = id=$(${lib.getExe pkgs.curl} -s -X GET "${cfapi}" \
+            actionban = \
+              response=$(${curl} --fail-with-body --silent --show-error \
+                --connect-timeout 5 \
+                --max-time 15 \
+                -X POST "${cfapi}" \
                 -H @${cfg.apiKeyFile} \
                 -H "Content-Type: application/json" \
-                | ${lib.getExe pkgs.jq} -r '.result[] | select(.notes == "${notes}" and .configuration.target == "ip" and .configuration.value == "<ip>") | .id')
-                if [ -z "$id" ]; then
-                  echo "id for <ip> cannot be found"
-                  exit 0
-                fi
-                ${lib.getExe pkgs.curl} -s -X DELETE "${cfapi}/$id" \
-                  -H @${cfg.apiKeyFile} \
-                  -H "Content-Type: application/json" \
-                  --data '{"cascade": "none"}'
+                --data '{"mode":"block","configuration":{"target":"ip","value":"<ip>"},"notes":"${notes}"}') \
+              || { echo "Cloudflare ban failed for <ip>: $response" >&2; exit 1; }
 
-            actionban = ${lib.getExe pkgs.curl} -s -X POST "${cfapi}" \
-              -H @${cfg.apiKeyFile} \
-              -H "Content-Type: application/json" \
-              --data '{"mode":"block","configuration":{"target":"ip","value":"<ip>"},"notes":"${notes}"}'
+            actionunban = \
+              id=$(${curl} --fail --silent --show-error \
+                --connect-timeout 5 \
+                --max-time 15 \
+                -X GET "${cfapi}" \
+                -H @${cfg.apiKeyFile} \
+                -H "Content-Type: application/json" \
+                | ${jq} -r --arg ip "<ip>" --arg notes "${notes}" \
+                  '.result[]
+                   | select(
+                       .notes == $notes
+                       and .configuration.target == "ip"
+                       and .configuration.value == $ip
+                     )
+                   | .id' \
+                | head -n 1) \
+              || { echo "Cloudflare lookup failed for <ip>" >&2; exit 1; }
+
+              if [ -z "$id" ]; then
+                echo "Cloudflare rule for <ip> not found"
+                exit 0
+              fi
+
+              ${curl} --fail --silent --show-error \
+                --connect-timeout 5 \
+                --max-time 15 \
+                -X DELETE "${cfapi}/$id" \
+                -H @${cfg.apiKeyFile} \
+                -H "Content-Type: application/json" \
+                --data '{"cascade":"none"}'
 
             [Init]
             name = cloudflare-token-sops
