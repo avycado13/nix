@@ -18,7 +18,7 @@ This is a Nix flake-based configuration for managing multiple systems:
 ## Essential Commands
 
 ```bash
-nix develop          # Enter dev shell (provides: just, nh, nixos-rebuild-ng, treefmt, sops, ssh-to-age, nil, cachix, nix-output-monitor, xilo, devour-flake, omnix)
+nix develop          # Enter dev shell (provides: just, nh, nixos-rebuild-ng, treefmt, sops, ssh-to-age, nil, cachix, nix-output-monitor, niks3, devour-flake, omnix)
 treefmt              # Format all files (nixfmt + deadnix + shellcheck)
 nix flake check      # Validate flake
 
@@ -89,8 +89,8 @@ fileofbrew                # Reference file listing previous Homebrew packages (b
 
 GitHub Actions workflows in `.github/workflows/`:
 
-- **build.yml**: Runs on push to main and PRs. Builds across 3 platforms (x86_64-linux, aarch64-darwin, aarch64-linux) using `om ci run`. Connects to Tailscale for cache access, pushes to xilo cache with retries.
-- **update-flake-lock.yml**: Runs weekly (Monday 06:47 UTC) and on dispatch. Updates flake.lock, commits, pushes, and pushes realized outputs to xilo cache.
+- **build.yml**: Runs on push to main and PRs. Builds across 3 platforms (x86_64-linux, aarch64-darwin, aarch64-linux) using `om ci run`. Connects to Tailscale for cache access, pushes to the niks3 cache (via the `niks3` CLI) with retries.
+- **update-flake-lock.yml**: Runs weekly (Monday 06:47 UTC) and on dispatch. Updates flake.lock, commits, pushes, and pushes realized outputs to the niks3 cache.
 
 ## Formatting and Linting
 
@@ -108,7 +108,7 @@ GitHub Actions workflows in `.github/workflows/`:
 - **Imports**: Configurations import from parent directories (e.g., `./homelab`, `./users/avy`)
 - **Hardware Modules**: NixOS configs may include hardware-specific modules (e.g., `nixos-hardware.nixosModules.raspberry-pi-3`)
 - **pi0**: Currently commented out in `flake.nix` outputs
-- **mkService**: Some homelab services (postgres, lldap) use a `mkService.nix` factory from a `lib/` directory, but this file does not currently exist in the repo — these services reference it via `import ../../lib/mkService.nix`
+- **mkService**: Some homelab services (postgres, lldap) use the `mkService.nix` factory in `homelab/lib/mkService.nix`, imported via `import ../../lib/mkService.nix`
 
 ## Secrets Management
 

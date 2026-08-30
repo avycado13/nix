@@ -71,10 +71,13 @@
     sopsFile = ../../../secrets/secrets.yaml;
     key = "wifi/password";
   };
-  sops.templates."wireless.conf".content = ''
-    psk_samosa=${config.sops.placeholder.wifi-password}
-  '';
-
+  sops.templates."wireless.conf" = {
+    content = ''
+      psk_samosa=${config.sops.placeholder.wifi-password}
+    '';
+    owner = "wpa_supplicant";
+    mode = "0400";
+  };
   networking = {
     hostName = "pi1";
     useDHCP = false;

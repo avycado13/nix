@@ -139,9 +139,8 @@ in
 
     # apikey/screen_id are secrets (bearer tokens), so the config is
     # rendered via a sops template and handed to the service as a
-    # LoadCredential, matching homelab/services/xilo's pattern -- sops
-    # placeholders only get substituted inside declared templates, never
-    # inside arbitrary Nix-store paths.
+    # LoadCredential -- sops placeholders only get substituted inside
+    # declared templates, never inside arbitrary Nix-store paths.
     sops.templates."isponsorblocktv-config.json" = {
       content = builtins.toJSON configJson;
     };

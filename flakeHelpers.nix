@@ -73,6 +73,7 @@ in
         inputs.home-manager.darwinModules.home-manager
         inputs.nix-index-database.darwinModules.nix-index
         inputs.nix-homebrew.darwinModules.nix-homebrew
+        inputs.niks3.darwinModules.niks3-auto-upload
         {
           home-manager.users.avy.home.homeDirectory = inputs.nixpkgs.lib.mkForce "/Users/avy";
           nix-homebrew = {
@@ -128,7 +129,8 @@ in
         inputs.home-manager.nixosModules.home-manager
         inputs.catppuccin.nixosModules.catppuccin
         inputs.srvos.nixosModules.mixins-terminfo
-        inputs.xilo.nixosModules.default
+        inputs.niks3.nixosModules.niks3
+        inputs.niks3.nixosModules.niks3-auto-upload
         inputs.nix-cache-beacon.nixosModules.default
         inputs.retrom.nixosModules.retrom
         {

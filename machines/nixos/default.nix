@@ -87,7 +87,7 @@ in
     curl
     git
     zmx
-    inputs.xilo.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.niks3.packages.${pkgs.stdenv.hostPlatform.system}.niks3
   ];
   nix.settings.auto-optimise-store = true;
 }

@@ -47,12 +47,10 @@ jobs:
           tags: tag:ci
           ping: 100.117.24.61
 
-      - name: Configure xilo cache
-        uses: stubbedev/xilo@v0
-        with:
-          url: https://cache.avyay.in
-          cache: default/main
-          token: ${{ secrets.XILO_TOKEN }}
+      - name: Configure niks3 cache
+        run: |
+          echo "extra-substituters = https://cache.avyay.in" | sudo tee -a /etc/nix/nix.conf
+          echo "extra-trusted-public-keys = ${{ secrets.NIKS3_CACHE_PUBLIC_KEY }}" | sudo tee -a /etc/nix/nix.conf
       - name: "Install omnix"
         run: |
            nix profile install nixpkgs#omnix
@@ -62,16 +60,24 @@ jobs:
               --extra-access-tokens ${{ secrets.GITHUB_TOKEN }} -d \
               -- --accept-flake-config
 
-      # Replace this with a more targeted command if xilo has one.
       - name: Push realized outputs to cache
         shell: bash
+        env:
+          NIKS3_SERVER_URL: https://cache.avyay.in
         run: |
           set -euo pipefail
+
+          token_file="$(mktemp)"
+          trap 'rm -f "$token_file"' EXIT
+          printf '%s' "${{ secrets.NIKS3_API_TOKEN }}" > "$token_file"
+          export NIKS3_AUTH_TOKEN_FILE="$token_file"
+
+          mapfile -t paths < <(nix-store --gc --print-live)
 
           for attempt in {1..10}; do
             echo "Cache upload attempt ${attempt}/10"
 
-            if nix-store --gc --print-live | xilo push default/main -; then
+            if nix run nixpkgs#niks3 -- push "${paths[@]}"; then
               echo "Cache upload succeeded"
               exit 0
             fi

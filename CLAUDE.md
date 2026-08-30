@@ -15,7 +15,7 @@ A Nix flake managing multiple systems declaratively:
 ## Essential Commands
 
 ```bash
-nix develop          # Enter dev shell (provides: just, nh, nixos-rebuild-ng, treefmt, sops, ssh-to-age, nil, cachix, nix-output-monitor, xilo, devour-flake, omnix)
+nix develop          # Enter dev shell (provides: just, nh, nixos-rebuild-ng, treefmt, sops, ssh-to-age, nil, cachix, nix-output-monitor, niks3, devour-flake, omnix)
 treefmt              # Format all files (nixfmt + deadnix + shellcheck)
 nix flake check      # Validate flake
 
@@ -80,11 +80,11 @@ fileofbrew                # Reference file listing previous Homebrew packages (b
 - `default.nix` — NixOS user declaration (uid, groups, shell, ssh key)
 - `sops.nix` — per-user sops secret declarations (paths, modes, which sops file each secret comes from)
 
-**Modules** (`modules/`) — reusable NixOS modules: `ddns` (cloudflare/desec/duckdns/freedns), `email` (msmtp setup), `binaryCache` (nix-serve + nginx), `remoteBuild` (creates `remotebuild` user + configures nix-daemon), `nix` (core nix settings + substituters + distributed builds via nixbuild.net + post-build-hook for xilo cache push, imported by `machines/nixos/default.nix`), `secrets` (wires sops-nix; `default.nix` for NixOS, `home.nix` for home-manager).
+**Modules** (`modules/`) — reusable NixOS modules: `ddns` (cloudflare/desec/duckdns/freedns), `email` (msmtp setup), `binaryCache` (nix-serve + nginx), `remoteBuild` (creates `remotebuild` user + configures nix-daemon), `nix` (core nix settings + substituters + distributed builds via nixbuild.net + `services.niks3-auto-upload` for pushing build outputs to the niks3 cache, imported by `machines/nixos/default.nix`), `secrets` (wires sops-nix; `default.nix` for NixOS, `home.nix` for home-manager).
 
-**Homelab** (`homelab/`) — imported directly into every NixOS system (`mkNixos` always includes `./homelab`), gated behind `homelab.enable`/`homelab.services.enable` so it's inert unless a host opts in (currently only `pi1` does, via `machines/nixos/pi1/homelab.nix`). Reverse proxy is **Caddy** (not Traefik), with ACME via `security.acme` (cloudflare DNS challenge). Currently imported services (see `homelab/services/default.nix` imports): `miniflux`, `auth` (indiko + lldap), `glance`, `xilo`, `retrom`, `cloudrun`, `scrutiny`, `restic`, `isponsorblocktv`. A `postgres` service dir provides shared DB setup for services that need it. `homelab/motd` builds a login MOTD listing enabled/monitored services; `homelab/fail2ban-cloudflare` bans offenders at the Cloudflare edge.
+**Homelab** (`homelab/`) — imported directly into every NixOS system (`mkNixos` always includes `./homelab`), gated behind `homelab.enable`/`homelab.services.enable` so it's inert unless a host opts in (currently only `pi1` does, via `machines/nixos/pi1/homelab.nix`). Reverse proxy is **Caddy** (not Traefik), with ACME via `security.acme` (cloudflare DNS challenge). Currently imported services (see `homelab/services/default.nix` imports): `miniflux`, `auth` (indiko + lldap), `glance`, `niks3`, `retrom`, `cloudrun`, `scrutiny`, `restic`, `isponsorblocktv`. A `postgres` service dir provides shared DB setup for services that need it. `homelab/motd` builds a login MOTD listing enabled/monitored services; `homelab/fail2ban-cloudflare` bans offenders at the Cloudflare edge.
 
-**Currently enabled on pi1:** miniflux, auth/indiko, glance, xilo (with R2 + GCS backends), cloudrun (searxng, it-tools), scrutiny, restic (backing up to B2), isponsorblocktv. **Disabled on pi1:** retrom (enable = false). **fail2ban-cloudflare** is enabled on pi1 but no jails configured yet.
+**Currently enabled on pi1:** miniflux, auth/indiko, glance, niks3 (S3-backed Nix binary cache, backed by an R2 bucket), cloudrun (searxng, it-tools), scrutiny, restic (backing up to B2), isponsorblocktv. **Disabled on pi1:** retrom (enable = false). **fail2ban-cloudflare** is enabled on pi1 but no jails configured yet.
 
 ## Adding a Homelab Service
 
@@ -137,7 +137,7 @@ in
 }
 ```
 
-2. **mkService factory** — `postgres` and `lldap` use a `mkService.nix` factory (`import ../../lib/mkService.nix`), but this file does not currently exist in the repo. Prefer the hand-rolled pattern for new services.
+2. **mkService factory** — `postgres` and `lldap` use the `mkService.nix` factory in `homelab/lib/mkService.nix` (`import ../../lib/mkService.nix`). Prefer the hand-rolled pattern for new services unless they closely match an existing factory-based one.
 
 Then:
 1. Add `./<name>` to the `imports` list in `homelab/services/default.nix`.
@@ -150,10 +150,10 @@ Then:
 
 - **Secrets**: `sops-nix`, not agenix. Encrypted files in `secrets/secrets.yaml` (default) and `secrets/services.yaml`; recipients defined in `.sops.yaml` (age keys `avy`/`pi1`, a GPG key, and an AWS KMS key). Age key file at `~/.config/sops/age/keys.txt` plus host SSH host keys are used to decrypt (`modules/secrets/default.nix`). Never commit plaintext secrets.
 - **nixpkgs config**: `allowUnfree = true`, overlays for nix-topology, lazygit, NUR, nix-vscode-extensions, fenix — applied uniformly via `nixpkgsCfg` in `flakeHelpers.nix`.
-- **Binary caches / substituters**: numtide, catppuccin, virby, nix-community, helix, fenix, avycado13, xilo (self-hosted at `cache.avyay.in`), retrom — configured in `modules/nix/default.nix`, shared by all NixOS hosts.
+- **Binary caches / substituters**: numtide, catppuccin, virby, nix-community, helix, fenix, avycado13, niks3 (self-hosted at `cache.avyay.in`), retrom — configured in `modules/nix/default.nix`, shared by all NixOS hosts.
 - **Distributed builds**: All NixOS hosts use `eu.nixbuild.net` for remote builds (x86_64-linux, aarch64-linux, armv7l-linux, i686-linux) via SSH key at `~/.ssh/avy`.
-- **Post-build hook**: All NixOS hosts push build outputs to xilo cache via a `post-build-hook` script.
-- **nix-cache-beacon**: Enabled alongside xilo to announce/discover caches on the local network.
+- **Post-build hook**: All NixOS hosts push build outputs to the niks3 cache via `services.niks3-auto-upload` (a socket-activated daemon that batches pushes and manages `nix.settings.post-build-hook` itself).
+- **nix-cache-beacon**: Enabled alongside niks3 to announce/discover caches on the local network.
 - **State version**: Varies by host — `"25.05"` (pi1, eclipse), `"25.11"` (pi0), `"26.05"` (oracle, gce), `5` (Avys-Mac Darwin).
 - **Home-manager on NixOS**: The `homeManagerCfg` call in `mkNixos` is currently commented out; NixOS hosts use `users/avy/` directly. Darwin uses `homeManagerCfg` with full dotfile module imports.
 - **Dotfile modules**: User dotfiles use a module system with enable flags (e.g., `dots.shell.enable`, `dots.editor.enable`), declared in `machines/darwin/Avys-Mac/home.nix`.
@@ -162,8 +162,8 @@ Then:
 
 GitHub Actions workflows in `.github/workflows/`:
 
-- **build.yml**: Runs on push to main and PRs. Builds across 3 platforms (x86_64-linux, aarch64-darwin, aarch64-linux) using `om ci run`. Connects to Tailscale for cache access, pushes to xilo cache with retries.
-- **update-flake-lock.yml**: Runs weekly (Monday 06:47 UTC) and on dispatch. Updates flake.lock, commits, pushes, and pushes realized outputs to xilo cache.
+- **build.yml**: Runs on push to main and PRs. Builds across 3 platforms (x86_64-linux, aarch64-darwin, aarch64-linux) using `om ci run`. Connects to Tailscale for cache access, pushes to the niks3 cache (via the `niks3` CLI) with retries.
+- **update-flake-lock.yml**: Runs weekly (Monday 06:47 UTC) and on dispatch. Updates flake.lock, commits, pushes, and pushes realized outputs to the niks3 cache.
 
 ## Formatting
 

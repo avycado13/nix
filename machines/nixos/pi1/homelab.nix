@@ -32,17 +32,21 @@
     #   key = "speedtest-tracker/app_key";
     #   owner = "speedtest-tracker";
     # };
-    xilo-env = {
+    niks3-s3-access-key = {
       sopsFile = ../../../secrets/services.yaml;
-      key = "xilo/env";
+      key = "niks3/s3_access_key";
     };
-    xilo-gcs-access-key = {
+    niks3-s3-secret-key = {
       sopsFile = ../../../secrets/services.yaml;
-      key = "xilo/gcs_access_key";
+      key = "niks3/s3_secret_key";
     };
-    xilo-gcs-secret-key = {
+    niks3-signing-key = {
       sopsFile = ../../../secrets/services.yaml;
-      key = "xilo/gcs_secret_key";
+      key = "niks3/signing_key";
+    };
+    niks3-server-api-token = {
+      sopsFile = ../../../secrets/services.yaml;
+      key = "niks3/api_token";
     };
 
     restic-repository-password = {
@@ -112,7 +116,7 @@
       auth.enable = true;
       indiko = {
         domain = "auth.avyay.in";
-        repository = "https://tangled.org/dunkirk.sh/indiko";
+        repository = "github.com/taciturnaxolotl/indiko.git";
         # repository = "https://tangled.org/avycado13.tngl.sh/indiko";
         branch = "main";
         autoUpdate = true;
@@ -131,21 +135,17 @@
         url = "glance.avyay.in";
       };
 
-      xilo = {
+      niks3 = {
         enable = true;
         url = "cache.avyay.in";
-        environmentFile = config.sops.secrets.xilo-env.path;
         s3 = {
-          enable = true;
           endpoint = "9de2baa272a57af74da84d8e6bd95a77.r2.cloudflarestorage.com";
           bucket = "nixcache";
+          accessKeyFile = config.sops.secrets.niks3-s3-access-key.path;
+          secretKeyFile = config.sops.secrets.niks3-s3-secret-key.path;
         };
-        storages.gcs = {
-          endpoint = "storage.googleapis.com";
-          bucket = "avycado13-nix-cache";
-          accessKey = config.sops.placeholder.xilo-gcs-access-key;
-          secretKey = config.sops.placeholder.xilo-gcs-secret-key;
-        };
+        apiTokenFile = config.sops.secrets.niks3-server-api-token.path;
+        signKeyFiles = [ config.sops.secrets.niks3-signing-key.path ];
       };
 
       cloudrun = {

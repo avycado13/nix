@@ -92,7 +92,7 @@
       url = "github:slp/homebrew-krun";
       flake = false;
     };
-    xilo.url = "github:stubbedev/xilo";
+    niks3.url = "github:Mic92/niks3";
     lard.url = "github:taciturnaxolotl/lard";
     nix-cache-beacon.url = "github:adisbladis/nix-cache-beacon";
     devour-flake = {
@@ -180,7 +180,7 @@
               pkgs.nil
               pkgs.cachix
               pkgs.nix-output-monitor
-              inputs.xilo.packages.${system}.default
+              inputs.niks3.packages.${system}.niks3
               pkgs.devour-flake
               pkgs.omnix
               (pkgs.writeShellApplication {

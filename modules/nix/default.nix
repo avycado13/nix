@@ -1,6 +1,5 @@
 {
   lib,
-  pkgs,
   inputs,
   config,
   ...
@@ -35,7 +34,7 @@ in
         "https://nix-community.cachix.org"
         "https://fenix.cachix.org"
         "https://avycado13.cachix.org"
-        "https://cache.avyay.in/c/default/main"
+        "https://cache.avyay.in"
       ];
       extra-trusted-public-keys = [
         "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
@@ -45,7 +44,7 @@ in
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
         "fenix.cachix.org-1:ecJhr+RdYEdcVgUkjruiYhjbBloIEGov7bos90cZi0Q="
         "avycado13.cachix.org-1:omae3JdfM9Oeri1fAPbWwqLhRbXmbs1tcI//1Hi48qs="
-        "main:dQ6VTlBqbChv4jdFSjf2g9pmylkXFkQEaFXLHuzWfMM="
+        "cache.avyay.in-1:YcPQvyY/tBqD86RfhMNckRkFIK/SU3hxmfBOxRMOECk="
       ];
 
       connect-timeout = lib.mkDefault 5;
@@ -54,23 +53,6 @@ in
       auto-optimise-store = true;
       netrc-file = "/etc/nix/netrc";
       narinfo-cache-positive-ttl = 3600;
-      # Runs as the nix-daemon (root), which has no ~/.config/cachix.
-      # Point HOME at avy's home so xilo finds the auth token, and make
-      # the push best-effort so a transient xilo/network failure can't
-      # fail an otherwise-successful rebuild.
-      post-build-hook = pkgs.writeShellScript "cache-push" ''
-        set -eu
-
-        export HOME=${config.users.users.avy.home}
-
-        [ -n "''${OUT_PATHS:-}" ] || exit 0
-
-        printf '%s\n' "''${OUT_PATHS}" \
-          | ${
-            lib.getExe inputs.xilo.packages.${pkgs.stdenv.hostPlatform.system}.default
-          } push default/main - --quiet \
-          || true
-      '';
     };
     nixPath = [
       "nixpkgs=${inputs.nixpkgs}"
@@ -153,5 +135,22 @@ in
     group = "root";
     mode = "0600";
     path = "/etc/nix/netrc";
+  };
+
+  # niks3 write token shared by every NixOS host so builds can push to the
+  # cache, distinct from the server-side apiTokenFile used by the niks3
+  # service itself on the host that runs it (see homelab/services/niks3).
+  sops.secrets.niks3_api_token = {
+    sopsFile = ../../secrets/services.yaml;
+    key = "niks3/api_token";
+    owner = "root";
+    group = "root";
+    mode = "0400";
+  };
+
+  services.niks3-auto-upload = {
+    enable = true;
+    serverUrl = "https://cache.avyay.in";
+    authTokenFile = config.sops.secrets.niks3_api_token.path;
   };
 }

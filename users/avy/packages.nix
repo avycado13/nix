@@ -81,7 +81,7 @@
       pkgs.scooter
       pkgs.dua
       pkgs.procs
-      inputs.xilo.packages.${pkgs.stdenv.hostPlatform.system}.default
+      inputs.niks3.packages.${pkgs.stdenv.hostPlatform.system}.niks3
 
       pkgs.pigz
 

@@ -77,7 +77,7 @@
     ./miniflux
     ./auth
     ./glance
-    ./xilo
+    ./niks3
     ./retrom
     ./cloudrun
     ./scrutiny

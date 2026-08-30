@@ -203,11 +203,11 @@ in
         };
         "pi1" = {
           user = "avy";
-          hostname = "10.0.0.227";
+          hostname = "100.117.24.61";
           identityFile = identity;
         };
         "p.*" = {
-          hostname = "10.0.0.227";
+          hostname = "100.117.24.61";
           zmx = true;
           identityFile = identity;
         };
