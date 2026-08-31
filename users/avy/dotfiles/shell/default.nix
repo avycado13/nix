@@ -49,10 +49,10 @@ let
     zoxide-init
     fzf-init
     direnv-hook
+    atuin-init
   ];
   defer-init = [
     nix-index-init
-    atuin-init
     zsh-you-should-use-init
     fzf-zsh-plugin-init
     terminal-wakatime-init
@@ -242,7 +242,7 @@ in
            ''}
 
            # if (( $+commands[motd] )); then
-           #   motd
+             # motd
            # fi
 
            # --- Keybindings & widgets ---

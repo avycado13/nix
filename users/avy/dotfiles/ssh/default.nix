@@ -249,6 +249,8 @@ in
         (pkgs.writeShellScriptBin "lip" ''
           ${pkgs.procps}/bin/pgrep -af "ssh.*-L [0-9]+:localhost:[0-9]+" || echo "No active forwards"
         '')
+        pkgs.ssh-to-age
+        pkgs.ssh-to-pgp
       ];
 
     programs.ssh = {

@@ -1,4 +1,4 @@
-name: build
+name: build and eval
 
 on:
   push:
@@ -11,8 +11,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v19
+
+      - name: Add Magic nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Evaluate flake
+        run: |
+          nix flake check --no-build . --accept-flake-config --all-systems
+
+          nix eval .#packages.x86_64-linux --accept-flake-config
+          nix eval .#packages.aarch64-linux --accept-flake-config
+          nix eval .#packages.aarch64-darwin --accept-flake-config
+
+          nix eval .#devShells.x86_64-linux --accept-flake-config
+          nix eval .#devShells.aarch64-linux --accept-flake-config
+          nix eval .#devShells.aarch64-darwin --accept-flake-config
+
+          nix eval .#nixosConfigurations --accept-flake-config
+          nix eval .#darwinConfigurations --accept-flake-config
   builds:
     runs-on: ${{ matrix.runner }}
+    needs: eval
     # timeout-minutes: 30
 
     permissions:
@@ -31,7 +59,7 @@ jobs:
             system: aarch64-linux
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 

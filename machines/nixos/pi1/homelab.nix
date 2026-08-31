@@ -35,18 +35,22 @@
     niks3-s3-access-key = {
       sopsFile = ../../../secrets/services.yaml;
       key = "niks3/s3_access_key";
+      mode = "0444";
     };
     niks3-s3-secret-key = {
       sopsFile = ../../../secrets/services.yaml;
       key = "niks3/s3_secret_key";
+      mode = "0444";
     };
     niks3-signing-key = {
       sopsFile = ../../../secrets/services.yaml;
       key = "niks3/signing_key";
+      mode = "0444";
     };
     niks3-server-api-token = {
       sopsFile = ../../../secrets/services.yaml;
       key = "niks3/api_token";
+      mode = "0444";
     };
 
     restic-repository-password = {
@@ -116,7 +120,7 @@
       auth.enable = true;
       indiko = {
         domain = "auth.avyay.in";
-        repository = "github.com/taciturnaxolotl/indiko.git";
+        repository = "https://github.com/taciturnaxolotl/indiko.git";
         # repository = "https://tangled.org/avycado13.tngl.sh/indiko";
         branch = "main";
         autoUpdate = true;
