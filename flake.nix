@@ -107,6 +107,10 @@
     };
     late-sh.url = "github:mpiorowski/late-sh";
     copyparty.url = "github:9001/copyparty";
+    nixos-pi-zero-2 = {
+      url = "github:plmercereau/nixos-pi-zero-2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -122,12 +126,13 @@
     mkMerge [
       (mkDarwin "Avys-Mac" inputs.nixpkgs "aarch64-darwin" [ ] [ ])
 
-      # (mkNixos "pi0" inputs.nixpkgs "aarch64-linux"
-      #   [ ]
-      #   [
-      #     "${inputs.nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
-      #   ]
-      # )
+      (mkNixos "pi0" inputs.nixpkgs "aarch64-linux"
+        [ ]
+        [
+          inputs.nixos-pi-zero-2.nixosModules.hardware
+          inputs.nixos-pi-zero-2.nixosModules.sd-image
+        ]
+      )
 
       (mkNixos "pi1" inputs.nixpkgs "aarch64-linux" [ ] [ ])
 

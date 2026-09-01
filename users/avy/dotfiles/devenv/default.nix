@@ -305,6 +305,9 @@ in
       pkgs.autoflake
       pkgs.nix-search-cli
       pkgs.sops
+      pkgs.nix-fast-build
+      pkgs.nix-build-uncached
+      pkgs.nix-converter
       (pkgs.writeShellApplication {
         name = "ns";
         runtimeInputs = with pkgs; [

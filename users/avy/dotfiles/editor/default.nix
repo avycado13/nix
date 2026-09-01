@@ -508,9 +508,6 @@ in
         };
       };
 
-      home.activation.mkHelixGrammars = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        ${lib.getExe pkgs.helix} -g fetch && ${lib.getExe pkgs.helix} -g build
-      '';
       vscode = {
         enable = false;
         profiles.default = {
@@ -592,5 +589,9 @@ in
         };
       };
     };
+
+    home.activation.mkHelixGrammars = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      ${lib.getExe pkgs.helix} -g fetch && ${lib.getExe pkgs.helix} -g build
+    '';
   };
 }
