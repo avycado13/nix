@@ -182,11 +182,6 @@
         environmentFile = config.sops.secrets.restic-b2-credentials.path;
       };
 
-      scrutiny = {
-        enable = true;
-        domain = "scrutiny.avyay.in";
-      };
-
       isponsorblocktv = {
         enable = true;
         devices = [

@@ -20,5 +20,19 @@
 
   swapDevices = [ ];
 
+  hardware.deviceTree = {
+    enable = true;
+
+    # Pine64+ (2GB RAM variant), not the base 1GB Pine64.
+    name = "allwinner/sun50i-a64-pine64-plus.dtb";
+
+    overlays = [
+      {
+        name = "pine64-wifi";
+        dtsFile = ./dts/pine64-wifi-overlay.dts;
+      }
+    ];
+  };
+
   nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
 }

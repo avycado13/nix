@@ -2,6 +2,7 @@
   pkgs,
   config,
   lib,
+  inputs,
   ...
 }:
 let
@@ -81,7 +82,7 @@ in
               C-1 = [
                 ":w"
                 ":write-all"
-                ":insert-output lazygit >/dev/tty"
+                ":insert-output ${lib.getExe pkgs.lazygit} >/dev/tty"
                 ":redraw"
                 ":reload-all"
                 ":set mouse false"
@@ -90,7 +91,7 @@ in
               C-r = [
                 ":w"
                 ":write-all"
-                ":insert-output scooter --no-stdin >/dev/tty"
+                ":insert-output ${lib.getExe pkgs.scooter} --no-stdin >/dev/tty"
                 ":redraw"
                 ":reload-all"
                 ":set mouse false"
@@ -98,20 +99,20 @@ in
               ];
               "C-f" = [
                 ":write-all"
-                ":insert-output rg --column --line-number --no-heading --color=always \"%{selection}\" | less -R"
+                ":insert-output ${lib.getExe pkgs.ripgrep} --column --line-number --no-heading --color=always \"%{selection}\" | less -R"
                 ":redraw"
               ];
               "C-p" = [
                 ":w"
                 ":write"
-                ":insert-output glow -p %{buffer_name} >/dev/tty"
+                ":insert-output ${lib.getExe pkgs.glow} -p %{buffer_name} >/dev/tty"
                 ":redraw"
               ];
               space = {
                 e = [
                   ":w"
                   ":sh rm -f /tmp/unique-file-h21a434"
-                  ":insert-output yazi \"%{buffer_name}\" --chooser-file=/tmp/unique-file-h21a434"
+                  ":insert-output ${lib.getExe pkgs.yazi} \"%{buffer_name}\" --chooser-file=/tmp/unique-file-h21a434"
                   ":sh printf \"\\x1b[?1049h\\x1b[?2004h\" > /dev/tty"
                   ":open %sh{cat /tmp/unique-file-h21a434}"
                   ":redraw"
@@ -135,7 +136,7 @@ in
                 "--file=/dev/stdin"
                 "--pretty-print=/dev/stdout"
               ];
-              command = "${pkgs.gawk}/bin/awk";
+              command = "${lib.getExe pkgs.gawk}";
               timeout = 5;
             };
             name = "awk";
@@ -148,7 +149,7 @@ in
                 "format"
                 "--stdin-file-path buffer.graphql"
               ];
-              command = "${pkgs.biome}/bin/biome";
+              command = "${lib.getExe pkgs.biome}";
             };
             name = "graphql";
             language-servers = [
@@ -165,7 +166,7 @@ in
                 "--stdin-file-path"
                 "buffer.html"
               ];
-              command = "${pkgs.biome}/bin/biome";
+              command = "${lib.getExe pkgs.biome}";
             };
             name = "html";
             language-servers = [
@@ -184,7 +185,7 @@ in
                 "--stdin-file-path"
                 "buffer.css"
               ];
-              command = "${pkgs.biome}/bin/biome";
+              command = "${lib.getExe pkgs.biome}";
             };
             name = "css";
             language-servers = [
@@ -202,7 +203,7 @@ in
                 "--stdin-file-path"
                 "buffer.js"
               ];
-              command = "${pkgs.biome}/bin/biome";
+              command = "${lib.getExe pkgs.biome}";
             };
             name = "javascript";
             language-servers = [
@@ -220,7 +221,7 @@ in
                 "--stdin-file-path"
                 "buffer.ts"
               ];
-              command = "${pkgs.biome}/bin/biome";
+              command = "${lib.getExe pkgs.biome}";
             };
             name = "typescript";
             language-servers = [
@@ -238,7 +239,7 @@ in
                 "--stdin-file-path"
                 "buffer.jsx"
               ];
-              command = "${pkgs.biome}/bin/biome";
+              command = "${lib.getExe pkgs.biome}";
             };
             name = "jsx";
             language-servers = [
@@ -256,7 +257,7 @@ in
                 "--stdin-file-path"
                 "buffer.tsx"
               ];
-              command = "${pkgs.biome}/bin/biome";
+              command = "${lib.getExe pkgs.biome}";
             };
             name = "tsx";
             language-servers = [
@@ -274,7 +275,7 @@ in
                 "--stdin-file-path"
                 "buffer.json"
               ];
-              command = "${pkgs.biome}/bin/biome";
+              command = "${lib.getExe pkgs.biome}";
             };
             name = "json";
             language-servers = [
@@ -292,7 +293,7 @@ in
                 "--stdin-file-path"
                 "buffer.jsonc"
               ];
-              command = "${pkgs.biome}/bin/biome";
+              command = "${lib.getExe pkgs.biome}";
             };
             name = "jsonc";
             language-servers = [
@@ -310,7 +311,7 @@ in
                 "/dev/stdin"
                 "--dump"
               ];
-              command = "${pkgs.just}/bin/just";
+              command = "${lib.getExe pkgs.just}";
             };
             name = "just";
             language-servers = [
@@ -321,7 +322,7 @@ in
           {
             auto-format = true;
             formatter = {
-              command = "${pkgs.nixfmt}/bin/nixfmt";
+              command = "${lib.getExe pkgs.nixfmt}";
             };
             name = "nix";
             language-servers = [
@@ -340,7 +341,7 @@ in
                 "88"
                 "-"
               ];
-              command = "${pkgs.ruff}/bin/ruff";
+              command = "${lib.getExe pkgs.ruff}";
             };
             name = "python";
             language-servers = [
@@ -353,7 +354,7 @@ in
           {
             auto-format = true;
             formatter = {
-              command = "${pkgs.shfmt}/bin/shfmt";
+              command = "${lib.getExe pkgs.shfmt}";
             };
             name = "bash";
             language-servers = [
@@ -369,7 +370,7 @@ in
                 "fmt"
                 "--emit=stdout"
               ];
-              command = "${pkgs.rustfmt}/bin/rustfmt";
+              command = "${lib.getExe pkgs.rustfmt}";
             };
             name = "rust";
             language-servers = [
@@ -418,14 +419,14 @@ in
 
         languages.language-server = {
           typescript-language-server = {
-            command = "${pkgs.typescript-language-server}/bin/typescript-language-server";
+            command = "${lib.getExe pkgs.typescript-language-server}";
             args = [ "--stdio" ];
           };
           nil = {
-            command = "${pkgs.nil}/bin/nil";
+            command = "${lib.getExe pkgs.nil}";
           };
           nixd = {
-            command = "${pkgs.nixd}/bin/nixd";
+            command = "${lib.getExe pkgs.nixd}";
             config.nixd = {
               options = {
                 nix-darwin.expr = "${flakeExpr}.darwinConfigurations.\"Avys-Mac\".options";
@@ -434,36 +435,36 @@ in
             };
           };
           ty = {
-            command = "${pkgs.ty}/bin/ty";
+            command = "${lib.getExe pkgs.ty}";
             args = [ "server" ];
           };
           ruff = {
-            command = "${pkgs.ruff}/bin/ruff";
+            command = "${lib.getExe pkgs.ruff}";
             args = [ "server" ];
           };
           biome = {
-            command = "${pkgs.biome}/bin/biome";
+            command = "${lib.getExe pkgs.biome}";
             args = [ "lsp-proxy" ];
           };
           vscode-html-language-server = {
-            command = "${pkgs.vscode-langservers-extracted}/bin/vscode-html-language-server";
+            command = "${lib.getExe pkgs.vscode-langservers-extracted}";
             args = [ "--stdio" ];
           };
           superhtml = {
-            command = "${pkgs.superhtml}/bin/superhtml";
+            command = "${lib.getExe pkgs.superhtml}";
             args = [ "lsp" ];
             except-features = [ "format" ];
           };
           vscode-css-language-server = {
-            command = "${pkgs.vscode-langservers-extracted}/bin/vscode-css-language-server";
+            command = "${lib.getExe pkgs.vscode-langservers-extracted}";
             args = [ "--stdio" ];
           };
           vscode-json-language-server = {
-            command = "${pkgs.vscode-langservers-extracted}/bin/vscode-json-language-server";
+            command = "${lib.getExe pkgs.vscode-langservers-extracted}";
             args = [ "--stdio" ];
           };
           graphql-language-server = {
-            command = "${pkgs.graphql-language-service-cli}/bin/graphql-lsp";
+            command = "${lib.getExe pkgs.graphql-language-service-cli}";
             args = [
               "server"
               "-m"
@@ -471,25 +472,25 @@ in
             ];
           };
           bash-language-server = {
-            command = "${pkgs.bash-language-server}/bin/bash-language-server";
+            command = "${lib.getExe pkgs.bash-language-server}";
             args = [ "start" ];
           };
           # marksman = {
-          #   command = "${pkgs.marksman}/bin/marksman";
+          #   command = "${lib.getExe pkgs.marksman}";
           #   args = [ "server" ];
           # };
           rust-analyzer = {
-            command = "${pkgs.rust-analyzer}/bin/rust-analyzer";
+            command = "${lib.getExe pkgs.rust-analyzer}";
           };
           wakatime = {
-            command = "wakatime-ls";
+            command = "${lib.getExe inputs.wakatime-ls.packages.${pkgs.stdenv.hostPlatform.system}.default}";
           };
           gopls = {
-            command = "${pkgs.gopls}/bin/gopls";
+            command = "${lib.getExe pkgs.gopls}";
             args = [ "serve" ];
           };
           golang-ci-langserver = {
-            command = "${pkgs.golangci-lint-langserver}/bin/golangci-lint-langserver";
+            command = "${lib.getExe pkgs.golangci-lint-langserver}";
             args = [
               "run"
               "--output.json.path"
@@ -500,13 +501,16 @@ in
 
           };
           templ = {
-            command = "${pkgs.templ}/bin/templ";
+            command = "${lib.getExe pkgs.templ}";
             args = [ "lsp" ];
           };
 
         };
       };
 
+      home.activation.mkHelixGrammars = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        ${lib.getExe pkgs.helix} -g fetch && ${lib.getExe pkgs.helix} -g build
+      '';
       vscode = {
         enable = false;
         profiles.default = {

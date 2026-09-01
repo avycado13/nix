@@ -29,9 +29,6 @@
     zfs.forceImportRoot = lib.mkForce false;
   };
 
-  # Pine64+ (2GB RAM variant), not the base 1GB Pine64.
-  hardware.deviceTree.name = "allwinner/sun50i-a64-pine64-plus.dtb";
-
   # U-Boot's SPL on Allwinner boards lives at a fixed raw offset before the
   # first partition (8KiB), so it has to be dd'd in after the sd-image is built.
   # No separate firmware partition is needed; extlinux.conf on the root
@@ -51,6 +48,28 @@
   services.openssh.settings.PermitRootLogin = lib.mkForce "yes";
 
   networking.hostName = "apollo1";
+
+  # AP6212 (brcmfmac) wifi behind the mmc1 SDIO bus enabled by the
+  # pine64-wifi device tree overlay above.
+  hardware.enableRedistributableFirmware = lib.mkForce true;
+
+  sops.secrets.wifi-password = {
+    sopsFile = ../../../secrets/secrets.yaml;
+    key = "wifi/password";
+  };
+  sops.templates."wireless.conf" = {
+    content = ''
+      psk_samosa=${config.sops.placeholder.wifi-password}
+    '';
+    owner = "wpa_supplicant";
+    mode = "0400";
+  };
+  networking.wireless = {
+    enable = true;
+    interfaces = [ "wlan0" ];
+    secretsFile = config.sops.templates."wireless.conf".path;
+    networks."samosa".pskRaw = "ext:psk_samosa";
+  };
 
   services.tailscale.enable = true;
   services.timesyncd.enable = lib.mkForce true;

@@ -3,6 +3,7 @@
   config,
   pkgs,
   inputs,
+  modulesPath,
   ...
 }:
 {
@@ -11,7 +12,7 @@
     ./homelab.nix
     ./home.nix
     inputs.nixos-hardware.nixosModules.raspberry-pi-3
-    "${inputs.nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
+    (modulesPath + "/installer/sd-card/sd-image-aarch64.nix")
   ];
   # Disable modules that conflict with SD image builds or are inappropriate
   # for a small embedded device.

@@ -8,14 +8,13 @@ update:
     nix flake update
 
 build-iso $host:
-    just copy {{ host }}; ssh {{ host }} "nix-shell -p nixos-generators.out --run 'nixos-generate -c /etc/nixos/machines/installer/default.nix -f install-iso -I nixpkgs=channel:nixos-25.11'"
+    just copy {{ host }}; ssh {{ host }}; nixos-rebuild build-image --image-variant iso --flake .#{{ host }}
 
 check:
     nix flake check
 
 dry-run $host:
-    nixos-rebuild dry-activate --flake .#{{ host }} --target-host {{ host }} --build-host {{ host }} --fast --use-remote-sudo
-
+    nixos-rebuild dry-activate --flake .#{{ host }} --target-host {{ host }} --build-host {{ host }} --fast --elevate=sudo --ask-sudo-password
 deploy $host:
     just copy {{ host }}; nixos-rebuild switch --flake .#{{ host }} --target-host {{ host }} --build-host {{ host }} --no-reexec --sudo --elevate=sudo --ask-sudo-password
 
@@ -30,3 +29,6 @@ home-deploy $host:
 
 home-dry-run $host:
     just copy {{ host }}; ssh {{ host }} "cd /etc/nixos && home-manager switch --flake .#avy@{{ host }} --dry-run"
+
+updatekeys:
+    sops updatekeys secrets/*
