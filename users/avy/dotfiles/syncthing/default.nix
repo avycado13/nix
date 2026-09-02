@@ -6,9 +6,10 @@
 }:
 let
   # Pick the right upstream package per platform.
-  syncthingPackage = if pkgs.stdenv.isDarwin then pkgs.syncthing-macos else pkgs.syncthing;
+  syncthingPackage =
+    if pkgs.stdenv.hostPlatform.isDarwin then pkgs.syncthing-macos else pkgs.syncthing;
   musicPath =
-    if pkgs.stdenv.isDarwin then
+    if pkgs.stdenv.hostPlatform.isDarwin then
       "${config.home.homeDirectory}/Music/Library"
     else
       "${config.home.homeDirectory}/Music";

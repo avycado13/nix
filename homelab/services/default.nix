@@ -87,5 +87,6 @@
     ./calibre-web
     ./asterisk
     ./irc
+    ./navidrome
   ];
 }

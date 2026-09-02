@@ -6,7 +6,7 @@
   ...
 }:
 let
-  colBin = if pkgs.stdenv.isDarwin then "/usr/bin/col" else "${pkgs.util-linux}/bin/col";
+  colBin = if pkgs.stdenv.hostPlatform.isDarwin then "/usr/bin/col" else "${pkgs.util-linux}/bin/col";
   # Pre-generated shell init scripts to avoid eval "$(cmd)" subprocess overhead at startup.
   zoxide-init = pkgs.runCommand "zoxide-init.zsh" { } ''
     ${lib.getExe pkgs.zoxide} init zsh > $out
@@ -85,7 +85,7 @@ in
     home.sessionPath = [
       "$HOME/.local/bin"
     ]
-    ++ lib.optionals pkgs.stdenv.isDarwin [
+    ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
       "$HOME/finance/bin"
       "$HOME/.cargo/bin"
       "$HOME/.bun/bin"
@@ -112,7 +112,7 @@ in
       MANROFFOPT = "-c";
       MANPAGER = "sh -c '${colBin} -bx | ${pkgs.bat}/bin/bat -l man -p --theme=ansi'";
     }
-    // lib.optionalAttrs pkgs.stdenv.isDarwin {
+    // lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
       OBJC_DISABLE_INITIALIZE_FORK_SAFETY = "YES";
       # Use Apple's toolchain for native builds. nix's cc/clang don't wire in
       # the macOS SDK, so cgo/cargo/cmake links fail with "library not found"
@@ -123,7 +123,7 @@ in
       DOCKER_HOST = "unix://${config.home.homeDirectory}/.colima/default/docker.sock";
     };
 
-    home.activation.mkPnpmHome = lib.mkIf pkgs.stdenv.isDarwin (
+    home.activation.mkPnpmHome = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (
       lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         run mkdir -p "${config.home.homeDirectory}/Library/pnpm"
       ''
@@ -227,7 +227,7 @@ in
           uvup = "${lib.getExe pkgs.uv} self update";
           uvv = "${lib.getExe pkgs.uv} venv";
         }
-        // lib.optionalAttrs pkgs.stdenv.isDarwin {
+        // lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
           flush-dns = "sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder";
           lsblk = "diskutil list";
         };
@@ -237,7 +237,7 @@ in
              zmodload zsh/zprof
            ''}
 
-           ${lib.optionalString pkgs.stdenv.isDarwin ''
+           ${lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
              builtin ulimit -n 2048
            ''}
 
@@ -472,6 +472,30 @@ in
         enable = true;
         enableZshIntegration = false;
         shellWrapperName = "yy";
+        plugins = with pkgs.yaziPlugins; {
+          # Plugins that don't call setup() can be configured in one line
+          smart-enter.package = smart-enter;
+          chmod.package = chmod;
+        };
+        initLua = ''
+          Header:children_add(function()
+            if ya.target_family() ~= "unix" then
+            		return ""
+            end
+            return ui.Span(ya.user_name() .. "@" .. ya.host_name() .. ":"):fg("blue")
+          end, 500, Header.LEFT)
+        '';
+
+        settings = {
+          mgr = {
+            prepend_keymap = [
+              {
+                on = "<C-p>";
+                run = "shell -- qlmanage -p %s";
+              }
+            ];
+          };
+        };
       };
 
       zoxide = {

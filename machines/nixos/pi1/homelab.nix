@@ -206,6 +206,11 @@
         url = "books.avyay.in";
       };
 
+      navidrome = {
+        enable = true;
+        url = "music.avyay.in";
+      };
+
       asterisk = {
         enable = true;
         url = "pbx.avyay.in";

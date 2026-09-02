@@ -7,10 +7,12 @@ avy's (avycado13) Nix configuration — a flake-based setup for managing macOS a
 | Host | Platform | Description |
 |------|----------|-------------|
 | `Avys-Mac` | `aarch64-darwin` | macOS (nix-darwin) |
-| `pi0` | `aarch64-linux` | Raspberry Pi (aarch64) |
-| `pi1` | `aarch64-linux` | Raspberry Pi 3 |
-| `oracle` | `x86_64-linux` | NixOS server |
+| `pi0` | `aarch64-linux` | Raspberry Pi Zero 2W (currently commented out in flake.nix) |
+| `pi1` | `aarch64-linux` | Raspberry Pi 3, runs the homelab |
+| `apollo1` | `aarch64-linux` | Allwinner A64 SBC |
+| `oracle` | `x86_64-linux` | Oracle Cloud VM |
 | `eclipse` | `x86_64-linux` | NixOS server |
+| `gce` | `x86_64-linux` | Google Compute Engine VM |
 
 ## Structure
 
@@ -19,13 +21,15 @@ flake.nix            # Flake definition
 flakeHelpers.nix     # mkDarwin / mkNixos helpers
 machines/
   darwin/            # macOS configurations
-  nixos/             # NixOS configurations (pi0, pi1, oracle, eclipse)
+  nixos/             # NixOS configurations (pi0, pi1, apollo1, oracle, eclipse, gce)
 users/avy/           # User config & dotfiles (home-manager)
 homelab/
-  services/          # auth, glance, miniflux, ntfy, postgres, restic, ...
-  motd/              # Message of the day
+  services/          # miniflux, auth, glance, niks3, retrom, cloudrun, scrutiny,
+                      # restic, isponsorblocktv, lard, calibre-web, asterisk, irc, navidrome
+  motd/               # Message of the day
+  fail2ban-cloudflare/ # bans offenders at the Cloudflare edge
 modules/             # Reusable modules (ddns, email, binary cache, remote build)
-secrets/             # Age-encrypted secrets (agenix)
+secrets/             # sops-nix encrypted secrets (secrets.yaml, services.yaml)
 ```
 
 ## Usage
@@ -56,4 +60,4 @@ Uses `nixfmt`, `deadnix`, and `shellcheck`.
 
 ## Secrets
 
-Managed with [agenix](https://github.com/ryantm/agenix) and [agenix-rekey](https://github.com/oddlama/agenix-rekey). Encrypted `.age` files live in `secrets/`.
+Managed with [sops-nix](https://github.com/Mic92/sops-nix). Encrypted YAML files (`secrets.yaml`, `services.yaml`) live in `secrets/`; recipients are defined in `.sops.yaml`. Never commit plaintext secrets.

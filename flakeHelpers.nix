@@ -45,7 +45,7 @@ let
         ./users/avy/sops.nix
       ]
       ++ (
-        if (pkgs.stdenv.isDarwin) then
+        if (pkgs.stdenv.hostPlatform.isDarwin) then
           [
             inputs.mac-app-util.homeManagerModules.default
           ]

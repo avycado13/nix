@@ -12,6 +12,7 @@ This is a Nix flake-based configuration for managing multiple systems:
 - **oracle** — Oracle Cloud VM (NixOS, x86_64-linux, OCI image)
 - **eclipse** — NixOS, x86_64-linux (srvos server profile, disko for partitioning)
 - **gce** — Google Compute Engine VM (NixOS, x86_64-linux, GCE image)
+- **apollo1** — Allwinner A64 SBC (NixOS, aarch64-linux, SD card image via u-boot/extlinux, wifi via sops-templated `wpa_supplicant` config)
 - Uses sops-nix for secrets management
 - Includes homelab services and reusable NixOS modules
 
@@ -39,7 +40,7 @@ just build-iso <host>            # Build a NixOS installer ISO for a host
 ### Directory Structure
 
 ```
-flake.nix               # Entry point; calls mkDarwin/mkNixos per host (Avys-Mac, pi0, pi1, oracle, eclipse, gce)
+flake.nix               # Entry point; calls mkDarwin/mkNixos per host (Avys-Mac, pi0, pi1, apollo1, oracle, eclipse, gce)
 flakeHelpers.nix         # mkDarwin, mkNixos, mkHome, mkMerge, nixpkgsCfg — read first for new machines
 machines/
   darwin/
@@ -109,6 +110,7 @@ GitHub Actions workflows in `.github/workflows/`:
 - **Hardware Modules**: NixOS configs may include hardware-specific modules (e.g., `nixos-hardware.nixosModules.raspberry-pi-3`)
 - **pi0**: Currently commented out in `flake.nix` outputs
 - **mkService**: Some homelab services (postgres, lldap) use the `mkService.nix` factory in `homelab/lib/mkService.nix`, imported via `import ../../lib/mkService.nix`
+- **Homelab services**: `homelab/services/default.nix` currently imports `miniflux`, `auth`, `glance`, `niks3`, `retrom`, `cloudrun`, `scrutiny`, `restic`, `isponsorblocktv`, `lard`, `calibre-web`, `asterisk`, `irc`, `navidrome`. Enabled on pi1: all except `retrom`.
 
 ## Secrets Management
 

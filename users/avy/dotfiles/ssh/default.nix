@@ -206,6 +206,11 @@ in
           hostname = "100.117.24.61";
           identityFile = identity;
         };
+        "apollo1" = {
+          user = "avy";
+          hostname = "100.72.166.0";
+          identityFile = identity;
+        };
         "p.*" = {
           hostname = "100.117.24.61";
           zmx = true;

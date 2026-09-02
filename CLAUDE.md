@@ -11,6 +11,7 @@ A Nix flake managing multiple systems declaratively:
 - **oracle** — Oracle Cloud VM (NixOS, x86_64-linux, OCI image)
 - **eclipse** — NixOS, x86_64-linux (srvos server profile, disko for partitioning)
 - **gce** — Google Compute Engine VM (NixOS, x86_64-linux, GCE image)
+- **apollo1** — Allwinner A64 SBC (NixOS, aarch64-linux, SD card image via u-boot/extlinux, wifi via sops-templated `wpa_supplicant` config)
 
 ## Essential Commands
 
@@ -34,7 +35,7 @@ just build-iso <host>            # Build a NixOS installer ISO for a host
 ## Codebase Structure
 
 ```
-flake.nix               # Entry point; calls mkDarwin/mkNixos per host (Avys-Mac, pi0, pi1, oracle, eclipse, gce)
+flake.nix               # Entry point; calls mkDarwin/mkNixos per host (Avys-Mac, pi0, pi1, apollo1, oracle, eclipse, gce)
 flakeHelpers.nix         # mkDarwin, mkNixos, mkHome, mkMerge, nixpkgsCfg — read first for new machines
 machines/
   darwin/
@@ -82,9 +83,9 @@ fileofbrew                # Reference file listing previous Homebrew packages (b
 
 **Modules** (`modules/`) — reusable NixOS modules: `ddns` (cloudflare/desec/duckdns/freedns), `email` (msmtp setup), `binaryCache` (nix-serve + nginx), `remoteBuild` (creates `remotebuild` user + configures nix-daemon), `nix` (core nix settings + substituters + distributed builds via nixbuild.net + `services.niks3-auto-upload` for pushing build outputs to the niks3 cache, imported by `machines/nixos/default.nix`), `secrets` (wires sops-nix; `default.nix` for NixOS, `home.nix` for home-manager).
 
-**Homelab** (`homelab/`) — imported directly into every NixOS system (`mkNixos` always includes `./homelab`), gated behind `homelab.enable`/`homelab.services.enable` so it's inert unless a host opts in (currently only `pi1` does, via `machines/nixos/pi1/homelab.nix`). Reverse proxy is **Caddy** (not Traefik), with ACME via `security.acme` (cloudflare DNS challenge). Currently imported services (see `homelab/services/default.nix` imports): `miniflux`, `auth` (indiko + lldap), `glance`, `niks3`, `retrom`, `cloudrun`, `scrutiny`, `restic`, `isponsorblocktv`. A `postgres` service dir provides shared DB setup for services that need it. `homelab/motd` builds a login MOTD listing enabled/monitored services; `homelab/fail2ban-cloudflare` bans offenders at the Cloudflare edge.
+**Homelab** (`homelab/`) — imported directly into every NixOS system (`mkNixos` always includes `./homelab`), gated behind `homelab.enable`/`homelab.services.enable` so it's inert unless a host opts in (currently only `pi1` does, via `machines/nixos/pi1/homelab.nix`). Reverse proxy is **Caddy** (not Traefik), with ACME via `security.acme` (cloudflare DNS challenge). Currently imported services (see `homelab/services/default.nix` imports): `miniflux`, `auth` (indiko + lldap), `glance`, `niks3`, `retrom`, `cloudrun`, `scrutiny`, `restic`, `isponsorblocktv`, `lard`, `calibre-web`, `asterisk`, `irc`, `navidrome`. A `postgres` service dir provides shared DB setup for services that need it. `homelab/motd` builds a login MOTD listing enabled/monitored services; `homelab/fail2ban-cloudflare` bans offenders at the Cloudflare edge.
 
-**Currently enabled on pi1:** miniflux, auth/indiko, glance, niks3 (S3-backed Nix binary cache, backed by an R2 bucket), cloudrun (searxng, it-tools), scrutiny, restic (backing up to B2), isponsorblocktv. **Disabled on pi1:** retrom (enable = false). **fail2ban-cloudflare** is enabled on pi1 but no jails configured yet.
+**Currently enabled on pi1:** miniflux, auth/indiko, glance, niks3 (S3-backed Nix binary cache, backed by an R2 bucket), cloudrun (searxng, it-tools), scrutiny, restic (backing up to B2), isponsorblocktv, lard, calibre-web, navidrome, asterisk (SIP/PBX), irc. **Disabled on pi1:** retrom (enable = false). **fail2ban-cloudflare** is enabled on pi1 but no jails configured yet.
 
 ## Adding a Homelab Service
 
