@@ -46,6 +46,7 @@ machines/
     <hostname>/default.nix # host-specific config; extras like disko.nix, facter.json, hardware-configuration.nix live alongside
     pi1/homelab.nix        # host opting into the homelab (sets homelab.enable + homelab.services.*)
 modules/                  # reusable NixOS modules: ddns, email, binaryCache, remoteBuild, nix, secrets
+  hardware/a64/             # nixos-hardware-style Pine64/A64 board profile (device tree, u-boot, boot loader)
 homelab/                  # imported into every NixOS system via mkNixos, inert unless homelab.enable is set
   default.nix              # top-level homelab.* options (group, timeZone, baseDomainName, cloudflare creds, email, notifications)
   services/
@@ -81,7 +82,7 @@ fileofbrew                # Reference file listing previous Homebrew packages (b
 - `default.nix` — NixOS user declaration (uid, groups, shell, ssh key)
 - `sops.nix` — per-user sops secret declarations (paths, modes, which sops file each secret comes from)
 
-**Modules** (`modules/`) — reusable NixOS modules: `ddns` (cloudflare/desec/duckdns/freedns), `email` (msmtp setup), `binaryCache` (nix-serve + nginx), `remoteBuild` (creates `remotebuild` user + configures nix-daemon), `nix` (core nix settings + substituters + distributed builds via nixbuild.net + `services.niks3-auto-upload` for pushing build outputs to the niks3 cache, imported by `machines/nixos/default.nix`), `secrets` (wires sops-nix; `default.nix` for NixOS, `home.nix` for home-manager).
+**Modules** (`modules/`) — reusable NixOS modules: `ddns` (cloudflare/desec/duckdns/freedns), `email` (msmtp setup), `binaryCache` (nix-serve + nginx), `remoteBuild` (creates `remotebuild` user + configures nix-daemon), `nix` (core nix settings + substituters + distributed builds via nixbuild.net + `services.niks3-auto-upload` for pushing build outputs to the niks3 cache, imported by `machines/nixos/default.nix`), `secrets` (wires sops-nix; `default.nix` for NixOS, `home.nix` for home-manager), `hardware/a64` (nixos-hardware-style board profile for Allwinner A64/Pine64 boards — device tree + wifi overlay, u-boot SPL dd into the sd-image, extlinux boot loader, serial console; host configs like `apollo1` import it and layer on host-specific policy such as hostname, secrets, and user accounts).
 
 **Homelab** (`homelab/`) — imported directly into every NixOS system (`mkNixos` always includes `./homelab`), gated behind `homelab.enable`/`homelab.services.enable` so it's inert unless a host opts in (currently only `pi1` does, via `machines/nixos/pi1/homelab.nix`). Reverse proxy is **Caddy** (not Traefik), with ACME via `security.acme` (cloudflare DNS challenge). Currently imported services (see `homelab/services/default.nix` imports): `miniflux`, `auth` (indiko + lldap), `glance`, `niks3`, `retrom`, `cloudrun`, `scrutiny`, `restic`, `isponsorblocktv`, `lard`, `calibre-web`, `asterisk`, `irc`, `navidrome`. A `postgres` service dir provides shared DB setup for services that need it. `homelab/motd` builds a login MOTD listing enabled/monitored services; `homelab/fail2ban-cloudflare` bans offenders at the Cloudflare edge.
 
