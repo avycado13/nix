@@ -59,6 +59,11 @@ let
     navi-init
     zsh-completions-init
   ];
+  patinaConfig = (pkgs.formats.toml { }).generate "zsh-patina-config.toml" {
+    highlighting = {
+      theme = "catppuccin-mocha";
+    };
+  };
 in
 {
   options.dots.shell = {
@@ -129,6 +134,8 @@ in
       ''
     );
 
+    home.packages = [ pkgs.zsh-patina ];
+    xdg.configFile."zsh-patina/config.toml".source = patinaConfig;
     programs = {
       zsh = {
         enable = true;

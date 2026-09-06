@@ -48,7 +48,6 @@
     catppuccin.url = "github:catppuccin/nix";
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
-    lazygit.url = "github:jesseduffield/lazygit";
     flake-utils.url = "github:numtide/flake-utils";
     llm-agents.url = "github:numtide/llm-agents.nix";
     nix-auth.url = "github:numtide/nix-auth";
@@ -57,10 +56,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
-    weechat-scripts = {
-      url = "github:weechat/scripts";
-      flake = false;
-    };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -75,6 +70,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     impermanence.url = "github:nix-community/impermanence";
+    impermanence.inputs.nixpkgs.follows = "";
+    impermanence.inputs.home-manager.follows = "";
     try.url = "github:tobi/try";
     fenix = {
       url = "github:nix-community/fenix/monthly";
@@ -122,11 +119,16 @@
         mkDarwin
         mkNixos
         ;
+      system = {
+        x86_64-linux = "x86_64-linux";
+        aarch64-linux = "aarch64-linux";
+        aarch64-darwin = "aarch64-darwin";
+      };
     in
     mkMerge [
-      (mkDarwin "Avys-Mac" inputs.nixpkgs "aarch64-darwin" [ ] [ ])
+      (mkDarwin "Avys-Mac" inputs.nixpkgs system.aarch64-darwin [ ] [ ])
 
-      (mkNixos "pi0" inputs.nixpkgs "aarch64-linux"
+      (mkNixos "pi0" inputs.nixpkgs system.aarch64-linux
         [ ]
         [
           inputs.nixos-pi-zero-2.nixosModules.hardware
@@ -134,7 +136,7 @@
         ]
       )
 
-      (mkNixos "pi1" inputs.nixpkgs "aarch64-linux" [ ] [ ])
+      (mkNixos "pi1" inputs.nixpkgs system.aarch64-linux [ ] [ ])
 
       (mkNixos "apollo1" inputs.nixpkgs "aarch64-linux"
         [ ]
@@ -143,20 +145,20 @@
         ]
       )
 
-      (mkNixos "oracle" inputs.nixpkgs "x86_64-linux"
+      (mkNixos "oracle" inputs.nixpkgs system.x86_64-linux
         [ ]
         [
           inputs.srvos.nixosModules.server
           "${inputs.nixpkgs}/nixos/modules/virtualisation/oci-image.nix"
         ]
       )
-      (mkNixos "eclipse" inputs.nixpkgs "x86_64-linux"
+      (mkNixos "eclipse" inputs.nixpkgs system.x86_64-linux
         [ ]
         [
           inputs.srvos.nixosModules.server
         ]
       )
-      (mkNixos "gce" inputs.nixpkgs "x86_64-linux" [ ] [ ])
+      (mkNixos "gce" inputs.nixpkgs system.x86_64-linux [ ] [ ])
 
       {
         overlays.default = _final: prev: {
@@ -164,7 +166,7 @@
         };
       }
 
-      (inputs.flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ] (
+      (inputs.flake-utils.lib.eachSystem (builtins.attrValues system) (
         system:
         let
           pkgs = import inputs.nixpkgs {

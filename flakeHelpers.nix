@@ -11,7 +11,6 @@ let
   nixpkgsCfg = {
     overlays = [
       inputs.nix-topology.overlays.default
-      inputs.lazygit.overlays.default
       inputs.nur.overlays.default
       inputs.nix-vscode-extensions.overlays.default
       inputs.fenix.overlays.default

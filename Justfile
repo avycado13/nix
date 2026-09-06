@@ -19,7 +19,7 @@ deploy $host:
     just copy {{ host }}; nixos-rebuild switch --flake .#{{ host }} --target-host {{ host }} --build-host {{ host }} --no-reexec --sudo --elevate=sudo --ask-sudo-password
 
 copy $host:
-    rsync -ax --delete --rsync-path="rsync" ./ {{ host }}:/etc/nixos/
+    rsync -ax --delete --rsync-path="sudo rsync" ./ {{ host }}:/etc/nixos/
 
 darwin-deploy:
     nh darwin switch .

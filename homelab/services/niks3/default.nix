@@ -130,22 +130,6 @@ in
               };
               scopes = [ "write" ];
             };
-          }
-          // lib.optionalAttrs hl.services.indiko.enable {
-            indiko = {
-              issuer = "https://${hl.services.indiko.domain}";
-              audience = "https://${cfg.url}";
-              # Scoped to the ACME/notification email as a stand-in for "my
-              # personal indiko account" -- tighten to a real `sub` value
-              # once you've decoded an actual token from this instance.
-              boundClaims = {
-                email = [ hl.email ];
-              };
-              scopes = [
-                "read"
-                "write"
-              ];
-            };
           };
 
           apiTokenFile = cfg.apiTokenFile;
