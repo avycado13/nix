@@ -40,7 +40,7 @@ jobs:
           nix eval .#darwinConfigurations --accept-flake-config
   builds:
     runs-on: ${{ matrix.runner }}
-    needs: eval
+    # needs: eval
     # timeout-minutes: 30
 
     permissions:
