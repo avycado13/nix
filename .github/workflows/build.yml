@@ -73,12 +73,10 @@ jobs:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           audience: ${{ secrets.TS_AUDIENCE }}
           tags: tag:ci
-          ping: 100.117.24.61
-
-      - name: Configure niks3 cache
-        run: |
-          echo "extra-substituters = https://cache.avyay.in" | sudo tee -a /etc/nix/nix.conf
-          echo "extra-trusted-public-keys = ${{ secrets.NIKS3_CACHE_PUBLIC_KEY }}" | sudo tee -a /etc/nix/nix.conf
+          ping: 100.72.166.0
+      - uses: Mic92/niks3-action@v1
+        with:
+          server-url: https://cache.avyay.in
       - name: "Install omnix"
         run: |
            nix profile install nixpkgs#omnix
@@ -87,35 +85,3 @@ jobs:
             om ci run \
               --extra-access-tokens ${{ secrets.GITHUB_TOKEN }} -d \
               -- --accept-flake-config
-
-      - name: Push realized outputs to cache
-        shell: bash
-        env:
-          NIKS3_SERVER_URL: https://cache.avyay.in
-        run: |
-          set -euo pipefail
-
-          token_file="$(mktemp)"
-          trap 'rm -f "$token_file"' EXIT
-          printf '%s' "${{ secrets.NIKS3_API_TOKEN }}" > "$token_file"
-          export NIKS3_AUTH_TOKEN_FILE="$token_file"
-
-          mapfile -t paths < <(nix-store --gc --print-live)
-
-          for attempt in {1..10}; do
-            echo "Cache upload attempt ${attempt}/10"
-
-            if nix run nixpkgs#niks3 -- push "${paths[@]}"; then
-              echo "Cache upload succeeded"
-              exit 0
-            fi
-
-            if [ "$attempt" -lt 5 ]; then
-              sleep_time=$((2 ** attempt))
-              echo "Upload failed, retrying in ${sleep_time}s..."
-              sleep "$sleep_time"
-            fi
-          done
-
-          echo "Cache upload failed after 5 attempts"
-          exit 1

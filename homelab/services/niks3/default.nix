@@ -97,7 +97,10 @@ in
       (lib.mkIf (cfg.host == "127.0.0.1") {
         services.niks3 = {
           enable = true;
-          readProxy.enable = true;
+          readProxy = {
+            enable = true;
+            redirectTTL = "24h";
+          };
           httpAddr = "127.0.0.1:${toString port}";
 
           s3 = {
