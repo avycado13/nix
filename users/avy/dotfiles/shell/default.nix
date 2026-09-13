@@ -43,6 +43,10 @@ let
   zsh-completions-init = pkgs.runCommand "zsh-completions-init.zsh" { } ''
     cp ${pkgs.zsh-completions.src}/zsh-completions.plugin.zsh $out
   '';
+  zsh-autosuggestions-init = pkgs.runCommand "zsh-autosuggestions-init.zsh" { } ''
+    cp ${pkgs.zsh-autosuggestions.src}/zsh-autosuggestions.zsh $out
+  '';
+
   # Everything sourced into interactive zsh, in order. Each entry is a store
   # path holding ready-to-source zsh; nothing is eval'd at startup.
   shell-init = [
@@ -58,6 +62,8 @@ let
     terminal-wakatime-init
     navi-init
     zsh-completions-init
+    zsh-autosuggestions-init
+    # forgit-init
   ];
   patinaConfig = (pkgs.formats.toml { }).generate "zsh-patina-config.toml" {
     highlighting = {
@@ -134,7 +140,10 @@ in
       ''
     );
 
-    home.packages = [ pkgs.zsh-patina ];
+    home.packages = [
+      pkgs.zsh-patina
+      pkgs.zsh-forgit
+    ];
     xdg.configFile."zsh-patina/config.toml".source = patinaConfig;
     programs = {
       zsh = {
@@ -176,9 +185,12 @@ in
             src = pkgs.zsh-defer.src;
             file = "zsh-defer.plugin.zsh";
           }
+          # {
+          #   name = pkgs.zsh-forgit.pname;
+          #   src = pkgs.zsh-forgit.src;
+          #   file = "forgit.plugin.zsh";
+          # }
         ];
-
-        autosuggestion.enable = true;
 
         shellAliases = {
           ash = "${lib.getExe pkgs.autossh} -M 0 -q";
@@ -214,24 +226,11 @@ in
           pyserver = "${lib.getExe pkgs.python3} -m http.server";
           uva = "${lib.getExe pkgs.uv} add";
           uvexp = "${lib.getExe pkgs.uv} export --format requirements-txt --no-hashes --output-file requirements.txt --quiet";
-          uvi = "${lib.getExe pkgs.uv} init";
-          uvinw = "${lib.getExe pkgs.uv} init --no-workspace";
           uvl = "${lib.getExe pkgs.uv} lock";
-          uvlr = "${lib.getExe pkgs.uv} lock --refresh";
-          uvlu = "${lib.getExe pkgs.uv} lock --upgrade";
           uvp = "${lib.getExe pkgs.uv} pip";
-          uvpi = "${lib.getExe pkgs.uv} python install";
-          uvpl = "${lib.getExe pkgs.uv} python list";
-          uvpp = "${lib.getExe pkgs.uv} python pin";
-          uvpu = "${lib.getExe pkgs.uv} python uninstall";
-          uvpy = "${lib.getExe pkgs.uv} python";
           uvr = "${lib.getExe pkgs.uv} run";
           uvrm = "${lib.getExe pkgs.uv} remove";
           uvs = "${lib.getExe pkgs.uv} sync";
-          uvsr = "${lib.getExe pkgs.uv} sync --refresh";
-          uvsu = "${lib.getExe pkgs.uv} sync --upgrade";
-          uvtr = "${lib.getExe pkgs.uv} tree";
-          uvup = "${lib.getExe pkgs.uv} self update";
           uvv = "${lib.getExe pkgs.uv} venv";
         }
         // lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
@@ -286,8 +285,31 @@ in
            alias -g NO='>/dev/null'
            alias -g NUL='>/dev/null 2>&1'
            alias -g J='| jq'
+           
+           # OSC 52 clipboard (works over SSH)
+           function osc52copy() {
+             local data=$(cat "$@" | base64 | tr -d '\n')
+             printf "\033]52;c;%s\a" "$data"
+           }
+           alias -g C='| osc52copy'
+           # Clear screen but keep current command buffer (Ctrl+X, Ctrl+L)
+           function clear-screen-and-scrollback() {
+             echoti civis >"$TTY"
+             printf '%b' '\e[H\e[2J\e[3J' >"$TTY"
+             echoti cnorm >"$TTY"
+             zle redisplay
+           }
+           zle -N clear-screen-and-scrollback
+           bindkey '^X^L' clear-screen-and-scrollback
 
-
+           # Copy current command buffer to clipboard (Ctrl+X, Ctrl+C) - OSC 52 for SSH support
+           function copy-buffer-to-clipboard() {
+             local data=$(echo -n "$BUFFER" | base64 | tr -d '\n')
+             printf "\033]52;c;%s\a" "$data"
+             zle -M "Copied to clipboard"
+           }
+           zle -N copy-buffer-to-clipboard
+           bindkey '^X^C' copy-buffer-to-clipboard
            # Edit command buffer in $EDITOR (Ctrl+X, Ctrl+E)
            autoload -Uz edit-command-line
            zle -N edit-command-line

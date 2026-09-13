@@ -97,6 +97,7 @@ in
       (lib.mkIf (cfg.host == "127.0.0.1") {
         services.niks3 = {
           enable = true;
+          readProxy.enable = true;
           httpAddr = "127.0.0.1:${toString port}";
 
           s3 = {
@@ -138,11 +139,24 @@ in
           cacheUrl = "https://${cfg.url}";
           serverUrl = "https://${cfg.url}";
           maxNarSize = cfg.maxNarSize;
+          gc = {
+            enable = true; # Default: true
+            olderThan = "720h"; # 30 days (default)
+            failedUploadsOlderThan = "6h"; # 6 hours (default)
+            schedule = "daily"; # Run at midnight daily (default)
+            randomizedDelaySec = 1800; # Add 0-30 min random delay (default)
+          };
         };
 
         systemd.services.${service}.unitConfig.OnFailure = lib.mkIf (
           hl.notifications.ntfySecretsFile != null
         ) "notify-failure@%n.service";
+
+        # First-boot initdb can outrun systemd's default 90s TimeoutStartSec
+        # on slow SD-card-backed boards (e.g. apollo1), which fails
+        # postgresql.service and cascades into "dependency failed" for
+        # niks3 (Requires=postgresql.service). Give it more room.
+        systemd.services.postgresql.serviceConfig.TimeoutStartSec = "600s";
 
         services.nix-cache-beacon = {
           # Announce cache to the local network
@@ -162,7 +176,7 @@ in
           wants = [ "avahi-daemon.service" ];
         };
       })
-      {
+      (lib.mkIf hl.services.enable {
         services.caddy.virtualHosts."${cfg.url}" = {
           useACMEHost = hl.baseDomainName;
           extraConfig = ''
@@ -172,7 +186,7 @@ in
             }
           '';
         };
-      }
+      })
     ]
   );
 }

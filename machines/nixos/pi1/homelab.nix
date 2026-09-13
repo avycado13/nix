@@ -32,27 +32,6 @@
     #   key = "speedtest-tracker/app_key";
     #   owner = "speedtest-tracker";
     # };
-    niks3-s3-access-key = {
-      sopsFile = ../../../secrets/services.yaml;
-      key = "niks3/s3_access_key";
-      mode = "0444";
-    };
-    niks3-s3-secret-key = {
-      sopsFile = ../../../secrets/services.yaml;
-      key = "niks3/s3_secret_key";
-      mode = "0444";
-    };
-    niks3-signing-key = {
-      sopsFile = ../../../secrets/services.yaml;
-      key = "niks3/signing_key";
-      mode = "0444";
-    };
-    niks3-server-api-token = {
-      sopsFile = ../../../secrets/services.yaml;
-      key = "niks3/api_token";
-      mode = "0444";
-    };
-
     restic-repository-password = {
       sopsFile = ../../../secrets/services.yaml;
       key = "restic/repository_password";
@@ -139,17 +118,13 @@
         url = "glance.avyay.in";
       };
 
+      # niks3 itself now runs on apollo1 (see machines/nixos/apollo1/default.nix);
+      # pi1 only reverse-proxies to it over tailscale.
       niks3 = {
         enable = true;
         url = "cache.avyay.in";
-        s3 = {
-          endpoint = "9de2baa272a57af74da84d8e6bd95a77.r2.cloudflarestorage.com";
-          bucket = "nixcache";
-          accessKeyFile = config.sops.secrets.niks3-s3-access-key.path;
-          secretKeyFile = config.sops.secrets.niks3-s3-secret-key.path;
-        };
-        apiTokenFile = config.sops.secrets.niks3-server-api-token.path;
-        signKeyFiles = [ config.sops.secrets.niks3-signing-key.path ];
+        host = "100.72.166.0"; # apollo1 tailscale IP
+        data = null;
       };
 
       cloudrun = {
@@ -202,17 +177,17 @@
       };
 
       calibre-web = {
-        enable = true;
+        enable = false;
         url = "books.avyay.in";
       };
 
       navidrome = {
-        enable = true;
+        enable = false;
         url = "music.avyay.in";
       };
 
       asterisk = {
-        enable = true;
+        enable = false;
         url = "pbx.avyay.in";
         domain = "avyay.in";
         phones = [

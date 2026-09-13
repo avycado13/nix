@@ -140,6 +140,11 @@ in
               timeout = 5;
             };
             name = "awk";
+            language-servers = [
+              "awk-language-server"
+              "harper-ls"
+              "wakatime"
+            ];
             scope = "source.awk";
           }
           {
@@ -154,6 +159,7 @@ in
             name = "graphql";
             language-servers = [
               "graphql-language-server"
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.graphql";
@@ -173,6 +179,7 @@ in
               "superhtml"
               "vscode-html-language-server"
               "biome"
+              "harper-ls"
               "wakatime"
             ];
             scope = "text.html.basic";
@@ -191,6 +198,7 @@ in
             language-servers = [
               "vscode-css-language-server"
               "biome"
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.css";
@@ -209,6 +217,7 @@ in
             language-servers = [
               "typescript-language-server"
               "biome"
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.js";
@@ -227,6 +236,7 @@ in
             language-servers = [
               "typescript-language-server"
               "biome"
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.ts";
@@ -245,6 +255,7 @@ in
             language-servers = [
               "typescript-language-server"
               "biome"
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.jsx";
@@ -263,6 +274,7 @@ in
             language-servers = [
               "typescript-language-server"
               "biome"
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.tsx";
@@ -281,6 +293,7 @@ in
             language-servers = [
               "vscode-json-language-server"
               "biome"
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.json";
@@ -299,6 +312,7 @@ in
             language-servers = [
               "vscode-json-language-server"
               "biome"
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.json";
@@ -315,6 +329,7 @@ in
             };
             name = "just";
             language-servers = [
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.just";
@@ -328,6 +343,7 @@ in
             language-servers = [
               "nil"
               "nixd"
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.nix";
@@ -347,6 +363,7 @@ in
             language-servers = [
               "ty"
               "ruff"
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.python";
@@ -359,6 +376,7 @@ in
             name = "bash";
             language-servers = [
               "bash-language-server"
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.bash";
@@ -375,6 +393,7 @@ in
             name = "rust";
             language-servers = [
               "rust-analyzer"
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.rust";
@@ -384,6 +403,7 @@ in
             name = "markdown";
             language-servers = [
               # "marksman"
+              "harper-ls"
               "wakatime"
             ];
             scope = "source.md";
@@ -394,8 +414,76 @@ in
             language-servers = [
               "gopls"
               "golangci-lint-lsp"
+              "harper-ls"
               "wakatime"
             ];
+          }
+          {
+            auto-format = true;
+            formatter = {
+              args = [ "-" ];
+              command = "${lib.getExe pkgs.google-java-format}";
+            };
+            name = "java";
+            language-servers = [
+              "jdtls"
+              "harper-ls"
+              "wakatime"
+            ];
+            scope = "source.java";
+            file-types = [ "java" ];
+          }
+          {
+            name = "groovy";
+            language-servers = [
+              "groovy-language-server"
+              "harper-ls"
+              "wakatime"
+            ];
+            scope = "source.groovy";
+            file-types = [
+              "groovy"
+              "gradle"
+            ];
+          }
+          {
+            auto-format = true;
+            name = "kotlin";
+            language-servers = [
+              "kotlin-language-server"
+              "harper-ls"
+              "wakatime"
+            ];
+            scope = "source.kotlin";
+            file-types = [
+              "kt"
+              "kts"
+            ];
+          }
+          {
+            name = "xml";
+            language-servers = [
+              "lemminx"
+              "harper-ls"
+              "wakatime"
+            ];
+            scope = "source.xml";
+            file-types = [
+              "xml"
+            ];
+          }
+          {
+            auto-format = true;
+            formatter = {
+              command = "${lib.getExe pkgs.swift-format}";
+            };
+            name = "swift";
+            language-servers = [
+              "harper-ls"
+              "wakatime"
+            ];
+            scope = "source.swift";
+            file-types = [ "swift" ];
           }
           {
             name = "templ";
@@ -412,6 +500,7 @@ in
             };
             language-servers = [
               "templ"
+              "harper-ls"
               "wakatime"
             ];
           }
@@ -447,7 +536,7 @@ in
             args = [ "lsp-proxy" ];
           };
           vscode-html-language-server = {
-            command = "${lib.getExe pkgs.vscode-langservers-extracted}";
+            command = "${lib.getExe' pkgs.vscode-langservers-extracted "vscode-html-language-server"}";
             args = [ "--stdio" ];
           };
           superhtml = {
@@ -456,11 +545,11 @@ in
             except-features = [ "format" ];
           };
           vscode-css-language-server = {
-            command = "${lib.getExe pkgs.vscode-langservers-extracted}";
+            command = "${lib.getExe' pkgs.vscode-langservers-extracted "vscode-css-language-server"}";
             args = [ "--stdio" ];
           };
           vscode-json-language-server = {
-            command = "${lib.getExe pkgs.vscode-langservers-extracted}";
+            command = "${lib.getExe' pkgs.vscode-langservers-extracted "vscode-json-language-server"}";
             args = [ "--stdio" ];
           };
           graphql-language-server = {
@@ -481,6 +570,18 @@ in
           # };
           rust-analyzer = {
             command = "${lib.getExe pkgs.rust-analyzer}";
+          };
+          kotlin-language-server = {
+            command = "${lib.getExe pkgs.kotlin-language-server}";
+          };
+          lemminx = {
+            command = "${lib.getExe pkgs.lemminx}";
+          };
+          jdtls = {
+            command = "${lib.getExe' pkgs.jdt-language-server "jdtls"}";
+          };
+          groovy-language-server = {
+            command = "${lib.getExe' pkgs.groovy-language-server "groovy-language-server"}";
           };
           wakatime = {
             command = "${lib.getExe inputs.wakatime-ls.packages.${pkgs.stdenv.hostPlatform.system}.default}";
@@ -503,6 +604,13 @@ in
           templ = {
             command = "${lib.getExe pkgs.templ}";
             args = [ "lsp" ];
+          };
+          awk-language-server = {
+            command = "${lib.getExe pkgs.awk-language-server}";
+          };
+          harper-ls = {
+            command = "${lib.getExe' pkgs.harper "harper-ls"}";
+            args = [ "--stdio" ];
           };
 
         };

@@ -6,6 +6,7 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ./homelab.nix
     ../../../modules/hardware/a64
   ];
 

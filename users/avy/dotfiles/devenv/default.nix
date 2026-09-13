@@ -97,6 +97,11 @@ in
       default = true;
       description = "Enable cloud provider CLI tools (google-cloud-sdk, oci-cli).";
     };
+    android.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable Android development tooling (gradle, kotlin, android-tools, kotlin-language-server).";
+    };
   };
 
   config = lib.mkIf config.dots.devenv.enable {
@@ -123,7 +128,11 @@ in
       ty = {
         enable = true;
       };
-      java.enable = config.dots.devenv.java.enable;
+      java = {
+        enable = config.dots.devenv.java.enable;
+        # FTC's Gradle tooling (and IntelliJ's bundled JBR) expect JDK 17.
+        package = lib.mkIf config.dots.devenv.android.enable pkgs.jdk17;
+      };
       claude-code = {
         enable = config.dots.devenv.ai.enable;
         package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
@@ -347,7 +356,25 @@ in
     ++ lib.optionals config.dots.devenv.cloud.enable [
       gdk
       pkgs.oci-cli
+    ]
+    ++ lib.optionals config.dots.devenv.android.enable [
+      pkgs.gradle
+      pkgs.kotlin
+      pkgs.kotlin-language-server
+      pkgs.android-tools
+      pkgs.scrcpy
     ];
+
+    home.shellAliases = lib.mkIf config.dots.devenv.android.enable {
+      # FTC Control/Expansion/Driver Hubs default to 192.168.43.1 in AP mode.
+      adb-ftc = "adb connect 192.168.43.1:5555";
+      adb-wifi = "adb tcpip 5555";
+      ftc-log = "adb logcat -s RobotCore:V FtcRobotController:V TeleOp:V Autonomous:V";
+      ftc-build = "./gradlew build";
+      ftc-deploy = "./gradlew installDebug";
+      ftc-clean = "./gradlew clean";
+      scrcpy-ftc = "scrcpy --tcpip=192.168.43.1:5555";
+    };
     programs.zsh.initContent = ''
       export CONTEXT7_API_KEY="$(cat ${config.sops.secrets.context7_api_key.path})"
       export GH_MCP_TOKEN="$(cat ${config.sops.secrets.gh_mcp_token.path})"

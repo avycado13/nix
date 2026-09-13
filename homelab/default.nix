@@ -3,16 +3,25 @@
   config,
   ...
 }:
+let
+  cfg = config.homelab;
+in
 {
   options.homelab = {
     enable = lib.mkEnableOption "The homelab services and configuration variables";
+    user = lib.mkOption {
+      default = "share";
+      type = lib.types.str;
+      description = ''
+        User to run the homelab services as
+      '';
+    };
     group = lib.mkOption {
       default = "share";
       type = lib.types.str;
       description = ''
         Group to run the homelab services as
       '';
-      apply = old: builtins.toString config.users.groups."${old}".gid;
     };
     timeZone = lib.mkOption {
       default = "America/Los_Angeles";
@@ -56,4 +65,14 @@
     ./fail2ban-cloudflare
     ./motd
   ];
+  config = lib.mkIf cfg.enable {
+    # users = {
+    #   groups.${cfg.group} = {
+    #   };
+    #   users.${cfg.user} = {
+    #     isSystemUser = true;
+    #     group = cfg.group;
+    #   };
+    # };
+  };
 }

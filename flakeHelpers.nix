@@ -15,6 +15,28 @@ let
       inputs.nix-vscode-extensions.overlays.default
       inputs.fenix.overlays.default
       inputs.copyparty.overlays.default
+      (_final: prev: {
+        flashrom = prev.flashrom.overrideAttrs (old: {
+          patches = (old.patches or [ ]) ++ [
+            (prev.writeText "flashrom-fix-dangling-chip-pointer.patch" ''
+              diff --git a/tests/chip.c b/tests/chip.c
+              --- a/tests/chip.c
+              +++ b/tests/chip.c
+              @@ -778,7 +778,8 @@ static void setup_bad_chip(struct flashrom_flashctx *flashctx)
+               	g_test_write_injector = NULL;
+               	g_test_read_injector = NULL;
+               	g_test_erase_injector[0] = NULL;
+
+              -	struct flashchip mock_chip = chip_bad;
+              +	static struct flashchip mock_chip;
+              +	mock_chip = chip_bad;
+               	const char *param = ""; /* Default values for all params. */
+
+               	setup_chip(flashctx, &mock_chip, param, NULL);
+            '')
+          ];
+        });
+      })
     ];
     config = {
       allowUnfree = true;

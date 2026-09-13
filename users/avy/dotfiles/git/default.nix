@@ -95,13 +95,18 @@
         git_protocol = "ssh";
 
         prompt = "enabled";
-        editor = "nvim";
+        editor = "$EDITOR";
 
         aliases = {
           co = "pr checkout";
           pv = "pr view";
         };
       };
+      extensions = [
+        pkgs.gh-stack
+        pkgs.gh-markdown-preview
+        pkgs.gh-skyline
+      ];
     };
     programs.gh-dash = {
       enable = false;
@@ -157,6 +162,7 @@
       '')
     ];
     programs.zsh.shellAliases = {
+      # FIXME turn these on after testing forgit
       grt = ''cd "$(git rev-parse --show-toplevel || echo .)"'';
       ggpur = "ggu";
       g = "git";
@@ -164,8 +170,6 @@
       ga = "git add";
       gaa = "git add --all";
       gapa = "git add --patch";
-      gau = "git add --update";
-      gav = "git add --verbose";
       gwip = ''git add -A; git rm $(git ls-files --deleted) 2> /dev/null; git commit --no-verify --no-gpg-sign --message "--wip-- [skip ci]"'';
       gam = "git am";
       gama = "git am --abort";
@@ -218,29 +222,13 @@
       gcn = "git commit --verbose --no-edit";
       "gcn!" = "git commit --verbose --no-edit --amend";
       gcf = "git config --list";
-      gcfu = "git commit --fixup";
-      gdct = "git describe --tags $(git rev-list --tags --max-count=1)";
       gd = "git diff";
-      gdca = "git diff --cached";
-      gdcw = "git diff --cached --word-diff";
-      gds = "git diff --staged";
       gdw = "git diff --word-diff";
-      gdup = "git diff @{upstream}";
-      gdt = "git diff-tree --no-commit-id --name-only -r";
       gf = "git fetch";
-      gfo = "git fetch origin";
       gg = "git gui citool";
-      gga = "git gui citool --amend";
-      ghh = "git help";
       glgg = "git log --graph";
       glgga = "git log --graph --decorate --all";
       glgm = "git log --graph --max-count=10";
-      glod = ''git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset"'';
-      glods = ''git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset" --date=short'';
-      glol = ''git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset"'';
-      glola = ''git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset" --all'';
-      glols = ''git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset" --stat'';
-      glo = "git log --oneline --decorate";
       glog = "git log --oneline --decorate --graph";
       gloga = "git log --oneline --decorate --graph --all";
       glg = "git log --stat";
@@ -256,35 +244,15 @@
       gmtlvim = "git mergetool --no-prompt --tool=vimdiff";
       gl = "git pull";
       gpr = "git pull --rebase";
-      gprv = "git pull --rebase -v";
-      gpra = "git pull --rebase --autostash";
-      gprav = "git pull --rebase --autostash -v";
-      gprom = "git pull --rebase origin $(git_main_branch)";
-      gpromi = "git pull --rebase=interactive origin $(git_main_branch)";
-      gprum = "git pull --rebase upstream $(git_main_branch)";
-      gprumi = "git pull --rebase=interactive upstream $(git_main_branch)";
-      ggpull = ''git pull origin "$(git_current_branch)"'';
-      gluc = "git pull upstream $(git_current_branch)";
-      glum = "git pull upstream $(git_main_branch)";
       gp = "git push";
-      gpd = "git push --dry-run";
       "gpf!" = "git push --force";
-      gpf = "git push --force-with-lease";
-      ggfl = "git push --force-with-lease origin $(git_current_branch)";
-      gpsup = "git push --set-upstream origin $(git_current_branch)";
-      gpsupf = "git push --set-upstream origin $(git_current_branch) --force-with-lease";
-      gpv = "git push --verbose";
       gpoat = "git push origin --all && git push origin --tags";
-      gpod = "git push origin --delete";
-      ggpush = ''git push origin "$(git_current_branch)"'';
-      gpu = "git push upstream";
       grb = "git rebase";
       grba = "git rebase --abort";
       grbc = "git rebase --continue";
       grbi = "git rebase --interactive";
       grbo = "git rebase --onto";
       grbs = "git rebase --skip";
-      grf = "git reflog";
       gr = "git remote";
       grv = "git remote --verbose";
       gra = "git remote add";
@@ -297,7 +265,6 @@
       grhh = "git reset --hard";
       grhk = "git reset --keep";
       grhs = "git reset --soft";
-      gpristine = "git reset --hard && git clean --force -dfx";
       gwipe = "git reset --hard && git clean --force -df";
       grs = "git restore";
       grss = "git restore --source";

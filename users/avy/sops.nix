@@ -23,7 +23,7 @@
       sopsFile = ../../secrets/services.yaml;
       key = "syncthing/guipass";
       path =
-        if pkgs.stdenv.isLinux then
+        if pkgs.stdenv.hostPlatform.isLinux then
           "${config.home.homeDirectory}/.local/state/syncthing/guiPass"
         else
           "${config.home.homeDirectory}/.config/syncthing/guiPass";

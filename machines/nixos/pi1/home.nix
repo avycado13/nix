@@ -16,7 +16,7 @@
         ../../../users/avy/dotfiles/editor/default.nix
       ];
 
-      dots.shell.enable = true;
+      dots.shell.enable = false;
       dots.editor.enable = true;
 
       home = {
