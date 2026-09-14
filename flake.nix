@@ -2,33 +2,33 @@
   description = "avy's (avycado13) nix configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?shallow=true&ref=nixos-unstable";
+    nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
     darwin = {
-      url = "github:lnl7/nix-darwin?shallow=true";
+      url = "github:lnl7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
-      url = "github:nix-community/home-manager?shallow=true";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nix-index-database = {
-      url = "github:nix-community/nix-index-database?shallow=true";
+      url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     homebrew-core = {
-      url = "github:homebrew/homebrew-core?shallow=true";
+      url = "github:homebrew/homebrew-core";
       flake = false;
     };
     homebrew-cask = {
-      url = "github:homebrew/homebrew-cask?shallow=true";
+      url = "github:homebrew/homebrew-cask";
       flake = false;
     };
     nur = {
-      url = "github:nix-community/NUR?shallow=true";
+      url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-hardware.url = "github:NixOS/nixos-hardware?shallow=true";
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
     mac-app-util.url = "github:hraban/mac-app-util";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -55,7 +55,7 @@
       url = "github:hackclub/terminal-wakatime";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions?shallow=true";
+    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
