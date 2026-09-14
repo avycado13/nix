@@ -2,33 +2,33 @@
   description = "avy's (avycado13) nix configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable?shallow=true";
     darwin = {
-      url = "github:lnl7/nix-darwin/master";
+      url = "github:lnl7/nix-darwin/master?shallow=true";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager?shallow=true";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     nix-index-database = {
-      url = "github:nix-community/nix-index-database";
+      url = "github:nix-community/nix-index-database?shallow=true";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     homebrew-core = {
-      url = "github:homebrew/homebrew-core";
+      url = "github:homebrew/homebrew-core?shallow=true";
       flake = false;
     };
     homebrew-cask = {
-      url = "github:homebrew/homebrew-cask";
+      url = "github:homebrew/homebrew-cask?shallow=true";
       flake = false;
     };
     nur = {
-      url = "github:nix-community/NUR";
+      url = "github:nix-community/NUR?shallow=true";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master?shallow=true";
     mac-app-util.url = "github:hraban/mac-app-util";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -55,7 +55,7 @@
       url = "github:hackclub/terminal-wakatime";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
+    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions?shallow=true";
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -69,9 +69,11 @@
       url = "git+https://git.atagen.co/atagen/unf";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    impermanence.url = "github:nix-community/impermanence";
-    impermanence.inputs.nixpkgs.follows = "";
-    impermanence.inputs.home-manager.follows = "";
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      inputs.nixpkgs.follows = "";
+      inputs.home-manager.follows = "";
+    };
     try.url = "github:tobi/try";
     fenix = {
       url = "github:nix-community/fenix/monthly";

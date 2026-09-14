@@ -144,10 +144,10 @@ in
           maxNarSize = cfg.maxNarSize;
           gc = {
             enable = true; # Default: true
-            olderThan = "720h"; # 30 days (default)
+            olderThan = "336h"; # 14 days
             failedUploadsOlderThan = "6h"; # 6 hours (default)
             schedule = "daily"; # Run at midnight daily (default)
-            randomizedDelaySec = 1800; # Add 0-30 min random delay (default)
+            randomizedDelaySec = 1800; # Add 0–30 minimum random delay (default)
           };
         };
 
