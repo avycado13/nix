@@ -2,9 +2,9 @@
   description = "avy's (avycado13) nix configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable?shallow=true";
+    nixpkgs.url = "github:nixos/nixpkgs?shallow=true&ref=nixos-unstable";
     darwin = {
-      url = "github:lnl7/nix-darwin/master?shallow=true";
+      url = "github:lnl7/nix-darwin?shallow=true";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
@@ -28,7 +28,7 @@
       url = "github:nix-community/NUR?shallow=true";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master?shallow=true";
+    nixos-hardware.url = "github:NixOS/nixos-hardware?shallow=true";
     mac-app-util.url = "github:hraban/mac-app-util";
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
