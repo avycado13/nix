@@ -53,13 +53,13 @@
         (pkgs.buku.override {
           withServer = true;
         }).overrideAttrs
-        (old: {
-          doCheck = false;
-          doInstallCheck = false;
-          preCheck = (old.preCheck or "") + ''
-            rm tests/test_{server,views}.py
-          '';
-        })
+          (old: {
+            doCheck = false;
+            doInstallCheck = false;
+            preCheck = (old.preCheck or "") + ''
+              rm tests/test_{server,views}.py
+            '';
+          })
       )
       pkgs.dos2unix
       pkgs.bunbun
