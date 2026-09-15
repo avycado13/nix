@@ -18,7 +18,7 @@ in
 
   # Monitor disk health where drives are present; no-op on VMs/SD cards
   services.smartd = {
-    enable = true;
+    enable = false;
     autodetect = true;
   };
 
