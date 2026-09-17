@@ -19,6 +19,7 @@ in
       default = true;
       description = "Enable music player packages (cmus, ncmpcpp, mpc, mpv, mpdscribble).";
     };
+    inkscape.enable = lib.mkEnableOption "Inkscape";
   };
 
   config = lib.mkIf config.dots.media.enable {
@@ -92,6 +93,10 @@ in
       pkgs.mpc
       pkgs.mpv
       pkgs.mpdscribble
+    ]
+    ++ lib.optionals cfg.inkscape.enable [
+      pkgs.inkscape
+      pkgs.inkscape-extensions.hexmap
     ];
   };
 }

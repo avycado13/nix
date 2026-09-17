@@ -18,6 +18,9 @@
     syncthing.enable = true;
     restic.enable = true;
     irc.enable = true;
-    media.enable = true;
+    media = {
+      enable = true;
+      inkscape.enable = true;
+    };
   };
 }
