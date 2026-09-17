@@ -14,11 +14,7 @@ in
       default = false;
       description = "Enable the media utilities module.";
     };
-    music.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Enable music player packages (cmus, ncmpcpp, mpc, mpv, mpdscribble).";
-    };
+    music.enable = lib.mkEnableOption "music player packages (cmus, ncmpcpp, mpc, mpv, mpdscribble).";
     inkscape.enable = lib.mkEnableOption "Inkscape";
   };
 
@@ -56,30 +52,30 @@ in
       pkgs.mediainfo
       pkgs.exiftool
       (pkgs.writeShellScriptBin "transcode-video-1080p" ''
-        ${pkgs.ffmpeg}/bin/ffmpeg -i "$1" -vf scale=1920:1080 -c:v libx264 -preset fast -crf 23 -c:a copy "''${1%.*}-1080p.mp4"
+        ${lib.getExe pkgs.ffmpeg} -i "$1" -vf scale=1920:1080 -c:v libx264 -preset fast -crf 23 -c:a copy "''${1%.*}-1080p.mp4"
       '')
       (pkgs.writeShellScriptBin "transcode-video-4K" ''
-        ${pkgs.ffmpeg}/bin/ffmpeg -i "$1" -c:v libx265 -preset slow -crf 24 -c:a aac -b:a 192k "''${1%.*}-optimized.mp4"
+        ${lib.getExe pkgs.ffmpeg} -i "$1" -c:v libx265 -preset slow -crf 24 -c:a aac -b:a 192k "''${1%.*}-optimized.mp4"
       '')
       (pkgs.writeShellScriptBin "img2jpg" ''
         img="$1"
         shift
-        ${pkgs.imagemagick}/bin/magick "$img" "$@" -quality 95 -strip "''${img%.*}-converted.jpg"
+        ${lib.getExe pkgs.imagemagick} "$img" "$@" -quality 95 -strip "''${img%.*}-converted.jpg"
       '')
       (pkgs.writeShellScriptBin "img2jpg-small" ''
         img="$1"
         shift
-        ${pkgs.imagemagick}/bin/magick "$img" "$@" -resize 1080x\> -quality 95 -strip "''${img%.*}-small.jpg"
+        ${lib.getExe pkgs.imagemagick} "$img" "$@" -resize 1080x\> -quality 95 -strip "''${img%.*}-small.jpg"
       '')
       (pkgs.writeShellScriptBin "img2jpg-medium" ''
         img="$1"
         shift
-        ${pkgs.imagemagick}/bin/magick "$img" "$@" -resize 1800x\> -quality 95 -strip "''${img%.*}-medium.jpg"
+        ${lib.getExe pkgs.imagemagick} "$img" "$@" -resize 1800x\> -quality 95 -strip "''${img%.*}-medium.jpg"
       '')
       (pkgs.writeShellScriptBin "img2png" ''
         img="$1"
         shift
-        ${pkgs.imagemagick}/bin/magick "$img" "$@" -strip \
+        ${lib.getExe pkgs.imagemagick} "$img" "$@" -strip \
           -define png:compression-filter=5 \
           -define png:compression-level=9 \
           -define png:compression-strategy=1 \

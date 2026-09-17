@@ -172,6 +172,11 @@
           run = "move-node-to-workspace M";
         }
         {
+          # "if" = "test %{app-bundle-id} = com.tinyspeck.slackmacgap";
+          "if".app-id = "app.jer.taut";
+          run = "move-node-to-workspace M";
+        }
+        {
           # "if" = "test %{app-bundle-id} = com.apple.MobileSMS";
           "if".app-id = "com.apple.MobileSMS";
           run = "move-node-to-workspace M";
