@@ -10,6 +10,7 @@ avy's (avycado13) Nix configuration — a flake-based setup for managing macOS a
 | `pi0` | `aarch64-linux` | Raspberry Pi Zero 2W (currently commented out in flake.nix) |
 | `pi1` | `aarch64-linux` | Raspberry Pi 3, runs the homelab |
 | `apollo1` | `aarch64-linux` | Allwinner A64 SBC |
+| `apollo13` | `aarch64-linux` | Allwinner A64 SBC (Pine64+) |
 | `oracle` | `x86_64-linux` | Oracle Cloud VM |
 | `eclipse` | `x86_64-linux` | NixOS server |
 | `gce` | `x86_64-linux` | Google Compute Engine VM |
@@ -21,7 +22,7 @@ flake.nix            # Flake definition
 flakeHelpers.nix     # mkDarwin / mkNixos helpers
 machines/
   darwin/            # macOS configurations
-  nixos/             # NixOS configurations (pi0, pi1, apollo1, oracle, eclipse, gce)
+  nixos/             # NixOS configurations (pi0, pi1, apollo1, apollo13, oracle, eclipse, gce)
 users/avy/           # User config & dotfiles (home-manager)
 homelab/
   services/          # miniflux, auth, glance, niks3, retrom, cloudrun, scrutiny,

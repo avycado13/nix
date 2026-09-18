@@ -147,6 +147,13 @@
         ]
       )
 
+      (mkNixos "apollo13" inputs.nixpkgs "aarch64-linux"
+        [ ]
+        [
+          "${inputs.nixpkgs}/nixos/modules/installer/sd-card/sd-image.nix"
+        ]
+      )
+
       (mkNixos "oracle" inputs.nixpkgs system.x86_64-linux
         [ ]
         [

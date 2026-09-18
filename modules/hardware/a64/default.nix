@@ -38,9 +38,23 @@
       "console=ttyS0,115200n8"
       "console=tty0"
     ];
+    extraModprobeConfig = ''
+      options brcmfmac roamoff=1 pm_config=1
+    '';
     swraid.enable = lib.mkForce false;
     supportedFilesystems.zfs = lib.mkForce false;
     zfs.forceImportRoot = lib.mkForce false;
+  };
+
+  systemd.services.wifi-powersave-off = {
+    description = "Disable WiFi power saving";
+    after = [ "sys-subsystem-net-devices-wlan0.device" ];
+    bindsTo = [ "sys-subsystem-net-devices-wlan0.device" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.iw}/bin/iw dev wlan0 set power_save off";
+    };
   };
 
   # U-Boot's SPL on Allwinner boards lives at a fixed raw offset before the

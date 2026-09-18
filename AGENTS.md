@@ -13,6 +13,7 @@ This is a Nix flake-based configuration for managing multiple systems:
 - **eclipse** — NixOS, x86_64-linux (srvos server profile, disko for partitioning)
 - **gce** — Google Compute Engine VM (NixOS, x86_64-linux, GCE image)
 - **apollo1** — Allwinner A64 SBC (NixOS, aarch64-linux, SD card image via u-boot/extlinux, wifi via sops-templated `wpa_supplicant` config)
+- **apollo13** — Allwinner A64 SBC (Pine64+) (NixOS, aarch64-linux, SD card image via u-boot/extlinux, wifi via sops-templated `wpa_supplicant` config)
 - Uses sops-nix for secrets management
 - Includes homelab services and reusable NixOS modules
 
@@ -40,7 +41,7 @@ just build-iso <host>            # Build a NixOS installer ISO for a host
 ### Directory Structure
 
 ```
-flake.nix               # Entry point; calls mkDarwin/mkNixos per host (Avys-Mac, pi0, pi1, apollo1, oracle, eclipse, gce)
+flake.nix               # Entry point; calls mkDarwin/mkNixos per host (Avys-Mac, pi0, pi1, apollo1, apollo13, oracle, eclipse, gce)
 flakeHelpers.nix         # mkDarwin, mkNixos, mkHome, mkMerge, nixpkgsCfg — read first for new machines
 machines/
   darwin/
@@ -50,7 +51,7 @@ machines/
     default.nix           # shared settings for all NixOS machines (imports modules/nix, binary caches, ssh/sudo defaults, tailscale, firewall)
     <hostname>/default.nix # host-specific config; extras like disko.nix, facter.json, hardware-configuration.nix live alongside
     pi1/homelab.nix        # host opting into the homelab (sets homelab.enable + homelab.services.*)
-modules/                  # reusable NixOS modules: ddns, email, binaryCache, remoteBuild, nix, secrets
+modules/                  # reusable NixOS modules: ddns, email, remoteBuild, nix, secrets
 homelab/                  # imported into every NixOS system via mkNixos, inert unless homelab.enable is set
   default.nix              # top-level homelab.* options (group, timeZone, baseDomainName, cloudflare creds, email, notifications)
   services/

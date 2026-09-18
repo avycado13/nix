@@ -20,7 +20,7 @@
 
   services.openssh.settings.PermitRootLogin = lib.mkForce "yes";
 
-  networking.hostName = "apollo1";
+  networking.hostName = "apollo13";
 
   sops.secrets.wifi-password = {
     sopsFile = ../../../secrets/secrets.yaml;
