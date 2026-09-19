@@ -29,5 +29,11 @@
           "${config.home.homeDirectory}/.config/syncthing/guiPass";
       mode = "0400";
     };
+    niks3_api_token = {
+      sopsFile = ../../secrets/services.yaml;
+      key = "niks3/api_token";
+      mode = "0400";
+    };
   };
+
 }

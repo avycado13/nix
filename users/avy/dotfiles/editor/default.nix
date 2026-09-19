@@ -698,8 +698,8 @@ in
       };
     };
 
-    home.activation.mkHelixGrammars = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      ${lib.getExe pkgs.helix} -g fetch && ${lib.getExe pkgs.helix} -g build
-    '';
+    # home.activation.mkHelixGrammars = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    #   bash -c "export PATH=${pkgs.git}/bin:${pkgs.ssh}/bin\$PATH; ${lib.getExe pkgs.helix} -g fetch && ${lib.getExe pkgs.helix} -g build"
+    # '';
   };
 }

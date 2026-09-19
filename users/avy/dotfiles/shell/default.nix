@@ -122,6 +122,8 @@ in
       # highlights what is left with the usual theme.
       MANROFFOPT = "-c";
       MANPAGER = "sh -c '${colBin} -bx | ${pkgs.bat}/bin/bat -l man -p --theme=ansi'";
+      NIKS3_AUTH_TOKEN_FILE = config.sops.secrets.niks3_api_token.path;
+      NIKS3_SERVER_URL = "https://cache.avyay.in";
     }
     // lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
       OBJC_DISABLE_INITIALIZE_FORK_SAFETY = "YES";
