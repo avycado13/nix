@@ -13,7 +13,11 @@
     };
     terminal.enable = true;
     gpg.enable = true;
-    devenv.enable = true;
+    devenv = {
+      enable = true;
+      ai.enable = true;
+      ai.codex.enable = true;
+    };
     theme.enable = true;
     syncthing.enable = true;
     restic.enable = true;

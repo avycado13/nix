@@ -168,6 +168,7 @@
         ]
       )
       (mkNixos "gce" inputs.nixpkgs system.x86_64-linux [ ] [ ])
+      (mkNixos "nest" inputs.nixpkgs system.x86_64-linux [ ] [ ])
       (mkNixos "iso" inputs.nixpkgs system.x86_64-linux [ ] [ ])
       {
         overlays.default = _final: prev: {

@@ -54,6 +54,8 @@
           adjust-cell-height = "50%";
           font-thicken = true;
           font-thicken-strength = 120;
+          keybind = "global:cmd+grave_accent=toggle_quick_terminal";
+
         };
         installVimSyntax = true;
         installBatSyntax = true;

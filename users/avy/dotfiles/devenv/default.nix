@@ -13,31 +13,22 @@ let
     ]
   );
 
-  ai =
-    with inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
-    [
-      amp
-      copilot-cli
-      crush
-      pi
-      opencode
-      antigravity-cli
-      grok
-      (pkgs.buildGoModule {
-        pname = "lard-client";
-        version = "0.2.0";
-        src = inputs.lard;
-        vendorHash = "sha256-8n+5kNTK1ZUzRBEli3T/l7WACvOZ2eKBTk0XuE1o7+E=";
-        subPackages = [ "cmd/lard-client" ];
-        meta = with lib; {
-          description = "Client for lard, a memory layer for homelab LLM sessions";
-          homepage = "https://lard.avyay.in";
-          license = licenses.mit;
-          platforms = platforms.unix;
-        };
-      })
-    ]
-    ++ lib.optional config.dots.devenv.ai.codex.enable codex;
+  ai = with inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
+    amp
+    (pkgs.buildGoModule {
+      pname = "lard-client";
+      version = "0.2.0";
+      src = inputs.lard;
+      vendorHash = "sha256-8n+5kNTK1ZUzRBEli3T/l7WACvOZ2eKBTk0XuE1o7+E=";
+      subPackages = [ "cmd/lard-client" ];
+      meta = with lib; {
+        description = "Client for lard, a memory layer for homelab LLM sessions";
+        homepage = "https://lard.avyay.in";
+        license = licenses.mit;
+        platforms = platforms.unix;
+      };
+    })
+  ];
 
   aiMap = builtins.listToAttrs (
     map (
@@ -135,7 +126,28 @@ in
       };
       claude-code = {
         enable = config.dots.devenv.ai.enable;
-        package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
+        enableMcpIntegration = true;
+      };
+      pi-coding-agent.enable = config.dots.devenv.ai.enable;
+      github-copilot-cli = {
+        enable = config.dots.devenv.ai.enable;
+        enableMcpIntegration = true;
+      };
+      antigravity-cli = {
+        enable = config.dots.devenv.ai.enable;
+        enableMcpIntegration = true;
+      };
+      crush = {
+        enable = config.dots.devenv.ai.enable;
+        # package = pkgs.nur.charmbracelet.crush; FIXME charmbracelet repo not resolving in nur
+        enableMcpIntegration = true;
+      };
+      opencode = {
+        enable = config.dots.devenv.ai.enable;
+        enableMcpIntegration = true;
+      };
+      codex = {
+        enable = config.dots.devenv.ai.codex.enable;
         enableMcpIntegration = true;
       };
       mcp = {
