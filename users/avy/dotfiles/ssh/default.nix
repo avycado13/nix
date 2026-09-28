@@ -184,7 +184,7 @@ in
         "eclipse" = {
           user = "root";
           hostname = "n1.eclipsesystems.org";
-          port = 25033;
+          port = 30014;
         };
         "nest" = {
           user = "avycado13";
