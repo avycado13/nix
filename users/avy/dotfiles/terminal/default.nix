@@ -64,5 +64,6 @@
         enableBashIntegration = true;
       };
     };
+    home.packages = [ pkgs.ghostty-bin ];
   };
 }

@@ -1,12 +1,5 @@
 {
-  modulesPath,
-  ...
-}:
-{
-  imports = [
-    (modulesPath + "/profiles/qemu-guest.nix")
-    ./disko.nix
-  ];
+  imports = [ ./hardware-configuration.nix ];
 
   # Boot configuration (GRUB, BIOS + EFI hybrid)
   boot.loader.grub = {
@@ -15,12 +8,6 @@
     efiInstallAsRemovable = true;
     device = "/dev/vda";
   };
-  boot.initrd.availableKernelModules = [
-    "virtio_pci"
-    "virtio_scsi"
-    "virtio_blk"
-    "virtio_net"
-  ];
   boot.tmp.cleanOnBoot = true;
 
   # /boot lives on the root partition (only /boot/efi is separate), so

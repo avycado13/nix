@@ -57,6 +57,7 @@
     # pkgs.quickemu
     pkgs.nur.repos.forkprince.helium-nightly
     inputs.nix-auth.packages.aarch64-darwin.default
+    pkgs.ghostty-bin
   ];
 
   # services.virby.enable = false;
