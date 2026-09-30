@@ -68,7 +68,7 @@ in
           };
           options = {
             calibreLibrary = cfg.libraryPath;
-            enableBookUploading = cfg.enableBookUploading;
+            inherit (cfg) enableBookUploading;
             enableBookConversion = true;
           };
         };

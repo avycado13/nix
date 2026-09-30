@@ -136,12 +136,12 @@ in
             };
           };
 
-          apiTokenFile = cfg.apiTokenFile;
-          signKeyFiles = cfg.signKeyFiles;
+          inherit (cfg) apiTokenFile;
+          inherit (cfg) signKeyFiles;
 
           cacheUrl = "https://${cfg.url}";
           serverUrl = "https://${cfg.url}";
-          maxNarSize = cfg.maxNarSize;
+          inherit (cfg) maxNarSize;
           gc = {
             enable = true; # Default: true
             olderThan = "336h"; # 14 days

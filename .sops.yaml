@@ -6,6 +6,7 @@ keys:
   - &pi1-avy age1t2zq6xsa3al6sq3ctuuy3f9zvfzvh823k672cjqye9la0st8tufsqrw5jk
   - &apollo1 age1p0qtfzkuqghlmjwttnrcp7735agrtwwkfq5jnguszwar754h540swl5dyf
   - &nest age1gk3umg599s8lwp6s9rxrncvk8xklasrkf84l6dks2tughe0xzalsweyqg5
+  - &eclipse age17zac4dyudmtdrt0p4g4rewjksm3tlad9w0uy7azw96xtf7hk7fsqlmcnth
 creation_rules:
   - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
@@ -15,6 +16,7 @@ creation_rules:
           - *pi1-avy
           - *apollo1
           - *nest
+          - *eclipse
         pgp:
           - *gpg
         aws:

@@ -84,7 +84,7 @@ in
     networking.sits.${cfg.dev} = {
       remote = cfg.serverIPv4;
       local = mkIf (cfg.clientIPv4 != null) cfg.clientIPv4;
-      ttl = cfg.ttl;
+      inherit (cfg) ttl;
     };
 
     networking.interfaces.${cfg.dev}.ipv6.addresses = [

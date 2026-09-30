@@ -18,7 +18,7 @@ let
       let
         svc = config.homelab.services.${x};
       in
-      if svc ? monitoredServices then svc.monitoredServices else [ x ]
+      svc.monitoredServices or [ x ]
     )
   );
 

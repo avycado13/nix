@@ -12,10 +12,10 @@ let
   configJson = {
     devices = map (d: {
       screen_id = d.screenId;
-      name = d.name;
-      offset = d.offset;
+      inherit (d) name;
+      inherit (d) offset;
     }) cfg.devices;
-    apikey = cfg.apikey;
+    inherit (cfg) apikey;
     skip_categories = cfg.skipCategories;
     channel_whitelist = cfg.channelWhitelist;
     skip_count_tracking = cfg.skipCountTracking;

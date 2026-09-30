@@ -66,7 +66,7 @@ let
         ./users/avy/sops.nix
       ]
       ++ (
-        if (pkgs.stdenv.hostPlatform.isDarwin) then
+        if pkgs.stdenv.hostPlatform.isDarwin then
           [
             inputs.mac-app-util.homeManagerModules.default
           ]
@@ -83,7 +83,7 @@ in
 
   mkDarwin = machineHostname: _nixpkgsVersion: system: extraHmModules: extraModules: {
     darwinConfigurations.${machineHostname} = inputs.darwin.lib.darwinSystem {
-      system = system;
+      inherit system;
       specialArgs = { inherit inputs; };
       modules = [
         ./machines/darwin

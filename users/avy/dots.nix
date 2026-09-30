@@ -13,7 +13,7 @@ in
 {
   nixpkgs = helpers.nixpkgsCfg;
 
-  home = home;
+  inherit home;
 
   imports = [
     ./dotfiles/shell/default.nix

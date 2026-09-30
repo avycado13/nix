@@ -101,6 +101,6 @@
     ++
       lib.optional config.dots.lateSh.enable
         # inputs.late-sh.packages.${pkgs.stdenv.hostPlatform.system}.default;
-        (pkgs.hello);
+        pkgs.hello;
   };
 }

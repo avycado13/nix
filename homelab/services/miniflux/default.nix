@@ -77,7 +77,7 @@ in
         (lib.mkIf (cfg.host == "127.0.0.1") {
           services.${service} = {
             enable = true;
-            adminCredentialsFile = cfg.adminCredentialsFile;
+            inherit (cfg) adminCredentialsFile;
             config = {
               BASE_URL = "https://${cfg.url}";
               CREATE_ADMIN = true;

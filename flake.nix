@@ -113,7 +113,7 @@
   };
 
   outputs =
-    { ... }@inputs:
+    inputs:
     let
       helpers = import ./flakeHelpers.nix inputs;
       inherit (helpers)

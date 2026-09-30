@@ -103,13 +103,13 @@ in
         # written to the Nix store in plaintext via pkgs.writeText.
         sops.templates."retrom-config.json" = {
           owner = rt.user;
-          group = rt.group;
+          inherit (rt) group;
           content = builtins.toJSON {
             connection = {
-              port = cfg.port;
+              inherit (cfg) port;
               dbUrl = if cfg.enableDatabase then "postgres:///retrom?host=/var/run/postgresql" else cfg.dbUrl;
             };
-            contentDirectories = cfg.contentDirectories;
+            inherit (cfg) contentDirectories;
             igdb = {
               clientId = cfg.igdb.clientId;
               clientSecret = cfg.igdb.clientSecret;
@@ -122,8 +122,8 @@ in
         };
         services.${service} = {
           enable = true;
-          enableDatabase = cfg.enableDatabase;
-          port = cfg.port;
+          inherit (cfg) enableDatabase;
+          inherit (cfg) port;
           configFile = config.sops.templates."retrom-config.json".path;
         };
       })

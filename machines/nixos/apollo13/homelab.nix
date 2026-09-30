@@ -1,5 +1,4 @@
-{ ... }:
-{
+_: {
   #   sops.secrets = {
   #     cloudflare-dns-credentials = {
   #       sopsFile = ../../../secrets/secrets.yaml;

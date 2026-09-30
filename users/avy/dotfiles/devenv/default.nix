@@ -148,7 +148,7 @@ in
       };
       codex = {
         enable = config.dots.devenv.ai.codex.enable;
-        enableMcpIntegration = true;
+        # enableMcpIntegration = true;
       };
       mcp = {
         enable = config.dots.devenv.ai.enable;
@@ -328,6 +328,9 @@ in
       pkgs.nix-fast-build
       pkgs.nix-build-uncached
       pkgs.nix-converter
+      pkgs.nixos-anywhere
+      pkgs.nixos-rebuild
+      pkgs.statix
       (pkgs.writeShellApplication {
         name = "ns";
         runtimeInputs = with pkgs; [

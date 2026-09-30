@@ -59,9 +59,9 @@ let
     in
     {
       inherit paths;
-      exclude = d.exclude;
-      repository = cfg.repository;
-      passwordFile = cfg.passwordFile;
+      inherit (d) exclude;
+      inherit (cfg) repository;
+      inherit (cfg) passwordFile;
       initialize = true;
       # Retention is enforced once for the whole repository by the shared
       # weekly prune below (see its comment for why per-service prune is
@@ -81,7 +81,7 @@ let
       backupCleanupCommand = lib.mkIf (cleanupCommand != "") cleanupCommand;
     }
     // lib.optionalAttrs (cfg.environmentFile != null) {
-      environmentFile = cfg.environmentFile;
+      inherit (cfg) environmentFile;
     };
 
   backupCli = pkgs.writeShellApplication {

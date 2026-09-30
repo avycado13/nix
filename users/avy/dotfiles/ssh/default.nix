@@ -182,7 +182,7 @@ in
           hostname = "34.10.89.155";
         };
         "eclipse" = {
-          user = "root";
+          user = "avy";
           hostname = "n1.eclipsesystems.org";
           port = 30014;
         };
@@ -328,7 +328,7 @@ in
         in
         defaultBlock // hostSettings // zmxPatternSettings;
 
-      extraConfig = cfg.extraConfig;
+      inherit (cfg) extraConfig;
     };
     programs.zsh.shellAliases = mkIf cfg.zmx.enable {
       zmls = "${lib.getExe pkgs.zmx} list";

@@ -73,7 +73,7 @@ in
         maxJobs = 100;
         # protocol = "ssh-ng";
         sshUser = "avycado13";
-        sshKey = sshKey;
+        inherit sshKey;
         supportedFeatures = [
           "benchmark"
           "big-parallel"
@@ -88,7 +88,7 @@ in
         speedFactor = 10;
         # protocol = "ssh-ng";
         sshUser = "avycado13";
-        sshKey = sshKey;
+        inherit sshKey;
         supportedFeatures = [
           "benchmark"
           "big-parallel"
@@ -102,7 +102,7 @@ in
         maxJobs = 100;
         # protocol = "ssh-ng";
         sshUser = "avycado13";
-        sshKey = sshKey;
+        inherit sshKey;
         supportedFeatures = [
           "benchmark"
           "big-parallel"
@@ -116,7 +116,7 @@ in
         maxJobs = 100;
         # protocol = "ssh-ng";
         sshUser = "avycado13";
-        sshKey = sshKey;
+        inherit sshKey;
         supportedFeatures = [
           "benchmark"
           "big-parallel"
