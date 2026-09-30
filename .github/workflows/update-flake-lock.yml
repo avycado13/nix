@@ -22,7 +22,7 @@ jobs:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           audience: ${{ secrets.TS_AUDIENCE }}
           tags: tag:ci
-          ping: 100.117.24.61
+          ping: 100.72.166.0
 
       - name: Configure niks3 cache
         run: |
