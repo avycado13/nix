@@ -139,6 +139,7 @@
       )
 
       (mkNixos "pi1" inputs.nixpkgs system.aarch64-linux [ ] [ ])
+      (mkNixos "pi2" inputs.nixpkgs system.aarch64-linux [ ] [ ])
 
       (mkNixos "apollo1" inputs.nixpkgs "aarch64-linux"
         [ ]
