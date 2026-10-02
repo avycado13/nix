@@ -8,10 +8,7 @@ let
   hl = config.homelab;
   port = 4533;
   proxyHost =
-    if cfg.host == "127.0.0.1" && cfg.listenAddress != "0.0.0.0" then
-      cfg.listenAddress
-    else
-      cfg.host;
+    if cfg.host == "127.0.0.1" && cfg.listenAddress != "0.0.0.0" then cfg.listenAddress else cfg.host;
   backupData = import ../../lib/backupData.nix { inherit lib; };
 in
 {
