@@ -508,6 +508,7 @@ in
           # Plugins that don't call setup() can be configured in one line
           smart-enter.package = smart-enter;
           chmod.package = chmod;
+          diff.package = diff;
         };
         initLua = ''
           Header:children_add(function()
@@ -524,6 +525,11 @@ in
               {
                 on = "<C-p>";
                 run = "shell -- qlmanage -p %s";
+              }
+              {
+                on = "<C-alt-d>";
+                run = "plugin diff";
+                desc = "Diff the selected with the hovered file";
               }
             ];
           };

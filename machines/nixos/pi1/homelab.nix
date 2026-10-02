@@ -182,8 +182,10 @@
       };
 
       navidrome = {
-        enable = false;
+        enable = true;
         url = "music.avyay.in";
+        host = "100.72.166.0"; # apollo1 tailscale IP
+        data = null; # Navidrome's database lives on apollo1
       };
 
       asterisk = {

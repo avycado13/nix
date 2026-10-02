@@ -45,6 +45,7 @@
   ];
 
   services.tailscale.enable = true;
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 4533 ];
   services.timesyncd.enable = lib.mkForce true;
   services.getty.autologinUser = "avy";
 

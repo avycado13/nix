@@ -10,6 +10,10 @@ update:
 build-iso $host:
     just copy {{ host }}; ssh {{ host }}; nixos-rebuild build-image --image-variant iso --flake .#{{ host }}
 
+# Build an SD card image for a host with an sdImage configuration (pi0, pi1, apollo1, apollo13)
+build-sd-image $host:
+    nom build ".#nixosConfigurations.{{ host }}.config.system.build.sdImage" --out-link "result-{{ host }}-sd-image"
+
 check:
     nix flake check
 

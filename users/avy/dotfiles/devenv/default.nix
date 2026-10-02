@@ -93,6 +93,11 @@ in
       default = false;
       description = "Enable Android development tooling (gradle, kotlin, android-tools, kotlin-language-server).";
     };
+    asic.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable ASIC/RTL development tools (iverilog, verilator, yosys, gtkwave).";
+    };
   };
 
   config = lib.mkIf config.dots.devenv.enable {
@@ -148,6 +153,16 @@ in
       };
       codex = {
         enable = config.dots.devenv.ai.codex.enable;
+        settings = {
+          projects = {
+            "${config.home.homeDirectory}/nix" = {
+              trust_level = "trusted";
+            };
+            "${config.home.homeDirectory}/Code" = {
+              trust_level = "trusted";
+            };
+          };
+        };
         # enableMcpIntegration = true;
       };
       mcp = {
@@ -157,20 +172,6 @@ in
             type = "http";
             url = "https://lard.avyay.in/mcp";
             oauth = true;
-          };
-          context7 = {
-            url = "https://mcp.context7.com/mcp";
-            headers = {
-              CONTEXT7_API_KEY = "{env:CONTEXT7_API_KEY}";
-            };
-          };
-
-          sequentialthinking = {
-            command = "${pkgs.bun}/bin/bunx";
-            args = [
-              "-y"
-              "@modelcontextprotocol/server-sequential-thinking"
-            ];
           };
           chrome-devtools = {
             command = "${pkgs.bun}/bin/bunx";
@@ -378,6 +379,12 @@ in
       pkgs.kotlin-language-server
       pkgs.android-tools
       pkgs.scrcpy
+    ]
+    ++ lib.optionals config.dots.devenv.asic.enable [
+      pkgs.iverilog
+      pkgs.verilator
+      pkgs.yosys
+      pkgs.gtkwave
     ];
 
     home.shellAliases = lib.mkIf config.dots.devenv.android.enable {

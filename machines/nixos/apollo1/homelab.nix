@@ -48,6 +48,13 @@
 
     services = {
       enable = true;
+      navidrome = {
+        enable = true;
+        # Bind all interfaces so startup doesn't depend on Tailscale's IP being ready.
+        # Port 4533 is opened only on tailscale0 (in default.nix).
+        listenAddress = "0.0.0.0";
+      };
+
       niks3 = {
         enable = true;
         url = "cache.avyay.in";

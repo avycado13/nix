@@ -15,6 +15,7 @@
     gpg.enable = true;
     devenv = {
       enable = true;
+      asic.enable = true;
       ai.enable = true;
       ai.codex.enable = true;
     };

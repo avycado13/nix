@@ -7,6 +7,11 @@ let
   cfg = config.homelab.services.navidrome;
   hl = config.homelab;
   port = 4533;
+  proxyHost =
+    if cfg.host == "127.0.0.1" && cfg.listenAddress != "0.0.0.0" then
+      cfg.listenAddress
+    else
+      cfg.host;
   backupData = import ../../lib/backupData.nix { inherit lib; };
 in
 {
@@ -17,6 +22,12 @@ in
       type = lib.types.str;
       default = "127.0.0.1";
       description = "Tailscale IP/hostname where navidrome actually runs, if not this machine";
+    };
+
+    listenAddress = lib.mkOption {
+      type = lib.types.str;
+      default = "127.0.0.1";
+      description = "Address Navidrome binds to on the machine running it";
     };
 
     data = lib.mkOption {
@@ -70,7 +81,7 @@ in
         services.navidrome = {
           enable = true;
           settings = {
-            Address = "127.0.0.1";
+            Address = cfg.listenAddress;
             Port = port;
             MusicFolder = cfg.musicFolder;
             DataFolder = cfg.dataFolder;
@@ -86,7 +97,7 @@ in
         services.caddy.virtualHosts."${cfg.url}" = {
           useACMEHost = hl.baseDomainName;
           extraConfig = ''
-            reverse_proxy http://${cfg.host}:${toString port}
+            reverse_proxy http://${proxyHost}:${toString port}
           '';
         };
       }
