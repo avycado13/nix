@@ -129,13 +129,14 @@ in
   programs.nix-index.enable = true;
 
   # Garnix binary cache netrc (sops, nixos only)
-  sops.secrets.garnix_netrc = {
-    sopsFile = ../../secrets/secrets.yaml;
-    owner = "root";
-    group = "root";
-    mode = "0600";
-    path = "/etc/nix/netrc";
-  };
+  # sops.secrets.garnix_netrc = {
+  #   sopsFile = ../../secrets/secrets.yaml;
+  #   owner = "root";
+  #   group = "root";
+  #   mode = "0600";
+  #   path = "/etc/nix/netrc";
+  # };
+  # rip garnix
 
   # niks3 write token shared by every NixOS host so builds can push to the
   # cache, distinct from the server-side apiTokenFile used by the niks3

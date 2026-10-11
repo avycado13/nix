@@ -12,7 +12,19 @@ concurrency:
 
 jobs:
   eval:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            system: x86_64-linux
+          - runner: ubuntu-24.04-arm
+            system: aarch64-linux
+          - runner: macos-latest
+            system: aarch64-darwin
+    env:
+      EVAL_SYSTEM: ${{ matrix.system }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -20,18 +32,47 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v19
-
-      - name: Evaluate flake
+      # Evaluation can build dependencies via import-from-derivation (IFD).
+      # Each runner must only force configurations for its native platform.
+      - name: Evaluate native NixOS configurations
+        if: runner.os == 'Linux'
         run: |
-          # Materialize evaluation dependencies (including Catppuccin's IFD)
-          # before the no-build checker encounters them in a fresh store.
-          # Force every system derivation; evaluating the outer attrset is lazy.
-          nix eval --json .#nixosConfigurations --accept-flake-config \
-            --apply 'builtins.mapAttrs (_: host: host.config.system.build.toplevel.drvPath)'
-          nix eval --json .#darwinConfigurations --accept-flake-config \
-            --apply 'builtins.mapAttrs (_: host: host.system.drvPath)'
+          nix eval \
+            --accept-flake-config \
+            --json \
+            .#nixosConfigurations \
+            --apply '
+              hosts:
+                builtins.mapAttrs
+                  (_: host: host.config.system.build.toplevel.drvPath)
+                  (builtins.listToAttrs (builtins.concatMap
+                    (name:
+                      let host = hosts.${name};
+                      in if host.pkgs.stdenv.hostPlatform.system == "'"$EVAL_SYSTEM"'"
+                      then [{ inherit name; value = host; }]
+                      else [])
+                    (builtins.attrNames hosts)))
+            '
 
-          nix flake check --no-build . --accept-flake-config --all-systems --show-trace
+      - name: Evaluate Darwin configurations
+        if: runner.os == 'macOS'
+        run: |
+          nix eval \
+            --accept-flake-config \
+            --json \
+            .#darwinConfigurations \
+            --apply '
+              builtins.mapAttrs
+                (_: host: host.system.drvPath)
+            '
+
+      - name: Check flake
+        run: |
+          nix flake check \
+            --accept-flake-config \
+            --no-build \
+            --show-trace
+
   builds:
     runs-on: ${{ matrix.runner }}
     # needs: eval
@@ -73,7 +114,7 @@ jobs:
           server-url: https://cache.avyay.in
       - name: "Install omnix"
         run: |
-           nix profile install nixpkgs#omnix
+           nix profile add nixpkgs#omnix
       - name: Run om ci
         run: |
             om ci run \

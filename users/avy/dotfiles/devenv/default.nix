@@ -154,6 +154,7 @@ in
       codex = {
         enable = config.dots.devenv.ai.codex.enable;
         settings = {
+          default_permissions = ":workspace";
           projects = {
             "${config.home.homeDirectory}/nix" = {
               trust_level = "trusted";

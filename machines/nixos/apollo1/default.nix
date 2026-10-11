@@ -40,6 +40,18 @@
     networks."samosa".pskRaw = "ext:psk_samosa";
   };
 
+  fileSystems."/var/lib/beets/library" = {
+    device = "/dev/disk/by-uuid/6AC1-D76C";
+    fsType = "exfat";
+    options = [
+      "nofail"
+      "uid=1000" # Keeps you as the owner of the files
+      "gid=navidrome" # Assigns the group ownership to navidrome dynamically
+      "dmask=002" # Directories: Owner=rwx, Group=rwx, Others=r-x
+      "fmask=112" # Files: Owner=rw-, Group=rw-, Others=r--
+    ];
+  };
+
   environment.systemPackages = with pkgs; [
     iw
   ];

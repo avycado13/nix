@@ -12,7 +12,8 @@ in
   imports = [ ../../modules/nix/default.nix ];
 
   nix-mineral = {
-    enable = lib.mkDefault true;
+    # enable = lib.mkDefault true;
+    enable = false;
     preset = "compatibility";
   };
 
@@ -34,7 +35,10 @@ in
     isNormalUser = true;
     home = "/home/avy";
     description = "avy";
-    extraGroups = lib.mkDefault [ "wheel" ];
+    extraGroups = lib.mkDefault [
+      "wheel"
+      "navidrome"
+    ];
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAPm9/uwsYQ2KrzaVcpulcDUKnBOCMCYogfC+D+TcrK7"
     ];
