@@ -171,9 +171,12 @@
       (mkNixos "nest" inputs.nixpkgs system.x86_64-linux [ ] [ ])
       (mkNixos "iso" inputs.nixpkgs system.x86_64-linux [ ] [ ])
       {
-        overlays.default = _final: prev: {
-          devour-flake = prev.callPackage inputs.devour-flake { };
-        };
+        overlays.default =
+          final: prev:
+          (import ./overlay.nix final prev)
+          // {
+            devour-flake = prev.callPackage inputs.devour-flake { };
+          };
       }
 
       (inputs.flake-utils.lib.eachSystem (builtins.attrValues system) (
@@ -183,6 +186,7 @@
             inherit system;
             overlays = [ inputs.self.overlays.default ];
           };
+          nurPackages = import ./default.nix { inherit pkgs; };
           treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs {
             projectRootFile = "flake.nix";
             programs.nixfmt.enable = true;
@@ -191,6 +195,12 @@
           };
         in
         {
+          legacyPackages = nurPackages;
+          packages = inputs.nixpkgs.lib.filterAttrs (
+            _: package:
+            inputs.nixpkgs.lib.isDerivation package
+            && inputs.nixpkgs.lib.meta.availableOn pkgs.stdenv.hostPlatform package
+          ) nurPackages;
           formatter = treefmtEval.config.build.wrapper;
           checks.formatting = treefmtEval.config.build.check inputs.self;
           devShells.default = pkgs.mkShell {

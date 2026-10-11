@@ -30,6 +30,8 @@ homelab/
   motd/               # Message of the day
   fail2ban-cloudflare/ # bans offenders at the Cloudflare edge
 modules/             # Reusable modules (ddns, email, binary cache, remote build)
+pkgs/                # NUR package definitions
+scripts/brew2nur.py  # Homebrew-to-Nix package generator
 secrets/             # sops-nix encrypted secrets (secrets.yaml, services.yaml)
 ```
 
@@ -50,6 +52,19 @@ just darwin-deploy     # Rebuild macOS config locally
 just update            # nix flake update
 just check             # nix flake check
 ```
+
+### NUR packages
+
+This repository also serves as the `avycado13` [NUR](https://github.com/nix-community/NUR) repository. Packages live in `pkgs/` and are exported from `default.nix`; `overlay.nix` is a standalone nixpkgs overlay (also exposed as `overlays.default` in the flake). The overlay is enabled in the host configurations.
+
+```bash
+nix-env -f . -qa '*'                  # List NUR packages (requires <nixpkgs>)
+nix-build -A gitcredits              # Build a package with legacy Nix
+nix build .#gitcredits               # Build using the flake
+nix-build ci.nix -A cacheOutputs     # Build supported, free, cacheable packages
+```
+
+`.github/workflows/nur.yml` builds the NUR packages and notifies the NUR registry on successful pushes to `main`. To complete the migration, update `avycado13` in [NUR's repos.json](https://github.com/nix-community/NUR/blob/master/repos.json) to point at `avycado13/nix` instead of `avycado13/nur-packages`.
 
 ### Formatting
 

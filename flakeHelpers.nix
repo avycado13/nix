@@ -37,6 +37,8 @@ let
           ];
         });
       })
+      # Apply local packages last so every host (and Home Manager) uses this repo's versions.
+      inputs.self.overlays.default
     ];
     config = {
       allowUnfree = true;
