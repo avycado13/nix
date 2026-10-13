@@ -411,9 +411,13 @@ in
           {
             auto-format = true;
             name = "go";
+            # Keep gopls rooted at the Go workspace/module, not an unrelated cwd.
+            roots = [
+              "go.work"
+              "go.mod"
+            ];
             language-servers = [
               "gopls"
-              "golangci-lint-lsp"
               "harper-ls"
               "wakatime"
             ];
@@ -588,18 +592,17 @@ in
           };
           gopls = {
             command = "${lib.getExe pkgs.gopls}";
-            args = [ "serve" ];
-          };
-          golang-ci-langserver = {
-            command = "${lib.getExe pkgs.golangci-lint-langserver}";
-            args = [
-              "run"
-              "--output.json.path"
-              "stdout"
-              "--show-stats=false"
-              "--issues-exit-code=1"
-            ];
-
+            config = {
+              staticcheck = true;
+              gofumpt = true;
+              usePlaceholders = true;
+              hints = {
+                assignVariableTypes = true;
+                compositeLiteralFields = true;
+                constantValues = true;
+                parameterNames = true;
+              };
+            };
           };
           templ = {
             command = "${lib.getExe pkgs.templ}";
@@ -611,6 +614,7 @@ in
           harper-ls = {
             command = "${lib.getExe' pkgs.harper "harper-ls"}";
             args = [ "--stdio" ];
+            config = { };
           };
 
         };

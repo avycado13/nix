@@ -29,7 +29,6 @@
       pkgs.cowsay
       pkgs.file
       pkgs.jnv
-      pkgs.clipboard-jh
       pkgs.serie
       pkgs.which
       pkgs.gnused

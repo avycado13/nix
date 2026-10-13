@@ -198,6 +198,9 @@ in
 
     home.packages = [
       pkgs.biome
+      # Go tooling: gopls is pinned in the Helix config; keep CLI linting and debugging available.
+      pkgs.golangci-lint
+      pkgs.delve
       pkgs.nodejs
       pkgs.nil
       pkgs.surge-cli
