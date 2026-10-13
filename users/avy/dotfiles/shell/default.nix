@@ -254,6 +254,17 @@ in
              # motd
            # fi
 
+           # Keep the shell in the filesystem's canonical path. gopls rejects
+           # differently cased macOS paths (e.g. ~/code instead of ~/Code).
+           canonicalize_pwd() {
+             local canonical
+             canonical="$(${lib.getExe' pkgs.coreutils "realpath"} .)" || return
+             [[ "$PWD" == "$canonical" ]] || builtin cd -- "$canonical"
+           }
+           autoload -Uz add-zsh-hook
+           add-zsh-hook chpwd canonicalize_pwd
+           canonicalize_pwd
+
            # --- Keybindings & widgets ---
            bindkey -e
 

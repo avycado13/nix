@@ -614,7 +614,8 @@ in
           harper-ls = {
             command = "${lib.getExe' pkgs.harper "harper-ls"}";
             args = [ "--stdio" ];
-            config = { };
+            # Harper expects LSP settings nested under its server name.
+            config."harper-ls" = { };
           };
 
         };

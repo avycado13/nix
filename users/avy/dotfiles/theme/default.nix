@@ -32,6 +32,13 @@
         };
       };
     };
+    # The upstream theme's rainbow array is not a valid style in Helix 25.07.
+    xdg.configFile."helix/themes/catppuccin-mocha.toml".source = lib.mkForce (
+      pkgs.runCommand "catppuccin-helix-mocha" { } ''
+        ${pkgs.gnused}/bin/sed '/^rainbow = /d' \
+          ${config.catppuccin.sources.helix}/default/catppuccin_mocha.toml > "$out"
+      ''
+    );
     fonts.fontconfig.enable = true;
     home.packages = [
       pkgs.nerd-fonts.jetbrains-mono
