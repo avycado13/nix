@@ -183,7 +183,7 @@ in
         };
         "eclipse" = {
           user = "avy";
-          hostname = "n1.eclipsesystems.org";
+          hostname = "100.114.91.116";
           port = 30014;
         };
         "nest" = {

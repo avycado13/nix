@@ -95,6 +95,7 @@ in
 
     home.sessionPath = [
       "$HOME/.local/bin"
+      "$HOME/go/bin"
     ]
     ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
       "$HOME/finance/bin"
