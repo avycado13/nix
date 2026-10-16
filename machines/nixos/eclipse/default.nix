@@ -2,6 +2,7 @@
   imports = [
     ./hardware-configuration.nix
     ./disko.nix
+    ./homelab.nix
   ];
 
   # Boot configuration (GRUB, BIOS + EFI hybrid)

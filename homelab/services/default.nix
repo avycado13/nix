@@ -94,5 +94,6 @@
     ./asterisk
     ./irc
     ./navidrome
+    ./slackbots/riddlebot.nix
   ];
 }
