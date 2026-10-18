@@ -5,9 +5,9 @@
   ...
 }:
 let
-  service = "RiddleBot";
+  service = "riddlebot";
   hl = config.homelab;
-  cfg = hl.services.${service};
+  cfg = hl.services.slackbots.${service};
 in
 {
   options.homelab.services.slackbots.${service} = {
@@ -70,7 +70,7 @@ in
           wantedBy = [ "multi-user.target" ];
           after = [ "network.target" ];
           path = [
-            pkgs.node
+            pkgs.nodejs
             pkgs.git
             pkgs.pnpm
           ];
@@ -93,7 +93,7 @@ in
 
           script = ''
             cd ${cfg.dataDir}/app
-            exec ${pkgs.node}/bin/node index.ts
+            exec ${pkgs.nodejs}/bin/node index.ts
           '';
 
           serviceConfig = {

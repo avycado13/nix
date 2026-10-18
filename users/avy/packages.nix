@@ -6,11 +6,6 @@
   ...
 }:
 {
-  options.dots.lateSh.enable = lib.mkOption {
-    type = lib.types.bool;
-    default = true;
-    description = "Enable the late-sh package.";
-  };
 
   config = {
     home.packages = [
@@ -45,7 +40,6 @@
       pkgs.wireguard-tools
       pkgs.exiftool
       pkgs.chafa
-      pkgs.gophertube
       pkgs.lesspipe
       pkgs.hledger
       (
@@ -96,10 +90,6 @@
             --print-query \
             < /dev/null
       '')
-    ]
-    ++
-      lib.optional config.dots.lateSh.enable
-        # inputs.late-sh.packages.${pkgs.stdenv.hostPlatform.system}.default;
-        pkgs.hello;
+    ];
   };
 }

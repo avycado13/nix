@@ -15,6 +15,7 @@ let
 
   ai = with inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}; [
     amp
+    pkgs.fx
     (pkgs.buildGoModule {
       pname = "lard-client";
       version = "0.2.0";

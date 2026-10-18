@@ -184,7 +184,8 @@ in
         "eclipse" = {
           user = "avy";
           hostname = "100.114.91.116";
-          port = 30014;
+          # port = 30014;
+          identityFile = identity;
         };
         "nest" = {
           user = "avycado13";
