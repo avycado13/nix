@@ -86,6 +86,7 @@
     ./miniflux
     ./auth
     ./glance
+    ./gatus
     ./niks3
     ./cloudrun
     ./scrutiny
